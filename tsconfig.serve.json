@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "experimentalDecorators": true,
+    "lib": ["es2020", "dom"],
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "target": "es5",
+    "typeRoots": ["node_modules/@types"]
+  },
+  "files": ["main.ts"],
+  "exclude": ["node_modules"]
+}

@@ -1,0 +1,240 @@
+root: true
+env:
+  node: true
+  es6: true
+  browser: true
+parser: "vue-eslint-parser"
+parserOptions:
+  parser: "@typescript-eslint/parser"
+  ecmaVersion: 2020
+  sourceType: module
+  jsxPragma: React
+  ecmaFeatures:
+    jsx: true
+    modules: true
+plugins:
+  # - unicorn
+  - "@typescript-eslint"
+  - prettier
+  - import
+extends:
+  # - airbnb-typescript
+  # - plugin:unicorn/recommended
+  - eslint:recommended
+  - plugin:import/errors
+  - plugin:@typescript-eslint/recommended
+  - plugin:vue/vue3-recommended
+  - prettier
+overrides:
+  - files:
+      - "**/*.{vue,ts,tsx}"
+    rules:
+      no-undef: 0
+rules:
+  curly: error
+  # no-console: 2
+  semi:
+    - warn
+    - never
+  no-restricted-syntax:
+    - error
+    - LabeledStatement
+    - WithStatement
+  camelcase:
+    - error
+    - properties: never
+  quotes:
+    - error
+    - single # has to match prettier quotes
+    - avoidEscape: true # has to always be true to not clash with prettier
+      allowTemplateLiterals: false
+  # '@typescript-eslint/explicit-function-return-type':
+  #   - error
+  #   - allowExpressions: true
+  no-var: error
+  no-empty:
+    - error
+    - allowEmptyCatch: true
+  prefer-const:
+    - warn
+    - destructuring: all
+      ignoreReadBeforeAssign: true
+  prefer-template: error
+  object-shorthand:
+    - error
+    - always
+    - ignoreConstructors: false
+      avoidQuotes: true
+  block-scoped-var: error
+  no-constant-condition:
+    - error
+    - checkLoops: false
+  # unicorn/no-null: 0
+  # unicorn/prefer-node-protocol: 0
+  # unicorn/filename-case: 0
+  # unicorn/no-array-for-each: 0
+  # unicorn/no-array-reduce: 0
+  # unicorn/no-array-callback-reference: 0
+  no-unreachable: 2
+  no-void: 0
+  "@typescript-eslint/naming-convention": 0
+
+  no-redeclare: off
+  "@typescript-eslint/no-redeclare": error
+  "@typescript-eslint/ban-ts-comment": off
+  "@typescript-eslint/ban-types": off
+  "@typescript-eslint/explicit-module-boundary-types": off
+  "@typescript-eslint/no-empty-function": off
+  "@typescript-eslint/no-explicit-any": off
+  "@typescript-eslint/no-non-null-assertion": off
+  "@typescript-eslint/no-non-null-asserted-optional-chain": off
+  "@typescript-eslint/no-var-requires": off
+
+  "@typescript-eslint/no-unused-vars":
+    - warn
+    - argsIgnorePattern: ^_
+      varsIgnorePattern: ^_
+  no-unused-vars:
+    - warn
+    - argsIgnorePattern: ^_
+      varsIgnorePattern: ^_
+  prettier/prettier:
+    - error
+    - arrowParens: avoid
+  import/first: error
+  import/no-duplicates: error
+  for-direction: error
+  no-prototype-builtins: error
+  no-template-curly-in-string: error
+  no-unsafe-negation: error
+  array-callback-return: error
+  complexity: error
+  consistent-return: error
+  eqeqeq:
+    - error
+    - smart
+  guard-for-in: error
+  no-alert: error
+  no-caller: error
+  no-div-regex: error
+  no-eval: error
+  no-extend-native: error
+  no-extra-bind: error
+  no-extra-label: error
+  no-floating-decimal: error
+  no-implied-eval: error
+  no-iterator: error
+  no-labels: error
+  no-lone-blocks: error
+  no-loop-func: error
+  no-new: error
+  no-new-func: error
+  no-new-wrappers: error
+  no-proto: error
+  no-restricted-properties: error
+  no-return-assign: error
+  no-return-await: error
+  no-self-compare: error
+  no-sequences: error
+  no-throw-literal: error
+  no-unmodified-loop-condition: error
+  no-unused-expressions:
+    - error
+    - allowShortCircuit: true
+  no-useless-call: error
+  no-useless-concat: error
+  no-useless-escape: error
+  no-useless-return: error
+  no-with: error
+  radix: error
+  require-await: error
+  wrap-iife: error
+  yoda: error
+  consistent-this:
+    - warn
+    - that
+  func-name-matching: error
+  func-style:
+    - warn
+    - declaration
+    - allowArrowFunctions: true
+  lines-between-class-members:
+    - error
+    - always
+    - exceptAfterSingleLine: true
+  max-depth: warn
+  max-lines:
+    - warn
+    - 1000
+  max-params:
+    - warn
+    - 4
+  no-array-constructor: warn
+  no-bitwise: warn
+  no-lonely-if: error
+  no-multi-assign: warn
+  no-nested-ternary: warn
+  no-new-object: warn
+  no-unneeded-ternary: warn
+  one-var:
+    - warn
+    - never
+  operator-assignment: warn
+  padding-line-between-statements: error
+  # no-duplicate-imports: error
+  no-useless-computed-key: error
+  no-useless-rename: error
+  prefer-arrow-callback: error
+  prefer-destructuring:
+    - warn
+    - object: true
+      array: false
+  prefer-numeric-literals: warn
+  prefer-rest-params: warn
+  prefer-spread: warn
+  no-undef: off
+
+  vue/no-v-html: 0
+  vue/require-default-prop': 0
+  vue/require-explicit-emits: 0
+  vue/multi-word-component-names: 0
+  vue/html-self-closing:
+    - error
+    - html:
+        normal: never
+        void: always
+      svg: always
+      math: always
+
+  import/newline-after-import: error
+  import/no-absolute-path: error
+  import/no-amd: error
+  import/no-deprecated: error
+  import/no-mutable-exports: error
+  import/no-named-as-default: error
+  import/no-named-as-default-member: error
+  import/no-named-default: error
+  import/no-unresolved: off
+  import/order:
+    - error
+    - groups:
+        - builtin
+        - external
+        - internal
+        - parent
+        - sibling
+        - index
+        - object
+        - type
+      pathGroups:
+        - pattern: vue
+          group: external
+          position: before
+        - pattern: "@vue/**"
+          group: external
+          position: before
+      pathGroupsExcludedImportTypes:
+        - type
+settings:
+  import/ignore:
+    - node_modules

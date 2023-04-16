@@ -1,0 +1,46 @@
+<!--🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
+
+Oh hi there! 😄 
+
+🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅-->
+<div ly-dialog-content style="padding: 15px 24px 0 24px">
+  <ly-field appearance="outlined" [lyWidth]="1">
+    <input lyNativeControl placeholder="name" [(ngModel)]="data.sysname" />
+  </ly-field>
+  <ly-field appearance="outlined" [lyWidth]="1">
+    <input lyNativeControl placeholder="username" [(ngModel)]="data.username" />
+  </ly-field>
+  <ly-field appearance="outlined" [lyWidth]="1">
+    <input lyNativeControl placeholder="password" [(ngModel)]="data.password" />
+  </ly-field>
+
+  <ly-field appearance="outlined" [lyWidth]="1" *ngIf="!_if; else _else">
+    <input lyNativeControl placeholder="url" [(ngModel)]="data.url" />
+    <button ly-button lySuffix appearance="icon" (click)="_if = !_if">
+      <ly-icon>view_headline</ly-icon>
+    </button>
+  </ly-field>
+
+  <ng-template #_else>
+    <ly-field appearance="outlined" [lyWidth]="1">
+      <ly-select placeholder="Select a system">
+        <ly-option value="0">0</ly-option>
+        <ly-option value="1">1</ly-option>
+        <ly-option value="2">2</ly-option>
+        <ly-option value="3">3</ly-option>
+      </ly-select>
+      <button ly-button lySuffix appearance="icon" (click)="_if = !_if">
+        <ly-icon>create</ly-icon>
+      </button>
+    </ly-field>
+  </ng-template>
+
+  <ly-grid container justify="end" ly-dialog-actions>
+    <button ly-button color="primary" type="button" (click)="dialogRef.close()"
+      >cancel</button
+    >
+    <button ly-button color="primary" type="submit" (click)="dialogRef.close(data)"
+      >submit</button
+    >
+  </ly-grid>
+</div>

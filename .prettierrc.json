@@ -1,0 +1,26 @@
+{
+  "semi": false,
+  "printWidth": 90,
+  "arrowParens": "avoid",
+  "endOfLine": "auto",
+  "singleQuote": true,
+  "proseWrap": "never",
+  "trailingComma": "all",
+  "vueIndentScriptAndStyle": true,
+  "htmlWhitespaceSensitivity": "strict",
+  "overrides": [
+    {
+      "files": ["*.json5"],
+      "options": {
+        "singleQuote": false,
+        "quoteProps": "preserve"
+      }
+    },
+    {
+      "files": ["*.yml"],
+      "options": {
+        "singleQuote": false
+      }
+    }
+  ]
+}

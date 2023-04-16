@@ -1,0 +1,257 @@
+import * as path from 'path'
+import {
+  app,
+  BrowserWindow,
+  Menu,
+  Tray,
+  MenuItemConstructorOptions,
+  ipcMain,
+} from 'electron'
+
+const Store = require('electron-store')
+const remote = require('@electron/remote/main')
+
+remote.initialize()
+interface Card {
+  id: string
+  url: string
+  sysname: string
+  username: string
+  password: string
+}
+
+class WindowMain {
+  win: BrowserWindow
+  isQuitting = false
+  tray: Tray
+  contextMenu: Menu
+  menuItems: Array<MenuItemConstructorOptions> = []
+  cards: Array<Card> = []
+  store: any
+
+  constructor(
+    private serve = false,
+    private port: number,
+    private defaultWidth = 430,
+    private defaultHeight = 500,
+  ) {
+    this.store = new Store({
+      defaults: {},
+      name: 'user-data',
+    })
+  }
+
+  init(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      try {
+        if (!app.requestSingleInstanceLock()) {
+          app.quit()
+          app.exit(0)
+        }
+
+        app.on('second-instance', (event, commandLine, workingDirectory) => {
+          if (this.win) {
+            this.win.focus()
+            if (this.win.isMinimized() || !this.win.isVisible()) {
+              this.win.restore()
+            }
+            this.win.once('ready-to-show', () => {
+              this.win.show()
+            })
+          }
+        })
+
+        app.on('ready', async () => {
+          await this.createWindow()
+          await this.enableTray()
+          resolve(true)
+        })
+
+        app.on('window-all-closed', () => {
+          if (process.platform !== 'darwin' || this.isQuitting) {
+            app.quit()
+            app.exit(0)
+          }
+        })
+
+        app.on('activate', async () => {
+          if (this.win === null) {
+            await this.createWindow()
+          }
+        })
+
+        app.on('before-quit', () => {
+          this.isQuitting = true
+        })
+      } catch (e) {
+        reject(e)
+      }
+    })
+  }
+
+  createWindow(): void {
+    this.win = new BrowserWindow({
+      width: this.defaultWidth,
+      height: this.defaultHeight,
+      minWidth: this.defaultWidth,
+      minHeight: this.defaultHeight,
+      icon: path.join(__dirname, 'src/assets/icons/favicon.64x64.png'),
+      webPreferences: {
+        contextIsolation: false,
+        nodeIntegration: true,
+      },
+    })
+    remote.enable(this.win.webContents)
+
+    Menu.setApplicationMenu(null)
+
+    this.win.on('closed', () => {
+      this.win.destroy()
+    })
+
+    this.win.on('close', (e: Event) => {
+      if (!this.isQuitting) {
+        e.preventDefault()
+        if (this.win) {
+          this.win.hide()
+        }
+        if (process.platform === 'darwin') {
+          app.dock.hide()
+        }
+      }
+    })
+
+    ipcMain.on('change-tray', (event: Event, cards: Array<Card>) => {
+      this.menuItems = []
+      this.cards = cards || []
+      this.cards.forEach(card => {
+        this.menuItems.push({
+          label: card.sysname,
+          click: () => {
+            this.openBrowser(card)
+          },
+        })
+      })
+      this.changeTrayMenu()
+    })
+
+    ipcMain.on('open-browser', (event: Event, card: Card) => {
+      this.openBrowser(card)
+    })
+
+    ipcMain.handle('storage-get', (event, key: string) => {
+      return this.store.get(key)
+    })
+
+    ipcMain.handle('storage-save', (event: Event, key: string, value: string) => {
+      return this.store.set(key, value)
+    })
+  }
+
+  openBrowser(card: Card): void {
+    // TODO: open
+  }
+
+  enableTray(): void {
+    if (this.tray) {
+      return
+    }
+    if (process.platform === 'darwin') {
+      this.tray = new Tray(
+        path.join(
+          __dirname,
+          `${this.serve ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
+        ),
+      )
+      this.tray.setPressedImage(
+        path.join(
+          __dirname,
+          `${this.serve ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
+        ),
+      )
+    } else {
+      this.tray = new Tray(
+        path.join(__dirname, `${this.serve ? 'src' : 'dist'}/assets/icons/favicon.png`),
+      )
+    }
+    this.tray.setToolTip('password-manager')
+    const toggleWindow = () => {
+      if (!this.win) {
+        return
+      }
+      this.win.show()
+      this.win.focus()
+      if (process.platform === 'darwin') {
+        app.dock.show()
+      }
+    }
+    this.tray.on('click', () => toggleWindow())
+    this.tray.on('double-click', () => toggleWindow())
+    this.tray.on('right-click', () => {
+      this.tray.popUpContextMenu(this.contextMenu)
+    })
+  }
+
+  changeTrayMenu(): void {
+    const initMenuItemOptions: Array<MenuItemConstructorOptions> = [
+      { type: 'separator' },
+      {
+        label: '退出',
+        click: () => {
+          this.isQuitting = true
+          if (this.win) {
+            this.win.hide()
+            this.win.destroy()
+          }
+          if (this.tray) {
+            this.tray.destroy()
+          }
+          app.quit()
+          app.exit(0)
+        },
+      },
+    ]
+    const menuItemOptions: Array<MenuItemConstructorOptions> = [
+      ...this.menuItems,
+      ...initMenuItemOptions,
+    ]
+    this.contextMenu = Menu.buildFromTemplate(menuItemOptions)
+    if (process.platform !== 'darwin') {
+      this.tray.setContextMenu(this.contextMenu)
+    }
+  }
+}
+
+class Main {
+  windowMain: WindowMain
+  constructor() {
+    const port = 13180
+    const appDataPath = app.getAppPath()
+    const args = process.argv.slice(1)
+    const serve = args.some(val => val === '--serve')
+    if (appDataPath != null) {
+      app.setPath('userData', `${appDataPath}/../password-manager-user-data`)
+    }
+    app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
+    this.windowMain = new WindowMain(serve, port)
+  }
+
+  bootstrap() {
+    this.windowMain.init().then(
+      () => {
+        const args = process.argv.slice(1)
+        const serve = args.some(val => val === '--serve')
+        if (serve) {
+          this.windowMain.win.webContents.openDevTools()
+          this.windowMain.win.loadURL('http://localhost:4200')
+        } else {
+          this.windowMain.win.loadURL(`file://${path.join(__dirname, 'dist/index.html')}`)
+        }
+      },
+      err => console.log(err),
+    )
+  }
+}
+
+const main = new Main()
+main.bootstrap()

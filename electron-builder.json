@@ -1,0 +1,35 @@
+{
+  "productName": "password-manager",
+  "directories": {
+    "output": "release/"
+  },
+  "files": [
+    "**/*",
+    "!**/*.ts",
+    "!LICENSE.md",
+    "!package.json",
+    "!pnpm-lock.yaml",
+    "!src/",
+    "!node_modules/",
+    "!angular.json",
+    "!tsconfig.json",
+    "!README.md",
+    "!main.js",
+    "!angular.webpack.js"
+  ],
+  "win": {
+    "icon": "dist/assets/icons",
+    "target": ["portable"]
+  },
+  "mac": {
+    "icon": "dist/assets/icons",
+    "target": {
+      "target": "dmg",
+      "arch": ["x64", "arm64"]
+    }
+  },
+  "linux": {
+    "icon": "dist/assets/icons",
+    "target": ["AppImage"]
+  }
+}
