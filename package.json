@@ -4,6 +4,7 @@
   "main": "main.js",
   "private": true,
   "scripts": {
+    "commit": "cz",
     "tsc": "tsc",
     "start": "npm-run-all -p ng:serve electron:serve",
     "start-el": "npm run electron:serve-tsc && npx electron . --serve",
@@ -76,6 +77,13 @@
     "stylelint-config-recommended": "^11.0.0",
     "stylelint-config-recommended-vue": "^1.4.0",
     "stylelint-config-standard": "^32.0.0",
-    "stylelint-order": "^6.0.3"
+    "stylelint-order": "^6.0.3",
+    "cz-conventional-changelog": "^3.3.0",
+    "commitizen": "^4.3.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   }
 }

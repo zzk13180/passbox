@@ -11,13 +11,47 @@ import {
 const Store = require('electron-store')
 const remote = require('@electron/remote/main')
 
-remote.initialize()
 interface Card {
   id: string
-  url: string
   sysname: string
   username: string
   password: string
+  url: string
+  width?: number // BrowserWindow width
+  height?: number // BrowserWindow height
+}
+
+class Main {
+  private windowMain: WindowMain
+
+  constructor() {
+    remote.initialize()
+    const appDataPath = app.getAppPath()
+    if (appDataPath != null) {
+      app.setPath('userData', `${appDataPath}/password-manager-user-data`)
+      app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
+    }
+    this.windowMain = new WindowMain(this.isServer)
+  }
+
+  get isServer(): boolean {
+    const args = process.argv.slice(1)
+    return args.some(val => val === '--serve')
+  }
+
+  bootstrap() {
+    this.windowMain.init().then(
+      () => {
+        if (this.isServer) {
+          this.windowMain.win.webContents.openDevTools()
+          this.windowMain.win.loadURL('http://localhost:4200')
+        } else {
+          this.windowMain.win.loadURL(`file://${path.join(__dirname, 'dist/index.html')}`)
+        }
+      },
+      err => console.log(err),
+    )
+  }
 }
 
 class WindowMain {
@@ -30,8 +64,7 @@ class WindowMain {
   store: any
 
   constructor(
-    private serve = false,
-    private port: number,
+    private isServe = false,
     private defaultWidth = 430,
     private defaultHeight = 500,
   ) {
@@ -49,7 +82,7 @@ class WindowMain {
           app.exit(0)
         }
 
-        app.on('second-instance', (event, commandLine, workingDirectory) => {
+        app.on('second-instance', () => {
           if (this.win) {
             this.win.focus()
             if (this.win.isMinimized() || !this.win.isVisible()) {
@@ -95,7 +128,10 @@ class WindowMain {
       height: this.defaultHeight,
       minWidth: this.defaultWidth,
       minHeight: this.defaultHeight,
-      icon: path.join(__dirname, 'src/assets/icons/favicon.64x64.png'),
+      icon: path.join(
+        __dirname,
+        `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
+      ),
       webPreferences: {
         contextIsolation: false,
         nodeIntegration: true,
@@ -149,7 +185,15 @@ class WindowMain {
   }
 
   openBrowser(card: Card): void {
-    // TODO: open
+    const win = new BrowserWindow({
+      width: card.width,
+      height: card.height,
+      icon: path.join(
+        __dirname,
+        `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
+      ),
+    })
+    win.loadURL(card.url)
   }
 
   enableTray(): void {
@@ -160,18 +204,18 @@ class WindowMain {
       this.tray = new Tray(
         path.join(
           __dirname,
-          `${this.serve ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
+          `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
         ),
       )
       this.tray.setPressedImage(
         path.join(
           __dirname,
-          `${this.serve ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
+          `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
         ),
       )
     } else {
       this.tray = new Tray(
-        path.join(__dirname, `${this.serve ? 'src' : 'dist'}/assets/icons/favicon.png`),
+        path.join(__dirname, `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.png`),
       )
     }
     this.tray.setToolTip('password-manager')
@@ -196,7 +240,7 @@ class WindowMain {
     const initMenuItemOptions: Array<MenuItemConstructorOptions> = [
       { type: 'separator' },
       {
-        label: '退出',
+        label: 'quit',
         click: () => {
           this.isQuitting = true
           if (this.win) {
@@ -219,37 +263,6 @@ class WindowMain {
     if (process.platform !== 'darwin') {
       this.tray.setContextMenu(this.contextMenu)
     }
-  }
-}
-
-class Main {
-  windowMain: WindowMain
-  constructor() {
-    const port = 13180
-    const appDataPath = app.getAppPath()
-    const args = process.argv.slice(1)
-    const serve = args.some(val => val === '--serve')
-    if (appDataPath != null) {
-      app.setPath('userData', `${appDataPath}/../password-manager-user-data`)
-    }
-    app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
-    this.windowMain = new WindowMain(serve, port)
-  }
-
-  bootstrap() {
-    this.windowMain.init().then(
-      () => {
-        const args = process.argv.slice(1)
-        const serve = args.some(val => val === '--serve')
-        if (serve) {
-          this.windowMain.win.webContents.openDevTools()
-          this.windowMain.win.loadURL('http://localhost:4200')
-        } else {
-          this.windowMain.win.loadURL(`file://${path.join(__dirname, 'dist/index.html')}`)
-        }
-      },
-      err => console.log(err),
-    )
   }
 }
 

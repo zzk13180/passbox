@@ -10,6 +10,7 @@
     "!package.json",
     "!pnpm-lock.yaml",
     "!src/",
+    "!password-manager-user-data/",
     "!node_modules/",
     "!angular.json",
     "!tsconfig.json",

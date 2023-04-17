@@ -1,10 +1,12 @@
 export interface Card {
   id: string
-  url: string
   sysname: string
   username: string
   password: string
   deleted: boolean
+  url: string
+  width?: string // BrowserWindow width
+  height?: string // BrowserWindow height
   passwordSee?: boolean
   panelOpened?: boolean
 }

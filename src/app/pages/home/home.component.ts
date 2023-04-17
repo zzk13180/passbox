@@ -54,7 +54,21 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.cards$ = this.store.select('card').pipe(select(selectCards))
     this.dbService.getItem('cards').then(result => {
-      const cards: Card[] = result && result.length ? result : []
+      const cards: Card[] =
+        result && result.length
+          ? result
+          : [
+              {
+                id: '0',
+                sysname: 'https://translate.google.com/',
+                username: 'example',
+                password: 'example',
+                deleted: false,
+                url: 'https://translate.google.com/',
+                width: 1300,
+                height: 650,
+              },
+            ]
       this.store.dispatch(initCards({ cards }))
     })
   }
@@ -119,6 +133,8 @@ export class HomeComponent implements OnInit {
           username: card ? card.username : '',
           password: card ? card.password : '',
           url: card ? card.url : '',
+          width: card ? card.width : '',
+          height: card ? card.height : '',
           deleted: false,
         },
       })

@@ -17,20 +17,23 @@ Oh hi there! 😄
   <ly-field appearance="outlined" [lyWidth]="1" *ngIf="!_if; else _else">
     <input lyNativeControl placeholder="url" [(ngModel)]="data.url" />
     <button ly-button lySuffix appearance="icon" (click)="_if = !_if">
-      <ly-icon>view_headline</ly-icon>
+      <ly-icon>settings</ly-icon>
     </button>
   </ly-field>
 
   <ng-template #_else>
-    <ly-field appearance="outlined" [lyWidth]="1">
-      <ly-select placeholder="Select a system">
-        <ly-option value="0">0</ly-option>
-        <ly-option value="1">1</ly-option>
-        <ly-option value="2">2</ly-option>
-        <ly-option value="3">3</ly-option>
-      </ly-select>
+    <ly-field appearance="outlined" [lyWidth]=".5">
+      <input lyNativeControl placeholder="width" type="number" [(ngModel)]="data.width" />
+    </ly-field>
+    <ly-field appearance="outlined" [lyWidth]=".5">
+      <input
+        lyNativeControl
+        placeholder="height"
+        type="number"
+        [(ngModel)]="data.height"
+      />
       <button ly-button lySuffix appearance="icon" (click)="_if = !_if">
-        <ly-icon>create</ly-icon>
+        <ly-icon>link</ly-icon>
       </button>
     </ly-field>
   </ng-template>

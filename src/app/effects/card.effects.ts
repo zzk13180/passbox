@@ -21,7 +21,7 @@ export class CardEffects {
       this.actions$.pipe(
         ofType(initCards, add, modify, remove),
         withLatestFrom(this.store.select('card').pipe(select(selectCards))),
-        tap(([action, cards]) => {
+        tap(([_action, cards]) => {
           this.dbService.setItem('cards', cards).then(cards => {
             this.electronService.changeTray(cards)
           })
