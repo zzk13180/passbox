@@ -6,16 +6,20 @@ import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey'
 import { CryptoService as CryptoServiceAbstraction } from '../models/abstractions/crypto.service'
 import { Utils } from '../misc/utils'
 import { CryptoFunctionService } from './cryptoFunction.service'
+import { ElectronService } from './electron.service'
 
 @Injectable({
   providedIn: 'root',
 })
 export class CryptoService implements CryptoServiceAbstraction {
   private legacyEtmKey: SymmetricCryptoKey
-  private password: ArrayBuffer
-  private salt: ArrayBuffer
+  private password: ArrayBuffer | null = null
+  private salt: ArrayBuffer | null = null
 
-  constructor(private cryptoFunctionService: CryptoFunctionService) {}
+  constructor(
+    private cryptoFunctionService: CryptoFunctionService,
+    private electronService: ElectronService,
+  ) {}
 
   private async makeKey(): Promise<SymmetricCryptoKey> {
     const key: ArrayBuffer = await this.cryptoFunctionService.pbkdf2(
@@ -108,7 +112,35 @@ export class CryptoService implements CryptoServiceAbstraction {
     return this.cryptoFunctionService.aesDecryptFast(fastParams)
   }
 
-  init(password: ArrayBuffer, salt: ArrayBuffer) {
+  private async init(): Promise<void> {
+    let password = null
+    let salt = null
+    const passwordStr = await this.electronService.storageGet('password')
+    const saltStr = await this.electronService.storageGet('salt')
+    if (passwordStr && saltStr) {
+      password = new ArrayBuffer(14)
+      passwordStr
+        .split(',')
+        .map((item, i) => new DataView(password).setUint8(i, Number(item)))
+      salt = new ArrayBuffer(21)
+      saltStr.split(',').map((item, i) => new DataView(salt).setUint8(i, Number(item)))
+    } else {
+      const bytes = await this.cryptoFunctionService.randomBytes(35)
+      password = bytes.slice(0, 14)
+      salt = bytes.slice(14, 35)
+      let s1 = ''
+      let s2 = ''
+      const arr = new Uint8Array(bytes)
+      for (let i = 0; i < arr.byteLength; i++) {
+        if (i < 14) {
+          s1 += `${arr[i]}${i === 13 ? '' : ','}`
+        } else {
+          s2 += `${arr[i]}${i === 34 ? '' : ','}`
+        }
+      }
+      await this.electronService.storageSave('password', s1)
+      await this.electronService.storageSave('salt', s2)
+    }
     this.password = password
     this.salt = salt
   }
@@ -116,6 +148,9 @@ export class CryptoService implements CryptoServiceAbstraction {
   async encrypt(plainValue: string | ArrayBuffer): Promise<CipherString> {
     if (plainValue == null) {
       return Promise.resolve(null)
+    }
+    if (!this.password || !this.salt) {
+      await this.init()
     }
 
     let plainBuf: ArrayBuffer
@@ -133,6 +168,9 @@ export class CryptoService implements CryptoServiceAbstraction {
   }
 
   async decryptToUtf8(cipherString: CipherString): Promise<string> {
+    if (!this.password || !this.salt) {
+      await this.init()
+    }
     const result = await this.aesDecryptToUtf8(
       cipherString.encryptionType,
       cipherString.data,

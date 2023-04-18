@@ -26,9 +26,9 @@ class Main {
 
   constructor() {
     remote.initialize()
-    const appDataPath = app.getAppPath()
-    if (appDataPath != null) {
-      app.setPath('userData', `${appDataPath}/../passbox-user-data`)
+    if (this.isServer) {
+      const appDataPath = app.getAppPath()
+      app.setPath('userData', `${appDataPath}/passbox-user-data`)
       app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
     }
     this.windowMain = new WindowMain(this.isServer)

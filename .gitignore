@@ -1,6 +1,6 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 .webpack
-password-manager-user-data
+passbox-user-data
 .eslintcache
 .angular
 /userDatas
@@ -17,7 +17,6 @@ src/**/*.js
 *.js.map
 *.js
 !angular.webpack.js
-!stf_password_manager_extension.js
 # dependencies
 /node_modules
 
@@ -54,5 +53,3 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-
-stfCache

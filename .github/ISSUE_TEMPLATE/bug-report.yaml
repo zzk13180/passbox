@@ -1,0 +1,38 @@
+name: 🐛 Bug Report
+description: Report a bug
+
+body:
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: Description
+      description: |
+        Please describe the bug in as much detail as possible.
+
+  - type: textarea
+    id: reproduction
+    validations:
+      required: true
+    attributes:
+      label: Reproduction
+      description: |
+        Please link to a working reproduction that will help us verify and understand the bug.
+
+  - type: input
+    id: version
+    validations:
+      required: true
+    attributes:
+      label: Affected versions
+      description: Please specify which version of the package you are using.
+
+  - type: textarea
+    id: environment
+    validations:
+      required: true
+    attributes:
+      label: Browser/OS/Node environment
+      description: |
+        Please list which browser and operating system combination(s) you are using.

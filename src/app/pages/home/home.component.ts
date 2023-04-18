@@ -129,9 +129,9 @@ export class HomeComponent implements OnInit {
     if (event) {
       event.stopPropagation()
     }
-    if(!card.url || card.url.indexOf('.') === -1) {
-       this.sb.open({msg: 'invalid url'})
-       return
+    if (!card.url || card.url.indexOf('.') === -1) {
+      this.sb.open({ msg: 'invalid url' })
+      return
     }
     let url = undefined
 
@@ -146,9 +146,9 @@ export class HomeComponent implements OnInit {
     }
 
     if (url) {
-      this.electronService.openBrowser({...card, url})
+      this.electronService.openBrowser({ ...card, url })
     } else {
-      this.sb.open({msg: 'invalid url'})
+      this.sb.open({ msg: 'invalid url' })
     }
   }
 

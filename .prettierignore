@@ -1,0 +1,17 @@
+/dist/*
+.local
+.output.js
+/node_modules/**
+/target/**
+
+**/*.svg
+**/*.sh
+
+/public/*
+
+*.cjs
+.angular
+passbox-user-data
+release
+main.js
+main.js.map
