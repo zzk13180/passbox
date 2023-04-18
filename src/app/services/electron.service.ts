@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core'
 import type { clipboard, ipcRenderer } from 'electron'
 import type { Card } from '../models'
+import * as remote from '@electron/remote'
 
 @Injectable({
   providedIn: 'root',
 })
 export class ElectronService {
-  remote: any
+  remote: typeof remote
   private clipboard: typeof clipboard
   private ipcRenderer: typeof ipcRenderer
 

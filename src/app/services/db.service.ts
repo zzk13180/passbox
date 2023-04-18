@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import { CryptoService } from './crypto.service'
 import { ElectronService } from './electron.service'
+import { CryptoFunctionService } from './cryptoFunction.service'
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,29 @@ export class DbService {
   constructor(
     private cryptoService: CryptoService,
     private electronService: ElectronService,
-  ) {}
+    private cryptoFunctionService: CryptoFunctionService,
+  ) {
+    this.init()
+  }
+
+  private async init() {
+    let password = null
+    let salt = null
+    const textDecoder = new TextDecoder('utf-8')
+    const textEncoder = new TextEncoder()
+    const passwordStr = await this.electronService.storageGet('password')
+    const saltStr = await this.electronService.storageGet('salt')
+    if (passwordStr && saltStr) {
+      password = textEncoder.encode(passwordStr).buffer
+      salt = textEncoder.encode(saltStr).buffer
+    } else {
+      password = await this.cryptoFunctionService.randomBytes(14)
+      salt = await this.cryptoFunctionService.randomBytes(21)
+      await this.electronService.storageSave('password', textDecoder.decode(password))
+      await this.electronService.storageSave('salt', textDecoder.decode(salt))
+      this.cryptoService.init(password, salt)
+    }
+  }
 
   async getItemByExactKey(key: string): Promise<any> {
     const result = await this.electronService.storageGet(key).then(async result => {

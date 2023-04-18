@@ -42,7 +42,7 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
     })
   }
 
-  // ref: https://tools.ietf.org/html/rfc5869
+  // eslint-disable-next-line max-params
   async hkdf(
     ikm: ArrayBuffer,
     salt: string | ArrayBuffer,

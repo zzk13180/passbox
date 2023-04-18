@@ -40,6 +40,7 @@ export class HomeComponent implements OnInit {
   readonly classes = this._theme.addStyleSheet(this.getStyle())
   cards$: Observable<Array<Card>>
 
+  // eslint-disable-next-line max-params
   constructor(
     readonly sRenderer: StyleRenderer,
     private electronService: ElectronService,
@@ -60,6 +61,14 @@ export class HomeComponent implements OnInit {
           : [
               {
                 id: '0',
+                sysname: '必应搜索 bing.com',
+                username: 'example',
+                password: 'example',
+                deleted: false,
+                url: 'https://www.bing.com/',
+              },
+              {
+                id: '1',
                 sysname: 'https://translate.google.com/',
                 username: 'example',
                 password: 'example',
@@ -120,7 +129,27 @@ export class HomeComponent implements OnInit {
     if (event) {
       event.stopPropagation()
     }
-    this.electronService.openBrowser(card)
+    if(!card.url || card.url.indexOf('.') === -1) {
+       this.sb.open({msg: 'invalid url'})
+       return
+    }
+    let url = undefined
+
+    if (card.url.startsWith('http')) {
+      try {
+        url = new URL(card.url).href
+      } catch (error) {}
+    } else {
+      try {
+        url = new URL(`https://${card.url}`).href
+      } catch (error) {}
+    }
+
+    if (url) {
+      this.electronService.openBrowser({...card, url})
+    } else {
+      this.sb.open({msg: 'invalid url'})
+    }
   }
 
   openDialog(flag: string, card?: Card) {
@@ -154,6 +183,13 @@ export class HomeComponent implements OnInit {
         })
         this._cd.markForCheck()
       })
+  }
+
+  export(event: Event): void {
+    event.stopPropagation()
+    this.dbService.getItem('cards').then(cards => {
+      this.downloadByData(JSON.stringify(cards), 'user-data.json')
+    })
   }
 
   seeAccount(event: Event): void {
@@ -245,6 +281,34 @@ export class HomeComponent implements OnInit {
           }
         }`,
       }
+    }
+  }
+
+  private downloadByData(
+    data: BlobPart,
+    filename: string,
+    mime?: string,
+    bom?: BlobPart,
+  ) {
+    const blobData = typeof bom !== 'undefined' ? [bom, data] : [data]
+    const blob = new Blob(blobData, { type: mime || 'application/octet-stream' })
+    // @ts-ignore
+    if (typeof window.navigator.msSaveBlob !== 'undefined') {
+      // @ts-ignore
+      window.navigator.msSaveBlob(blob, filename)
+    } else {
+      const blobURL = window.URL.createObjectURL(blob)
+      const tempLink = document.createElement('a')
+      tempLink.style.display = 'none'
+      tempLink.href = blobURL
+      tempLink.setAttribute('download', filename)
+      if (typeof tempLink.download === 'undefined') {
+        tempLink.setAttribute('target', '_blank')
+      }
+      document.body.appendChild(tempLink)
+      tempLink.click()
+      document.body.removeChild(tempLink)
+      window.URL.revokeObjectURL(blobURL)
     }
   }
 }

@@ -12,23 +12,22 @@ import { CryptoFunctionService } from './cryptoFunction.service'
 })
 export class CryptoService implements CryptoServiceAbstraction {
   private legacyEtmKey: SymmetricCryptoKey
+  private password: ArrayBuffer
+  private salt: ArrayBuffer
 
   constructor(private cryptoFunctionService: CryptoFunctionService) {}
 
   private async makeKey(): Promise<SymmetricCryptoKey> {
     const key: ArrayBuffer = await this.cryptoFunctionService.pbkdf2(
-      'passworda+tg2z',
-      'password-manager-salt',
+      this.password,
+      this.salt,
       'sha256',
       5000,
     )
     return new SymmetricCryptoKey(key)
   }
 
-  private async aesEncrypt(
-    data: ArrayBuffer,
-    _key: SymmetricCryptoKey,
-  ): Promise<EncryptedObject> {
+  private async aesEncrypt(data: ArrayBuffer): Promise<EncryptedObject> {
     const obj = new EncryptedObject()
     obj.key = await this.makeKey()
     obj.iv = await this.cryptoFunctionService.randomBytes(16)
@@ -46,28 +45,6 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     return obj
-  }
-
-  async encrypt(
-    plainValue: string | ArrayBuffer,
-    key?: SymmetricCryptoKey,
-  ): Promise<CipherString> {
-    if (plainValue == null) {
-      return Promise.resolve(null)
-    }
-
-    let plainBuf: ArrayBuffer
-    if (typeof plainValue === 'string') {
-      plainBuf = Utils.fromUtf8ToArray(plainValue).buffer
-    } else {
-      plainBuf = plainValue
-    }
-
-    const encObj = await this.aesEncrypt(plainBuf, key)
-    const iv = Utils.fromBufferToB64(encObj.iv)
-    const data = Utils.fromBufferToB64(encObj.data)
-    const mac = encObj.mac != null ? Utils.fromBufferToB64(encObj.mac) : null
-    return new CipherString(encObj.key.encType, data, iv, mac)
   }
 
   private resolveLegacyKey(
@@ -95,7 +72,6 @@ export class CryptoService implements CryptoServiceAbstraction {
     data: string,
     iv: string,
     mac: string,
-    key: SymmetricCryptoKey,
   ): Promise<string> {
     const keyForEnc = await this.makeKey()
     const theKey = this.resolveLegacyKey(encType, keyForEnc)
@@ -132,16 +108,36 @@ export class CryptoService implements CryptoServiceAbstraction {
     return this.cryptoFunctionService.aesDecryptFast(fastParams)
   }
 
-  async decryptToUtf8(
-    cipherString: CipherString,
-    key?: SymmetricCryptoKey,
-  ): Promise<string> {
+  init(password: ArrayBuffer, salt: ArrayBuffer) {
+    this.password = password
+    this.salt = salt
+  }
+
+  async encrypt(plainValue: string | ArrayBuffer): Promise<CipherString> {
+    if (plainValue == null) {
+      return Promise.resolve(null)
+    }
+
+    let plainBuf: ArrayBuffer
+    if (typeof plainValue === 'string') {
+      plainBuf = Utils.fromUtf8ToArray(plainValue).buffer
+    } else {
+      plainBuf = plainValue
+    }
+
+    const encObj = await this.aesEncrypt(plainBuf)
+    const iv = Utils.fromBufferToB64(encObj.iv)
+    const data = Utils.fromBufferToB64(encObj.data)
+    const mac = encObj.mac != null ? Utils.fromBufferToB64(encObj.mac) : null
+    return new CipherString(encObj.key.encType, data, iv, mac)
+  }
+
+  async decryptToUtf8(cipherString: CipherString): Promise<string> {
     const result = await this.aesDecryptToUtf8(
       cipherString.encryptionType,
       cipherString.data,
       cipherString.iv,
       cipherString.mac,
-      key,
     )
     return result
   }

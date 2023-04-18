@@ -1,5 +1,6 @@
 {
   "productName": "password-manager",
+  "appId": "com.zhangzhankui.passwordManager",
   "directories": {
     "output": "release/"
   },
@@ -10,13 +11,8 @@
     "!package.json",
     "!pnpm-lock.yaml",
     "!src/",
-    "!password-manager-user-data/",
-    "!node_modules/",
     "!angular.json",
-    "!tsconfig.json",
-    "!README.md",
-    "!main.js",
-    "!angular.webpack.js"
+    "!tsconfig.json"
   ],
   "win": {
     "icon": "dist/assets/icons",

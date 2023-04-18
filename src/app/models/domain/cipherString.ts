@@ -1,11 +1,5 @@
 import { EncryptionType } from '../../enums/encryptionType'
 
-import { CryptoService } from '../abstractions/crypto.service'
-
-import { Utils } from '../../misc/utils'
-
-import { SymmetricCryptoKey } from './symmetricCryptoKey'
-
 export class CipherString {
   encryptedString?: string
   encryptionType?: EncryptionType
@@ -96,26 +90,5 @@ export class CipherString {
         break
       default:
     }
-  }
-
-  async decrypt(orgId: string, key: SymmetricCryptoKey = null): Promise<string> {
-    if (this.decryptedValue != null) {
-      return this.decryptedValue
-    }
-
-    let cryptoService: CryptoService
-    const containerService = (Utils.global as any).bitwardenContainerService
-    if (containerService) {
-      cryptoService = containerService.getCryptoService()
-    } else {
-      throw new Error('global bitwardenContainerService not initialized.')
-    }
-
-    try {
-      this.decryptedValue = await cryptoService.decryptToUtf8(this, key)
-    } catch (e) {
-      this.decryptedValue = '[error: cannot decrypt]'
-    }
-    return this.decryptedValue
   }
 }

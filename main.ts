@@ -28,7 +28,7 @@ class Main {
     remote.initialize()
     const appDataPath = app.getAppPath()
     if (appDataPath != null) {
-      app.setPath('userData', `${appDataPath}/password-manager-user-data`)
+      app.setPath('userData', `${appDataPath}/../password-manager-user-data`)
       app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
     }
     this.windowMain = new WindowMain(this.isServer)
@@ -46,6 +46,7 @@ class Main {
           this.windowMain.win.webContents.openDevTools()
           this.windowMain.win.loadURL('http://localhost:4200')
         } else {
+          // this.windowMain.win.webContents.openDevTools()
           this.windowMain.win.loadURL(`file://${path.join(__dirname, 'dist/index.html')}`)
         }
       },
@@ -61,7 +62,7 @@ class WindowMain {
   contextMenu: Menu
   menuItems: Array<MenuItemConstructorOptions> = []
   cards: Array<Card> = []
-  store: any
+  store: typeof Store
 
   constructor(
     private isServe = false,
