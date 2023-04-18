@@ -1,6 +1,6 @@
 {
-  "productName": "password-manager",
-  "appId": "com.zhangzhankui.passwordManager",
+  "productName": "passbox",
+  "appId": "com.zhangzhankui.passbox",
   "directories": {
     "output": "release/"
   },

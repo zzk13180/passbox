@@ -1,7 +1,7 @@
 {
-  "name": "password-manager",
-  "productName": "password-manager",
-  "description": "password-manager",
+  "name": "passbox",
+  "productName": "passbox",
+  "description": "passbox",
   "author": {
     "name": "zhangzhankui",
     "email": "zzk13180@gmail.com"
@@ -13,7 +13,7 @@
     "Electron",
     "Angular",
     "@alyle/ui",
-    "password-manager"
+    "passbox"
   ],
   "scripts": {
     "dev": "concurrently --raw \"npm run ng:serve\" \"npm run electron:serve\"",

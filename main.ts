@@ -28,7 +28,7 @@ class Main {
     remote.initialize()
     const appDataPath = app.getAppPath()
     if (appDataPath != null) {
-      app.setPath('userData', `${appDataPath}/../password-manager-user-data`)
+      app.setPath('userData', `${appDataPath}/../passbox-user-data`)
       app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
     }
     this.windowMain = new WindowMain(this.isServer)
@@ -219,7 +219,7 @@ class WindowMain {
         path.join(__dirname, `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.png`),
       )
     }
-    this.tray.setToolTip('password-manager')
+    this.tray.setToolTip('passbox')
     const toggleWindow = () => {
       if (!this.win) {
         return

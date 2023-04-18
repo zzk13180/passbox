@@ -7,7 +7,7 @@ import { CryptoFunctionService } from './cryptoFunction.service'
   providedIn: 'root',
 })
 export class DbService {
-  storagePrefix = 'password-manager:'
+  storagePrefix = 'passbox:'
   servicePrefix = 'db:'
 
   constructor(
