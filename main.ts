@@ -1,4 +1,5 @@
-import * as path from 'path'
+import * as path from 'node:path'
+import * as fs from 'node:fs'
 import {
   app,
   BrowserWindow,
@@ -170,6 +171,11 @@ class WindowMain {
         })
       })
       this.changeTrayMenu()
+    })
+
+    ipcMain.handle('read-file', (_event: Event, path: string) => {
+      const data = fs.readFileSync(path, 'utf8')
+      return data
     })
 
     ipcMain.on('open-browser', (event: Event, card: Card) => {

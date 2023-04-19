@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core'
 import { EncryptionType } from '../enums/encryptionType'
+import { StorageKey } from '../enums/storageKey'
 import { CipherString } from '../models/domain/cipherString'
 import { EncryptedObject } from '../models/domain/encryptedObject'
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey'
@@ -115,8 +116,8 @@ export class CryptoService implements CryptoServiceAbstraction {
   private async init(): Promise<void> {
     let password = null
     let salt = null
-    const passwordStr = await this.electronService.storageGet('password')
-    const saltStr = await this.electronService.storageGet('salt')
+    const passwordStr = await this.electronService.storageGet(StorageKey.password)
+    const saltStr = await this.electronService.storageGet(StorageKey.salt)
     if (passwordStr && saltStr) {
       password = new ArrayBuffer(14)
       passwordStr
@@ -138,20 +139,34 @@ export class CryptoService implements CryptoServiceAbstraction {
           s2 += `${arr[i]}${i === 34 ? '' : ','}`
         }
       }
-      await this.electronService.storageSave('password', s1)
-      await this.electronService.storageSave('salt', s2)
+      await this.electronService.storageSave(StorageKey.password, s1)
+      await this.electronService.storageSave(StorageKey.salt, s2)
     }
     this.password = password
     this.salt = salt
+  }
+
+  // Prevent files storing user data from being deleted while the program is running
+  // Check whether the file storing user data exists before each decryption
+  private async fileExists(): Promise<boolean> {
+    const saltStr = await this.electronService.storageGet(StorageKey.salt)
+    return !!saltStr != null
+  }
+
+  private async checkPassword() {
+    const isExist = await this.fileExists()
+    if (!this.password || !this.salt || !isExist) {
+      this.password = null
+      this.salt = null
+      await this.init()
+    }
   }
 
   async encrypt(plainValue: string | ArrayBuffer): Promise<CipherString> {
     if (plainValue == null) {
       return Promise.resolve(null)
     }
-    if (!this.password || !this.salt) {
-      await this.init()
-    }
+    await this.checkPassword()
 
     let plainBuf: ArrayBuffer
     if (typeof plainValue === 'string') {
@@ -168,9 +183,7 @@ export class CryptoService implements CryptoServiceAbstraction {
   }
 
   async decryptToUtf8(cipherString: CipherString): Promise<string> {
-    if (!this.password || !this.salt) {
-      await this.init()
-    }
+    await this.checkPassword()
     const result = await this.aesDecryptToUtf8(
       cipherString.encryptionType,
       cipherString.data,

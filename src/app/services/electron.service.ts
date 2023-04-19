@@ -24,6 +24,11 @@ export class ElectronService {
     }
   }
 
+  async readFile(path: string): Promise<string> {
+    const result = await this.ipcRenderer.invoke('read-file', path)
+    return result
+  }
+
   copyText(text: string) {
     this.clipboard.writeText(text)
   }

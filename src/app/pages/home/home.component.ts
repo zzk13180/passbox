@@ -14,6 +14,8 @@ import { LySnackBar } from '@alyle/ui/snack-bar'
 import { Observable } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import { Store, select } from '@ngrx/store'
+import { v4 as uuid } from 'uuid'
+import { StorageKey } from '../../enums/storageKey'
 import { Card, CardState, CardFieldMap } from '../../models'
 import {
   ElectronService,
@@ -54,25 +56,23 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.cards$ = this.store.select('card').pipe(select(selectCards))
-    this.dbService.getItem('cards').then(result => {
+    this.dbService.getItem(StorageKey.cards).then(result => {
       const cards: Card[] =
         result && result.length
           ? result
           : [
               {
-                id: '0',
-                sysname: '必应搜索 bing.com',
+                id: uuid(),
+                sysname: 'bing.com',
                 username: 'example',
                 password: 'example',
-                deleted: false,
                 url: 'https://www.bing.com/',
               },
               {
-                id: '1',
+                id: uuid(),
                 sysname: 'https://translate.google.com/',
                 username: 'example',
                 password: 'example',
-                deleted: false,
                 url: 'https://translate.google.com/',
                 width: 1300,
                 height: 650,
@@ -185,11 +185,47 @@ export class HomeComponent implements OnInit {
       })
   }
 
-  export(event: Event): void {
+  async exportData(event: Event): Promise<void> {
     event.stopPropagation()
-    this.dbService.getItem('cards').then(cards => {
-      this.downloadByData(JSON.stringify(cards), 'user-data.json')
-    })
+    const cards = await this.dbService.getItem(StorageKey.cards)
+    this.downloadByData(JSON.stringify(cards), 'passbox-data.json')
+  }
+
+  importData(event: Event): void {
+    event.stopPropagation()
+    this.electronService.remote.dialog
+      .showOpenDialog(this.electronService.remote.BrowserWindow.getFocusedWindow(), {
+        title: 'import data',
+        filters: [
+          {
+            name: 'json',
+            extensions: ['json'],
+          },
+        ],
+        properties: ['openFile'],
+      })
+      .then(async result => {
+        if (result.filePaths && result.filePaths.length) {
+          const filePath = result.filePaths[0]
+          const data = await this.electronService.readFile(filePath)
+          let cards: Card[] | null = null
+          try {
+            cards = JSON.parse(data)
+          } catch (error) {
+            this.sb.open({ msg: 'invalid data' })
+          }
+          if (cards && Object.prototype.toString.call(cards) === '[object Array]') {
+            const allCards = await this.dbService.getItem(StorageKey.cards)
+            cards.forEach(card => {
+              const even = (element: Card) => element.id === card.id
+              if (!allCards.some(even)) {
+                this.store.dispatch(add({ card }))
+              }
+            })
+            this.sb.open({ msg: 'import success' })
+          }
+        }
+      })
   }
 
   seeAccount(event: Event): void {

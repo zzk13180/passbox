@@ -3,6 +3,7 @@ import { createEffect, Actions, ofType } from '@ngrx/effects'
 import { tap, withLatestFrom } from 'rxjs/operators'
 import { Store, select } from '@ngrx/store'
 import { CardState } from '../models'
+import { StorageKey } from '../enums/storageKey'
 import { DbService } from '../services/db.service'
 import { add, modify, remove, selectCards, initCards } from '../services/ngrx.service'
 import { ElectronService } from '../services/electron.service'
@@ -22,7 +23,7 @@ export class CardEffects {
         ofType(initCards, add, modify, remove),
         withLatestFrom(this.store.select('card').pipe(select(selectCards))),
         tap(([_action, cards]) => {
-          this.dbService.setItem('cards', cards).then(cards => {
+          this.dbService.setItem(StorageKey.cards, cards).then(cards => {
             this.electronService.changeTray(cards)
           })
         }),

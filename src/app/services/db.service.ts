@@ -6,9 +6,6 @@ import { ElectronService } from './electron.service'
   providedIn: 'root',
 })
 export class DbService {
-  storagePrefix = 'passbox:'
-  servicePrefix = 'db:'
-
   constructor(
     private cryptoService: CryptoService,
     private electronService: ElectronService,
@@ -16,8 +13,12 @@ export class DbService {
 
   private async getItemByExactKey(key: string): Promise<any> {
     const result = await this.electronService.storageGet(key).then(async result => {
-      if (result && JSON.parse(result).value) {
-        const decrypted = await this.cryptoService.decryptToUtf8(JSON.parse(result).value)
+      if (!result) {
+        return Promise.resolve(null)
+      }
+      const { value } = JSON.parse(result)
+      if (result && value) {
+        const decrypted = await this.cryptoService.decryptToUtf8(value)
         return Promise.resolve(JSON.parse(decrypted))
       } else {
         return Promise.resolve(null)
@@ -26,8 +27,13 @@ export class DbService {
     return result
   }
 
+  async getEncryptedData(key: string): Promise<any> {
+    const result = await this.electronService.storageGet(key)
+    return result
+  }
+
   async getItem(key: string): Promise<any> {
-    const result = await this.getItemByExactKey(this.getItemName(key))
+    const result = await this.getItemByExactKey(key)
     return result
   }
 
@@ -40,18 +46,11 @@ export class DbService {
         .encrypt(JSON.stringify(value))
         .then(async encrypted => {
           dbValue.value = encrypted
-          await this.electronService.storageSave(
-            this.getItemName(key),
-            JSON.stringify(dbValue),
-          )
+          await this.electronService.storageSave(key, JSON.stringify(dbValue))
           return value
         })
       return result
     }
     return Promise.resolve(null)
-  }
-
-  private getItemName(key: string) {
-    return `${this.storagePrefix}${this.servicePrefix}${key}`
   }
 }

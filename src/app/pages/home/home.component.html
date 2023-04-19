@@ -22,10 +22,15 @@ Oh hi there! 😄
         <span class="spacer"></span>
         <span>add</span>
       </button>
-      <button ly-button ly-menu-item (click)="export($event)">
+      <button ly-button ly-menu-item (click)="exportData($event)">
         <ly-icon>file_download</ly-icon>
         <span class="spacer"></span>
         <span>export</span>
+      </button>
+      <button ly-button ly-menu-item (click)="importData($event)">
+        <ly-icon>file_upload</ly-icon>
+        <span class="spacer"></span>
+        <span>import</span>
       </button>
     </ly-menu>
   </ng-template>
