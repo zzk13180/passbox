@@ -5,8 +5,9 @@ Oh hi there! 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅-->
 
 <div class="container">
-  <ly-toolbar position="static" bg="primary" class="home-toolbar">
+  <ly-toolbar position="static" bg="primary">
     <button
+      class="menu-btn"
       color="primary:contrast"
       ly-button
       appearance="icon"
@@ -14,6 +15,7 @@ Oh hi there! 😄
     >
       <ly-icon>menu</ly-icon>
     </button>
+    <search class="home-search" (searchFn)="onSearch($event)"></search>
   </ly-toolbar>
   <ng-template #clipboard let-M>
     <ly-menu [ref]="M" [lyWidth]="180">
@@ -35,8 +37,14 @@ Oh hi there! 😄
     </ly-menu>
   </ng-template>
 
-  <ly-accordion [withClass]="classes.expansion" [hasToggle]="false">
+  <ly-accordion
+    cdkDropList
+    [withClass]="classes.expansion"
+    [hasToggle]="false"
+    (cdkDropListDropped)="drop($event)"
+  >
     <ly-expansion-panel
+      cdkDrag
       *ngFor="let card of cards$ | async; index as i"
       [expanded]="card.panelOpened"
       (afterCollapse)="togglePanelOpened(card)"

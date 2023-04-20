@@ -2,8 +2,14 @@
   height: 100%;
 }
 
-.home-toolbar {
-  height: 24px !important;
+.home-search {
+  width: calc(100% - 111px);
+}
+
+.menu-btn {
+  position: relative;
+  right: 8px;
+  top: 0;
 }
 
 .spacer {

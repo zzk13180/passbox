@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core'
+import * as pako from 'pako'
 import { EncryptionType } from '../enums/encryptionType'
 import { StorageKey } from '../enums/storageKey'
 import { CipherString } from '../models/domain/cipherString'
@@ -170,7 +171,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     let plainBuf: ArrayBuffer
     if (typeof plainValue === 'string') {
-      plainBuf = Utils.fromUtf8ToArray(plainValue).buffer
+      plainBuf = pako.deflate(plainValue).buffer
     } else {
       plainBuf = plainValue
     }
@@ -191,36 +192,5 @@ export class CryptoService implements CryptoServiceAbstraction {
       cipherString.mac,
     )
     return result
-  }
-
-  async randomNumber(min: number, max: number): Promise<number> {
-    let rval = 0
-    const range = max - min + 1
-    const bitsNeeded = Math.ceil(Math.log2(range))
-    if (bitsNeeded > 53) {
-      throw new Error('We cannot generate numbers larger than 53 bits.')
-    }
-
-    const bytesNeeded = Math.ceil(bitsNeeded / 8)
-    const mask = Math.pow(2, bitsNeeded) - 1
-
-    const byteArray = new Uint8Array(
-      await this.cryptoFunctionService.randomBytes(bytesNeeded),
-    )
-
-    let p = (bytesNeeded - 1) * 8
-    for (let i = 0; i < bytesNeeded; i++) {
-      rval += byteArray[i] * Math.pow(2, p)
-      p -= 8
-    }
-
-    // eslint-disable-next-line no-bitwise
-    rval &= mask
-
-    if (rval >= range) {
-      return this.randomNumber(min, max)
-    }
-
-    return min + rval
   }
 }

@@ -1,5 +1,6 @@
 import * as Crypto from 'crypto'
 import { Injectable } from '@angular/core'
+import * as pako from 'pako'
 import { CryptoFunctionService as CryptoFunctionServiceAbstraction } from '../models/abstractions/cryptoFunction.service'
 import { Utils } from '../misc/utils'
 import { DecryptParameters } from '../models/domain/decryptParameters'
@@ -183,7 +184,7 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
       parameters.iv,
       parameters.encKey,
     )
-    return Utils.fromBufferToUtf8(decBuf)
+    return pako.inflate(decBuf, { to: 'string' })
   }
 
   aesDecrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {

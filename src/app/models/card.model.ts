@@ -3,15 +3,16 @@ export interface Card {
   sysname: string
   username: string
   password: string
-  deleted: boolean
   url: string
   width?: string // BrowserWindow width
   height?: string // BrowserWindow height
   passwordSee?: boolean
   panelOpened?: boolean
+  isSearched?: boolean
+  deleted: boolean
 }
 
-export type CardsFilter = 'ALL' | 'ACTIVE'
+export type CardsFilter = 'ALL' | 'ACTIVE' | 'DELETED' | 'SEARCH'
 
 export interface CardState {
   items: Array<Card>

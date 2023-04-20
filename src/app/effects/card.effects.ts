@@ -5,8 +5,17 @@ import { Store, select } from '@ngrx/store'
 import { CardState } from '../models'
 import { StorageKey } from '../enums/storageKey'
 import { DbService } from '../services/db.service'
-import { add, modify, remove, selectCards, initCards } from '../services/ngrx.service'
 import { ElectronService } from '../services/electron.service'
+import {
+  add,
+  sort,
+  modify,
+  remove,
+  search,
+  initCards,
+  selectCards,
+} from '../services/ngrx.service'
+import type { Card } from '../models'
 
 @Injectable()
 export class CardEffects {
@@ -20,12 +29,24 @@ export class CardEffects {
   card = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(initCards, add, modify, remove),
+        ofType(initCards, add, modify, remove, sort),
         withLatestFrom(this.store.select('card').pipe(select(selectCards))),
         tap(([_action, cards]) => {
           this.dbService.setItem(StorageKey.cards, cards).then(cards => {
             this.electronService.changeTray(cards)
           })
+        }),
+      ),
+    { dispatch: false },
+  )
+
+  search = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(search),
+        withLatestFrom(this.store.select('card').pipe(select(selectCards))),
+        tap(([_action, cards]) => {
+          this.electronService.changeTray(cards)
         }),
       ),
     { dispatch: false },

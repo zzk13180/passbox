@@ -8,6 +8,7 @@ import {
   NgZone,
 } from '@angular/core'
 import { StyleRenderer, ThemeVariables, LyTheme2, ThemeRef, lyl } from '@alyle/ui'
+import { CdkDragDrop } from '@angular/cdk/drag-drop'
 import { LyDialog, LyDialogRef, LY_DIALOG_DATA } from '@alyle/ui/dialog'
 import { STYLES as EXPANSION_STYLES } from '@alyle/ui/expansion'
 import { LySnackBar } from '@alyle/ui/snack-bar'
@@ -22,8 +23,10 @@ import {
   DbService,
   initCards,
   add,
+  sort,
   modify,
   remove,
+  search,
   selectCards,
   togglePasswordSee,
   togglePanelOpened,
@@ -276,6 +279,15 @@ export class HomeComponent implements OnInit {
       }),
     )
     menu.popup()
+  }
+
+  drop(event: CdkDragDrop<Card[]>) {
+    const { previousIndex, currentIndex } = event
+    this.store.dispatch(sort({ previousIndex, currentIndex }))
+  }
+
+  onSearch(term: string) {
+    this.store.dispatch(search({ term }))
   }
 
   private getStyle() {

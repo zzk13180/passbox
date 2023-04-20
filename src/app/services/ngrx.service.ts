@@ -24,6 +24,11 @@ export const togglePanelOpened = createAction(
   '[Card List] TogglePanelOpened',
   props<{ card: Card }>(),
 )
+export const sort = createAction(
+  '[Card List] Sort',
+  props<{ previousIndex: number; currentIndex: number }>(),
+)
+export const search = createAction('[Card List] Search', props<{ term: string }>())
 const initialState: CardState = {
   items: [],
   filter: 'ACTIVE',
@@ -62,6 +67,26 @@ export const _reducer = createReducer(
       item.id === card.id ? { ...item, panelOpened: !item.panelOpened } : item,
     ),
   })),
+  on(sort, (state, { previousIndex, currentIndex }) => {
+    const items = [...state.items]
+    const [removed] = items.splice(previousIndex, 1)
+    items.splice(currentIndex, 0, removed)
+    return { ...state, items }
+  }),
+  on(search, (state, { term }) => ({
+    ...state,
+    filter: 'SEARCH',
+    items: state.items.map((item: Card) => {
+      const sysname = item.sysname.toLowerCase()
+      const username = item.username.toLowerCase()
+      const password = item.password.toLowerCase()
+      const termLower = term.toLowerCase()
+      const sysnameMatch = sysname.includes(termLower)
+      const usernameMatch = username.includes(termLower)
+      const passwordMatch = password.includes(termLower)
+      return { ...item, isSearched: sysnameMatch || usernameMatch || passwordMatch }
+    }),
+  })),
 )
 
 export function cardReducer(state: CardState, action: Action) {
@@ -75,11 +100,25 @@ export const selectCards = createSelector(
   selectorItems,
   selectorFilter,
   (items, filter) => {
-    if (filter === 'ALL') {
-      return items
-    } else {
-      const predicate = filter === 'ACTIVE' ? t => !t.deleted : t => t.deleted
-      return items.filter(predicate)
+    let predicate = null
+    switch (filter) {
+      case 'ALL':
+        predicate = (_card: Card) => true
+        break
+      case 'ACTIVE':
+        predicate = (card: Card) => !card.deleted
+        break
+      case 'DELETED':
+        predicate = (card: Card) => card.deleted
+        break
+      case 'SEARCH':
+        predicate = (card: Card) => card.isSearched
+        break
+      default:
+        predicate = (_card: Card) => true
+        break
     }
+    const result = items.filter(predicate)
+    return result
   },
 )

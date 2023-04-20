@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
+import { DragDropModule } from '@angular/cdk/drag-drop'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { LyTabsModule } from '@alyle/ui/tabs'
 import { LyIconModule } from '@alyle/ui/icon'
 import { LyExpansionIconModule, LyCommonModule } from '@alyle/ui'
 import { LyExpansionModule } from '@alyle/ui/expansion'
 import { LyTypographyModule } from '@alyle/ui/typography'
 import { LyButtonModule } from '@alyle/ui/button'
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { LyDialogModule } from '@alyle/ui/dialog'
 import { LyGridModule } from '@alyle/ui/grid'
 import { LyFieldModule } from '@alyle/ui/field'
@@ -18,13 +19,15 @@ import { LyListModule } from '@alyle/ui/list'
 import { LySelectModule } from '@alyle/ui/select'
 import { LyAvatarModule } from '@alyle/ui/avatar'
 import { HomeComponent, AddDialog } from './home.component'
+import { SearchComponent } from './search.component'
 import { HomeRoutingModule } from './home-routing.module'
 
 @NgModule({
-  declarations: [HomeComponent, AddDialog],
+  declarations: [HomeComponent, AddDialog, SearchComponent],
   entryComponents: [AddDialog],
   imports: [
     CommonModule,
+    DragDropModule,
     LyTabsModule,
     LyIconModule,
     LyExpansionModule,
