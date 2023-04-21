@@ -22,7 +22,7 @@ import { cardReducer } from './services'
     HomeModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    StoreModule.forRoot({ card: cardReducer }),
+    StoreModule.forRoot({ theCards: cardReducer }),
     EffectsModule.forRoot([CardEffects]),
   ],
   providers: [

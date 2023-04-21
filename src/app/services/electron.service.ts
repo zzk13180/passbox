@@ -41,7 +41,7 @@ export class ElectronService {
     this.ipcRenderer.send('change-tray', cards)
   }
 
-  storageSave(key: string, value: string): Promise<any> {
+  storageSave(key: string, value: string): Promise<void> {
     return this.ipcRenderer.invoke('storage-save', key, value)
   }
 

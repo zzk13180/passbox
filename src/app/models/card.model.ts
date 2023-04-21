@@ -4,19 +4,19 @@ export interface Card {
   username: string
   password: string
   url: string
-  width?: string // BrowserWindow width
-  height?: string // BrowserWindow height
+  width?: number // BrowserWindow width
+  height?: number // BrowserWindow height
   passwordSee?: boolean
   panelOpened?: boolean
-  isSearched?: boolean
-  deleted: boolean
 }
 
-export type CardsFilter = 'ALL' | 'ACTIVE' | 'DELETED' | 'SEARCH'
+export type CardsFilter = 'ALL' | 'ACTIVE' | 'DELETED'
 
 export interface CardState {
+  term: string
   items: Array<Card>
   filter: CardsFilter
+  deletedItems: Array<Card>
 }
 
 export enum CardFieldMap {

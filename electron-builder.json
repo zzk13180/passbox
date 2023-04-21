@@ -1,6 +1,7 @@
 {
   "productName": "passbox",
   "appId": "com.zhangzhankui.passbox",
+  "copyright": "Copyright © 2023 Zhang ZhanKui",
   "directories": {
     "output": "release/"
   },
@@ -12,11 +13,18 @@
     "!pnpm-lock.yaml",
     "!src/",
     "!angular.json",
-    "!tsconfig.json"
+    "!tsconfig.json",
+    "!passbox-user-data/",
+    "!tsconfig.app.json",
+    "!tsconfig.serve.json",
+    "!tslint.json",
+    "!README.md",
+    "!main.js.map",
+    ".*/**/*"
   ],
   "win": {
     "icon": "dist/assets/icons",
-    "target": ["portable"]
+    "target": ["nsis", "portable"]
   },
   "mac": {
     "icon": "dist/assets/icons",
@@ -28,5 +36,9 @@
   "linux": {
     "icon": "dist/assets/icons",
     "target": ["AppImage"]
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": true
   }
 }

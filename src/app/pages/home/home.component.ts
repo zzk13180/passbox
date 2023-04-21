@@ -43,6 +43,7 @@ export class HomeComponent implements OnInit {
   @ViewChild('sb') sb: LySnackBar
 
   readonly classes = this._theme.addStyleSheet(this.getStyle())
+  private theTerm = ''
   cards$: Observable<Array<Card>>
 
   // eslint-disable-next-line max-params
@@ -54,35 +55,38 @@ export class HomeComponent implements OnInit {
     private _theme: LyTheme2,
     private ngZone: NgZone,
     private _cd: ChangeDetectorRef,
-    private store: Store<{ card: CardState }>,
+    private store: Store<{ theCards: CardState }>,
   ) {}
 
-  ngOnInit(): void {
-    this.cards$ = this.store.select('card').pipe(select(selectCards))
-    this.dbService.getItem(StorageKey.cards).then(result => {
-      const cards: Card[] =
-        result && result.length
-          ? result
-          : [
-              {
-                id: uuid(),
-                sysname: 'bing.com',
-                username: 'example',
-                password: 'example',
-                url: 'https://www.bing.com/',
-              },
-              {
-                id: uuid(),
-                sysname: 'https://translate.google.com/',
-                username: 'example',
-                password: 'example',
-                url: 'https://translate.google.com/',
-                width: 1300,
-                height: 650,
-              },
-            ]
-      this.store.dispatch(initCards({ cards }))
-    })
+  async ngOnInit(): Promise<void> {
+    this.cards$ = this.store.select('theCards').pipe(select(selectCards))
+    let cards: Card[] | null = null
+    try {
+      cards = await this.dbService.getItem(StorageKey.cards)
+    } catch (_) {}
+    if (!cards || !cards.length) {
+      cards = [
+        {
+          id: uuid(),
+          sysname: 'bing.com',
+          username: 'example',
+          password: 'example',
+          url: 'https://www.bing.com/',
+          width: 800,
+          height: 600,
+        },
+        {
+          id: uuid(),
+          sysname: 'https://translate.google.com/',
+          username: 'example',
+          password: 'example',
+          url: 'https://translate.google.com/',
+          width: 1300,
+          height: 650,
+        },
+      ]
+    }
+    this.store.dispatch(initCards({ cards }))
   }
 
   copy(card: Card, field: string): void {
@@ -158,23 +162,21 @@ export class HomeComponent implements OnInit {
   openDialog(flag: string, card?: Card) {
     this._dialog
       .open<AddDialog, Card>(AddDialog, {
-        width: 300,
         data: {
-          id: card ? card.id : null,
-          sysname: card ? card.sysname : '',
-          username: card ? card.username : '',
-          password: card ? card.password : '',
-          url: card ? card.url : '',
-          width: card ? card.width : '',
-          height: card ? card.height : '',
-          deleted: false,
+          id: card?.id ?? uuid(),
+          sysname: card?.sysname ?? '',
+          username: card?.username ?? '',
+          password: card?.password ?? '',
+          url: card?.url ?? '',
+          width: card?.width ?? 800,
+          height: card?.height ?? 600,
         },
       })
       .afterClosed.pipe(filter(result => !!result))
       .subscribe(card => {
         let msg = ''
         if (flag === 'add') {
-          this.store.dispatch(add({ card }))
+          this.store.dispatch(add({ cards: [card] }))
           msg = 'add success'
         }
         if (flag === 'modify') {
@@ -190,8 +192,12 @@ export class HomeComponent implements OnInit {
 
   async exportData(event: Event): Promise<void> {
     event.stopPropagation()
-    const cards = await this.dbService.getItem(StorageKey.cards)
-    this.downloadByData(JSON.stringify(cards), 'passbox-data.json')
+    try {
+      const cards = await this.dbService.getItem(StorageKey.cards)
+      this.downloadByData(JSON.stringify(cards), 'passbox-data.json')
+    } catch (_) {
+      this.sb.open({ msg: 'export data failed' })
+    }
   }
 
   importData(event: Event): void {
@@ -201,8 +207,8 @@ export class HomeComponent implements OnInit {
         title: 'import data',
         filters: [
           {
-            name: 'json',
-            extensions: ['json'],
+            name: 'passboxdata',
+            extensions: ['json', 'html'],
           },
         ],
         properties: ['openFile'],
@@ -211,24 +217,64 @@ export class HomeComponent implements OnInit {
         if (result.filePaths && result.filePaths.length) {
           const filePath = result.filePaths[0]
           const data = await this.electronService.readFile(filePath)
+          const { toString } = Object.prototype
           let cards: Card[] | null = null
+          const ext = filePath.split('.').pop()
           try {
-            cards = JSON.parse(data)
+            if (ext !== 'json') {
+              cards = this.html2cards(data)
+            } else {
+              cards = JSON.parse(data)
+            }
+            if (!cards.length || toString.call(cards[0]) !== '[object Object]') {
+              throw new Error('invalid data')
+            }
           } catch (error) {
             this.sb.open({ msg: 'invalid data' })
           }
-          if (cards && Object.prototype.toString.call(cards) === '[object Array]') {
-            const allCards = await this.dbService.getItem(StorageKey.cards)
-            cards.forEach(card => {
-              const even = (element: Card) => element.id === card.id
-              if (!allCards.some(even)) {
-                this.store.dispatch(add({ card }))
-              }
-            })
+          if (cards && toString.call(cards) === '[object Array]') {
+            try {
+              await this.addCards(cards, ext)
+            } catch (error) {
+              this.sb.open({ msg: 'invalid data' })
+            }
             this.sb.open({ msg: 'import success' })
           }
         }
       })
+  }
+
+  private async addCards(addCards: Card[], from: string): Promise<void> {
+    const existCards = await this.dbService.getItem(StorageKey.cards)
+    const keys = ['sysname', 'username', 'password', 'url']
+    const cards: Card[] = []
+    addCards.forEach(card => {
+      const isAvailable = keys.some(key => card[key] && typeof card[key] === 'string')
+      const even = (element: Card) => element.id === card.id
+      const isNotExist = from === 'html' || !existCards.some(even)
+      if (isNotExist && isAvailable) {
+        cards.push(card)
+      }
+    })
+    this.store.dispatch(add({ cards }))
+  }
+
+  private html2cards(html: string): Card[] {
+    const cards: Card[] = []
+    const placeholder = document.createElement('div')
+    placeholder.innerHTML = html
+    const atags = placeholder.querySelectorAll('a')
+    atags.forEach(atag => {
+      const card: Card = {
+        id: uuid(),
+        sysname: atag.innerText || '',
+        username: '',
+        password: '',
+        url: atag.getAttribute('href') || '',
+      }
+      cards.push(card)
+    })
+    return cards
   }
 
   seeAccount(event: Event): void {
@@ -282,11 +328,14 @@ export class HomeComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<Card[]>) {
-    const { previousIndex, currentIndex } = event
-    this.store.dispatch(sort({ previousIndex, currentIndex }))
+    if (!this.theTerm) {
+      const { previousIndex, currentIndex } = event
+      this.store.dispatch(sort({ previousIndex, currentIndex }))
+    }
   }
 
   onSearch(term: string) {
+    this.theTerm = term
     this.store.dispatch(search({ term }))
   }
 

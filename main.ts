@@ -51,7 +51,7 @@ class Main {
           this.windowMain.win.loadURL(`file://${path.join(__dirname, 'dist/index.html')}`)
         }
       },
-      err => console.log(err),
+      err => console.error(err),
     )
   }
 }
@@ -173,8 +173,11 @@ class WindowMain {
       this.changeTrayMenu()
     })
 
-    ipcMain.handle('read-file', (_event: Event, path: string) => {
-      const data = fs.readFileSync(path, 'utf8')
+    ipcMain.handle('read-file', (_event: Event, path: string): string => {
+      let data = ''
+      try {
+        data = fs.readFileSync(path, 'utf8')
+      } catch (_) {}
       return data
     })
 
@@ -182,11 +185,11 @@ class WindowMain {
       this.openBrowser(card)
     })
 
-    ipcMain.handle('storage-get', (event, key: string) => {
-      return this.store.get(key)
+    ipcMain.handle('storage-get', (event, key: string): string => {
+      return this.store.get(key, '')
     })
 
-    ipcMain.handle('storage-save', (event: Event, key: string, value: string) => {
+    ipcMain.handle('storage-save', (event: Event, key: string, value: string): void => {
       return this.store.set(key, value)
     })
   }
@@ -245,7 +248,6 @@ class WindowMain {
 
   changeTrayMenu(): void {
     const initMenuItemOptions: Array<MenuItemConstructorOptions> = [
-      { type: 'separator' },
       {
         label: 'quit',
         click: () => {
@@ -261,10 +263,12 @@ class WindowMain {
           app.exit(0)
         },
       },
+      { type: 'separator' },
+      { type: 'separator' },
     ]
     const menuItemOptions: Array<MenuItemConstructorOptions> = [
-      ...this.menuItems,
       ...initMenuItemOptions,
+      ...this.menuItems,
     ]
     this.contextMenu = Menu.buildFromTemplate(menuItemOptions)
     if (process.platform !== 'darwin') {

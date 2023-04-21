@@ -24,7 +24,7 @@ svg.svg-icon-clear {
 
   path {
     fill: #5b5d66;
-    transition: all cubic-bezier(0.645, 0.045, 0.355, 1)  300ms;
+    transition: all cubic-bezier(0.645, 0.045, 0.355, 1) 300ms;
   }
 
   &:hover {
@@ -94,13 +94,13 @@ svg.svg-icon-clear {
     }
 
     &:disabled {
-      background-color: #3D3E44;
+      background-color: #3d3e44;
       border-color: #505153;
-      color: #7D7D7D;
+      color: #7d7d7d;
 
       & + .search-icon {
         svg path {
-          fill:#7D7D7D;
+          fill: #7d7d7d;
         }
       }
     }
