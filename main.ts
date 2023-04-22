@@ -1,5 +1,7 @@
 import * as path from 'node:path'
 import * as fs from 'node:fs'
+import * as dns from 'node:dns'
+import { parse } from 'node:url'
 import {
   app,
   Tray,
@@ -195,21 +197,39 @@ class WindowMain {
     })
   }
 
-  openBrowser(card: Card): void {
-    if (!card.url || card.url.indexOf('.') === -1) {
-      dialog.showErrorBox('failed to open the link', 'invalid url')
-      return
+  async openBrowser(card: Card): Promise<boolean> {
+    const { href, protocol, pathname } = parse(card.url)
+    let url = ''
+    if (protocol) {
+      url = href
+    } else if (pathname) {
+      url = `http://${href}`
+      try {
+        // eslint-disable-next-line no-new
+        new URL(url)
+        const ok = await lookupDnsOk(pathname)
+        if (!ok) {
+          url = ''
+        }
+      } catch (_) {
+        url = ''
+      }
     }
-    // TODO: check url is invalid web link or file link
+    if (!url) {
+      dialog.showErrorBox('failed to open the link', `invalid url: ${card.url}`)
+      return Promise.resolve(false)
+    }
     const win = new BrowserWindow({
       width: card.width,
       height: card.height,
+      title: url,
       icon: path.join(
         __dirname,
         `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
       ),
     })
-    win.loadURL(card.url)
+    win.loadURL(url)
+    return Promise.resolve(true)
   }
 
   enableTray(): void {
@@ -281,6 +301,20 @@ class WindowMain {
       this.tray.setContextMenu(this.contextMenu)
     }
   }
+}
+
+async function lookupDnsOk(pathname: string): Promise<boolean> {
+  const result: boolean = await new Promise(resolve => {
+    dns.lookup(pathname, (err, _ip) => {
+      if (!err) {
+        resolve(true)
+      } else {
+        resolve(false)
+      }
+    })
+    setTimeout(() => resolve(false), 2 * 1000)
+  })
+  return result
 }
 
 const main = new Main()

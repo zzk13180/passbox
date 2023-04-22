@@ -6,6 +6,7 @@ import {
   props,
   createSelector,
 } from '@ngrx/store'
+import Fuse from 'fuse.js'
 import { Card, CardState } from '../models'
 
 // actions
@@ -87,15 +88,12 @@ export function cardReducer(state: CardState, action: Action) {
   return _reducer(state, action)
 }
 
-const searchHandler = (term: string, card: Card) => {
-  const termLower = term.toLowerCase()
-  const sysname = card.sysname.toLowerCase()
-  const username = card.username.toLowerCase()
-  const password = card.password.toLowerCase()
-  const sysnameMatch = sysname.includes(termLower)
-  const usernameMatch = username.includes(termLower)
-  const passwordMatch = password.includes(termLower)
-  return sysnameMatch || usernameMatch || passwordMatch
+const searchHandler = (cards: Card[], term: string): Card[] => {
+  const fuse = new Fuse(cards, {
+    keys: ['sysname'],
+  })
+  const result = fuse.search(term).map(item => item.item)
+  return result
 }
 
 // selectors
@@ -121,7 +119,7 @@ export const selectCards = createSelector(
         break
     }
     if (result && term) {
-      result = result.filter((card: Card) => searchHandler(term, card))
+      result = searchHandler(result, term)
     }
     return result
   },

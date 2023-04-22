@@ -62,24 +62,22 @@ Oh hi there! 😄
           <ly-icon>send</ly-icon>
         </button>
       </ly-expansion-panel-header>
-      <div>
-        <ly-paper>
-          <ly-list>
-            <button ly-list-item (click)="copy(card, 'username')">
-              <ly-icon (click)="seeAccount($event)" ly-list-icon>account_box</ly-icon>
-              <span ly-line>{{ card.username }}</span>
-            </button>
-            <button ly-list-item (click)="copy(card, 'password')">
-              <ly-icon (click)="togglePasswordSee($event, card)" ly-list-icon>
-                {{ card.passwordSee ? 'visibility_off' : 'visibility' }}
-              </ly-icon>
-              <span ly-line>{{
-                card.passwordSee ? card.password : getPasswordOffStr(card)
-              }}</span>
-            </button>
-          </ly-list>
-        </ly-paper>
-      </div>
+      <ly-paper>
+        <ly-list>
+          <button ly-list-item (click)="copy(card, 'username')">
+            <ly-icon (click)="seeAccount($event)" ly-list-icon>account_box</ly-icon>
+            <span ly-line>{{ card.username }}</span>
+          </button>
+          <button ly-list-item (click)="copy(card, 'password')">
+            <ly-icon (click)="togglePasswordSee($event, card)" ly-list-icon>
+              {{ card.passwordSee ? 'visibility_off' : 'visibility' }}
+            </ly-icon>
+            <span ly-line>{{
+              card.passwordSee ? card.password : getPasswordOffStr(card)
+            }}</span>
+          </button>
+        </ly-list>
+      </ly-paper>
     </ly-expansion-panel>
   </ly-accordion>
 
