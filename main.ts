@@ -2,11 +2,12 @@ import * as path from 'node:path'
 import * as fs from 'node:fs'
 import {
   app,
-  BrowserWindow,
-  Menu,
   Tray,
-  MenuItemConstructorOptions,
+  Menu,
+  dialog,
   ipcMain,
+  BrowserWindow,
+  MenuItemConstructorOptions,
 } from 'electron'
 
 const Store = require('electron-store')
@@ -195,6 +196,11 @@ class WindowMain {
   }
 
   openBrowser(card: Card): void {
+    if (!card.url || card.url.indexOf('.') === -1) {
+      dialog.showErrorBox('failed to open the link', 'invalid url')
+      return
+    }
+    // TODO: check url is invalid web link or file link
     const win = new BrowserWindow({
       width: card.width,
       height: card.height,

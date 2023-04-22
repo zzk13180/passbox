@@ -105,6 +105,7 @@ export const selectCards = createSelector(
   (state: CardState) => state.filter,
   (state: CardState) => state.term,
   (items, deletedItems, filter, term) => {
+    console.log('selectCards', items, deletedItems, filter, term)
     let result: Card[] = items
     switch (filter) {
       case 'ALL':

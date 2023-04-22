@@ -32,7 +32,7 @@ export class CardEffects {
         debounceTime(300),
         withLatestFrom(this.store.select('theCards').pipe(select(selectCards))),
         tap(([_action, cards]) => {
-          console.log('card effect')
+          console.log('cards', cards)
           this.dbService.setItem(StorageKey.cards, cards)
           this.electronService.changeTray(cards)
         }),
@@ -47,7 +47,7 @@ export class CardEffects {
         debounceTime(300),
         withLatestFrom(this.store.select('theCards').pipe(select(selectCards))),
         tap(([_action, cards]) => {
-          console.log('search effect')
+          console.log('cards', cards)
           this.electronService.changeTray(cards)
         }),
       ),

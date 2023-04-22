@@ -136,27 +136,7 @@ export class HomeComponent implements OnInit {
     if (event) {
       event.stopPropagation()
     }
-    if (!card.url || card.url.indexOf('.') === -1) {
-      this.sb.open({ msg: 'invalid url' })
-      return
-    }
-    let url = undefined
-
-    if (card.url.startsWith('http')) {
-      try {
-        url = new URL(card.url).href
-      } catch (error) {}
-    } else {
-      try {
-        url = new URL(`https://${card.url}`).href
-      } catch (error) {}
-    }
-
-    if (url) {
-      this.electronService.openBrowser({ ...card, url })
-    } else {
-      this.sb.open({ msg: 'invalid url' })
-    }
+    this.electronService.openBrowser(card)
   }
 
   openDialog(flag: string, card?: Card) {
@@ -328,10 +308,11 @@ export class HomeComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<Card[]>) {
-    if (!this.theTerm) {
-      const { previousIndex, currentIndex } = event
-      this.store.dispatch(sort({ previousIndex, currentIndex }))
+    if (this.theTerm) {
+      return
     }
+    const { previousIndex, currentIndex } = event
+    this.store.dispatch(sort({ previousIndex, currentIndex }))
   }
 
   onSearch(term: string) {
