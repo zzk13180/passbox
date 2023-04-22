@@ -10,12 +10,9 @@ export interface Card {
   panelOpened?: boolean
 }
 
-export type CardsFilter = 'ALL' | 'ACTIVE' | 'DELETED'
-
 export interface CardState {
   term: string
   items: Array<Card>
-  filter: CardsFilter
   deletedItems: Array<Card>
 }
 

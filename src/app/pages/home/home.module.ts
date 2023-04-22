@@ -18,13 +18,14 @@ import { LyDividerModule } from '@alyle/ui/divider'
 import { LyListModule } from '@alyle/ui/list'
 import { LySelectModule } from '@alyle/ui/select'
 import { LyAvatarModule } from '@alyle/ui/avatar'
-import { HomeComponent, AddDialog } from './home.component'
+import { LyTableModule } from '@alyle/ui/table'
+import { HomeComponent, AddDialog, DeletedCardsDialog } from './home.component'
 import { SearchComponent } from './search.component'
 import { HomeRoutingModule } from './home-routing.module'
 
 @NgModule({
-  declarations: [HomeComponent, AddDialog, SearchComponent],
-  entryComponents: [AddDialog],
+  declarations: [HomeComponent, SearchComponent, AddDialog, DeletedCardsDialog],
+  entryComponents: [AddDialog, DeletedCardsDialog],
   imports: [
     CommonModule,
     DragDropModule,
@@ -38,7 +39,6 @@ import { HomeRoutingModule } from './home-routing.module'
     FormsModule,
     LyDialogModule,
     LyGridModule,
-    LyButtonModule,
     LyTypographyModule,
     LyFieldModule,
     LyCommonModule,
@@ -49,6 +49,7 @@ import { HomeRoutingModule } from './home-routing.module'
     LyDividerModule,
     LyListModule,
     LyAvatarModule,
+    LyTableModule,
     ReactiveFormsModule,
     HomeRoutingModule,
   ],

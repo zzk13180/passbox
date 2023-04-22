@@ -12,7 +12,7 @@ import { Card, CardState } from '../models'
 // actions
 export const initCards = createAction(
   '[Card List] InitCards',
-  props<{ cards: Array<Card> }>(),
+  props<{ theCards: CardState }>(),
 )
 export const add = createAction('[Card List] AddItem', props<{ cards: Card[] }>())
 export const modify = createAction('[Card List] ModifyItem', props<{ card: Card }>())
@@ -36,14 +36,12 @@ export const initialState: CardState = {
   term: '',
   items: [],
   deletedItems: [],
-  filter: 'ACTIVE',
 }
 export function cardReducer(state: CardState, action: Action) {
   const _reducer = createReducer(
     initialState,
-    on(initCards, (state, { cards }) => ({
-      ...state,
-      items: [...cards],
+    on(initCards, (_state, { theCards }) => ({
+      ...theCards,
     })),
     on(add, (state, { cards }) => ({
       ...state,
@@ -99,28 +97,22 @@ const searchHandler = (cards: Card[], term: string): Card[] => {
 // selectors
 export const selectCards = createSelector(
   (state: CardState) => state.items,
-  (state: CardState) => state.deletedItems,
-  (state: CardState) => state.filter,
   (state: CardState) => state.term,
-  (items, deletedItems, filter, term) => {
-    console.log('selectCards', items, deletedItems, filter, term)
+  (items, term) => {
     let result: Card[] = items
-    switch (filter) {
-      case 'ALL':
-        result = [...items, ...deletedItems]
-        break
-      case 'ACTIVE':
-        // result = items
-        break
-      case 'DELETED':
-        result = deletedItems
-        break
-      default:
-        break
-    }
-    if (result && term) {
+    if (term && result?.length) {
       result = searchHandler(result, term)
     }
     return result
   },
+)
+
+export const selectDeletedCards = createSelector(
+  (state: CardState) => state.deletedItems,
+  deletedItems => deletedItems,
+)
+
+export const selectSearchTerm = createSelector(
+  (state: CardState) => state.term,
+  term => term,
 )

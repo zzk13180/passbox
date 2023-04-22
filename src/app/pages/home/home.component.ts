@@ -27,9 +27,11 @@ import {
   modify,
   remove,
   search,
-  selectCards,
   togglePasswordSee,
   togglePanelOpened,
+  selectCards,
+  selectDeletedCards,
+  selectSearchTerm,
 } from '../../services'
 
 @Component({
@@ -43,8 +45,9 @@ export class HomeComponent implements OnInit {
   @ViewChild('sb') sb: LySnackBar
 
   readonly classes = this._theme.addStyleSheet(this.getStyle())
-  private theTerm = ''
   cards$: Observable<Array<Card>>
+  deletedCards$: Observable<Array<Card>>
+  searchTerm$: Observable<string>
 
   // eslint-disable-next-line max-params
   constructor(
@@ -58,35 +61,46 @@ export class HomeComponent implements OnInit {
     private store: Store<{ theCards: CardState }>,
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    this.cards$ = this.store.select('theCards').pipe(select(selectCards))
-    let cards: Card[] | null = null
+  ngOnInit() {
+    const theCardsStore = this.store.select('theCards')
+    this.cards$ = theCardsStore.pipe(select(selectCards))
+    this.deletedCards$ = theCardsStore.pipe(select(selectDeletedCards))
+    this.searchTerm$ = theCardsStore.pipe(select(selectSearchTerm))
+    this.initTheCards()
+  }
+
+  private async initTheCards(): Promise<void> {
+    let theCards: CardState | null = null
     try {
-      cards = await this.dbService.getItem(StorageKey.cards)
+      theCards = await this.dbService.getItem(StorageKey.cards)
     } catch (_) {}
-    if (!cards || !cards.length) {
-      cards = [
-        {
-          id: uuid(),
-          sysname: 'bing.com',
-          username: 'example',
-          password: 'example',
-          url: 'https://www.bing.com/',
-          width: 800,
-          height: 600,
-        },
-        {
-          id: uuid(),
-          sysname: 'https://translate.google.com/',
-          username: 'example',
-          password: 'example',
-          url: 'https://translate.google.com/',
-          width: 1300,
-          height: 650,
-        },
-      ]
+    if (!theCards) {
+      theCards = {
+        term: '',
+        items: [
+          {
+            id: uuid(),
+            sysname: 'example - bing.com',
+            username: 'example',
+            password: 'example',
+            url: 'https://www.bing.com/',
+            width: 800,
+            height: 600,
+          },
+          {
+            id: uuid(),
+            sysname: 'https://translate.google.com/',
+            username: 'example',
+            password: 'example',
+            url: 'https://translate.google.com/',
+            width: 1300,
+            height: 650,
+          },
+        ],
+        deletedItems: [],
+      }
     }
-    this.store.dispatch(initCards({ cards }))
+    this.store.dispatch(initCards({ theCards }))
   }
 
   copy(card: Card, field: string): void {
@@ -170,11 +184,17 @@ export class HomeComponent implements OnInit {
       })
   }
 
+  showDeletedCards() {
+    let data: Card[] = []
+    this.deletedCards$.subscribe(cards => (data = cards)).unsubscribe()
+    this._dialog.open<DeletedCardsDialog, Card[]>(DeletedCardsDialog, { data })
+  }
+
   async exportData(event: Event): Promise<void> {
     event.stopPropagation()
     try {
-      const cards = await this.dbService.getItem(StorageKey.cards)
-      this.downloadByData(JSON.stringify(cards), 'passbox-data.json')
+      const theCards: CardState = await this.dbService.getItem(StorageKey.cards)
+      this.downloadByData(JSON.stringify(theCards), 'passbox-data.json')
     } catch (_) {
       this.sb.open({ msg: 'export data failed' })
     }
@@ -224,14 +244,17 @@ export class HomeComponent implements OnInit {
       })
   }
 
-  private async addCards(addCards: Card[], from: string): Promise<void> {
-    const existCards = await this.dbService.getItem(StorageKey.cards)
-    const keys = ['sysname', 'username', 'password', 'url']
+  private addCards(addCards: Card[], from: string): void {
     const cards: Card[] = []
+    let existCards: Card[] = []
+    const subscriber = this.cards$.subscribe({
+      next: c => (existCards = c),
+    })
+    subscriber.unsubscribe()
+    const keys = ['sysname', 'username', 'password', 'url']
     addCards.forEach(card => {
-      const isAvailable = keys.some(key => card[key] && typeof card[key] === 'string')
-      const even = (element: Card) => element.id === card.id
-      const isNotExist = from === 'html' || !existCards.some(even)
+      const isAvailable = keys.some(key => card[key])
+      const isNotExist = from === 'html' || !existCards.some(c => c.id === card.id)
       if (isNotExist && isAvailable) {
         cards.push(card)
       }
@@ -308,15 +331,15 @@ export class HomeComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<Card[]>) {
-    if (this.theTerm) {
-      return
-    }
     const { previousIndex, currentIndex } = event
-    this.store.dispatch(sort({ previousIndex, currentIndex }))
+    let term = ''
+    this.searchTerm$.subscribe(t => (term = t)).unsubscribe()
+    if (!term) {
+      this.store.dispatch(sort({ previousIndex, currentIndex }))
+    }
   }
 
   onSearch(term: string) {
-    this.theTerm = term
     this.store.dispatch(search({ term }))
   }
 
@@ -404,4 +427,43 @@ export class AddDialog {
   constructor(public dialogRef: LyDialogRef, @Inject(LY_DIALOG_DATA) public data: Card) {
     this._if = false
   }
+}
+
+/*🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
+show deleted cards dialog 😄
+🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅*/
+@Component({
+  templateUrl: './card-deleted-dialog.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class DeletedCardsDialog {
+  constructor(
+    public dialogRef: LyDialogRef,
+    @Inject(LY_DIALOG_DATA) public cards: Card[],
+  ) {}
+
+  columns = [
+    {
+      columnDef: 'sysname',
+      header: 'name',
+      cell: (card: Card) => `${card.sysname}`,
+    },
+    {
+      columnDef: 'username',
+      header: 'username',
+      cell: (card: Card) => `${card.username}`,
+    },
+    {
+      columnDef: 'password',
+      header: 'password',
+      cell: (card: Card) => `${card.password}`,
+    },
+    {
+      columnDef: 'url',
+      header: 'url',
+      cell: (card: Card) => `${card.url}`,
+    },
+  ]
+
+  displayedColumns = this.columns.map(c => c.columnDef)
 }
