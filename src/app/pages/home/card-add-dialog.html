@@ -39,10 +39,20 @@ Oh hi there! 😄
   </ng-template>
 
   <ly-grid container justify="end" ly-dialog-actions>
-    <button ly-button color="primary" type="button" (click)="dialogRef.close()"
+    <button
+      ly-button
+      color="primary"
+      type="button"
+      (click)="dialogRef.close()"
+      (keydown.escape)="dialogRef.close()"
       >cancel</button
     >
-    <button ly-button color="primary" type="submit" (click)="dialogRef.close(data)"
+    <button
+      ly-button
+      color="primary"
+      type="submit"
+      (click)="dialogRef.close(data)"
+      (keydown.enter)="dialogRef.close(data)"
       >submit</button
     >
   </ly-grid>

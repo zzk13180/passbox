@@ -6,7 +6,15 @@ import { CardState } from '../models'
 import { StorageKey } from '../enums/storageKey'
 import { DbService } from '../services/db.service'
 import { ElectronService } from '../services/electron.service'
-import { add, sort, modify, remove, search, selectCards } from '../services/ngrx.service'
+import {
+  add,
+  sort,
+  modify,
+  remove,
+  search,
+  restore,
+  selectCards,
+} from '../services/ngrx.service'
 
 @Injectable()
 export class CardEffects {
@@ -20,7 +28,7 @@ export class CardEffects {
   card = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(add, modify, remove, sort),
+        ofType(add, modify, remove, sort, restore),
         debounceTime(300),
         withLatestFrom(this.store.select('theCards')),
         tap(([_action, theCards]) => {

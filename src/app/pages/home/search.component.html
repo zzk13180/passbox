@@ -4,6 +4,7 @@
     [placeholder]="placeholder"
     (change)="inputChange(filterInput.value, $event)"
     (keyup)="inputChange(filterInput.value, $event)"
+    (keydown.escape)="clearText()"
     [attr.maxlength]="maxLength"
     [disabled]="disabled"
     (blur)="inputBlur()"

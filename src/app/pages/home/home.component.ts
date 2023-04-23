@@ -7,7 +7,7 @@ import {
   ViewChild,
   NgZone,
 } from '@angular/core'
-import { StyleRenderer, ThemeVariables, LyTheme2, ThemeRef, lyl } from '@alyle/ui'
+import { StyleRenderer, lyl, ThemeVariables, ThemeRef, LyTheme2 } from '@alyle/ui'
 import { CdkDragDrop } from '@angular/cdk/drag-drop'
 import { LyDialog, LyDialogRef, LY_DIALOG_DATA } from '@alyle/ui/dialog'
 import { STYLES as EXPANSION_STYLES } from '@alyle/ui/expansion'
@@ -27,12 +27,52 @@ import {
   modify,
   remove,
   search,
-  togglePasswordSee,
-  togglePanelOpened,
+  restore,
   selectCards,
   selectDeletedCards,
   selectSearchTerm,
 } from '../../services'
+
+const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
+  const expansion = ref.selectorsOf(EXPANSION_STYLES)
+  return {
+    $name: 'home-panel',
+    title: () => lyl`{
+      display: block
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+    }`,
+    panelafter: () => lyl`{
+      &::after {
+        transition: border ${theme.animations.durations.entering}ms ${theme.animations.curves.standard}
+        content: ''
+        position: absolute
+        top: 0
+        bottom: 0
+        ${theme.before}: 0
+        border-${theme.before}: 3px solid transparent
+      }
+    }`,
+    accordion: () => {
+      return lyl`{
+        ${expansion.expanded} {
+          ${expansion.panelHeader} {
+            height: 64px
+          }
+          &${expansion.panel} {
+            &::after {
+              border-${theme.before}: 3px solid ${theme.primary.default}
+            }
+          }
+          ${expansion.panelHeader} ${expansion.panelTitle} {
+            color: ${theme.primary.default}
+          }
+        }
+      }`
+    },
+  }
+}
 
 @Component({
   selector: 'app-home',
@@ -43,8 +83,7 @@ import {
 })
 export class HomeComponent implements OnInit {
   @ViewChild('sb') sb: LySnackBar
-
-  readonly classes = this._theme.addStyleSheet(this.getStyle())
+  classes: any
   cards$: Observable<Array<Card>>
   deletedCards$: Observable<Array<Card>>
   searchTerm$: Observable<string>
@@ -52,16 +91,17 @@ export class HomeComponent implements OnInit {
   // eslint-disable-next-line max-params
   constructor(
     readonly sRenderer: StyleRenderer,
+    private _theme: LyTheme2,
     private electronService: ElectronService,
     private dbService: DbService,
     private _dialog: LyDialog,
-    private _theme: LyTheme2,
     private ngZone: NgZone,
     private _cd: ChangeDetectorRef,
     private store: Store<{ theCards: CardState }>,
   ) {}
 
   ngOnInit() {
+    this.classes = this._theme.addStyleSheet(STYLES)
     const theCardsStore = this.store.select('theCards')
     this.cards$ = theCardsStore.pipe(select(selectCards))
     this.deletedCards$ = theCardsStore.pipe(select(selectDeletedCards))
@@ -104,6 +144,9 @@ export class HomeComponent implements OnInit {
   }
 
   copy(card: Card, field: string): void {
+    if (!card[field]) {
+      return
+    }
     this.electronService.copyText(card[field])
     this.sb.open({
       msg: `${CardFieldMap[field]} is copied`,
@@ -284,23 +327,6 @@ export class HomeComponent implements OnInit {
     event.stopPropagation()
   }
 
-  togglePanelOpened(card: Card): void {
-    this.store.dispatch(togglePanelOpened({ card }))
-  }
-
-  togglePasswordSee(event: Event, card: Card): void {
-    event.stopPropagation()
-    this.store.dispatch(togglePasswordSee({ card }))
-  }
-
-  getPasswordOffStr(card: Card): string {
-    const len =
-      card.password && card.password.length && card.password.length > 5
-        ? card.password.length
-        : 6
-    return new Array(len + 1).join('*')
-  }
-
   viewMenu(card: Card) {
     const menu = new this.electronService.remote.Menu()
     menu.append(
@@ -327,6 +353,14 @@ export class HomeComponent implements OnInit {
         },
       }),
     )
+    // menu.append(
+    //   new this.electronService.remote.MenuItem({
+    //     label: 'open',
+    //     click: () => {
+    //       this.openBrowser(card)
+    //     },
+    //   }),
+    // )
     menu.popup()
   }
 
@@ -343,46 +377,8 @@ export class HomeComponent implements OnInit {
     this.store.dispatch(search({ term }))
   }
 
-  private getStyle() {
-    return (theme: ThemeVariables, ref: ThemeRef) => {
-      const expansion = ref.selectorsOf(EXPANSION_STYLES)
-      const { before } = theme
-      return {
-        expansion: () => lyl`{
-          ${expansion.panel} {
-            &::after {
-              transition: border ${theme.animations.durations.entering}ms ${theme.animations.curves.standard}
-              content: ''
-              position: absolute
-              top: 0
-              bottom: 0
-              ${before}: 0
-              border-${before}: 2px solid transparent
-            }
-          }
-          ${expansion.panelHeader} {
-            height: 54px
-          }
-          ${expansion.panelTitle} {
-            font-weight: 500
-          }
-          ${expansion.expanded} {
-            ${expansion.panelHeader} {
-              height: 64px
-            }
-            &${expansion.panel} {
-              background: ${theme.background.secondary}
-              &::after {
-                border-${before}: 2px solid ${theme.primary.default}
-              }
-            }
-            ${expansion.panelHeader} ${expansion.panelTitle} {
-              color: ${theme.primary.default}
-            }
-          }
-        }`,
-      }
-    }
+  trackByFn(_index: number, item: Card): string {
+    return item.id
   }
 
   private downloadByData(
@@ -432,31 +428,43 @@ export class AddDialog {
 /*🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
 show deleted cards dialog 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅*/
+
 @Component({
   templateUrl: './card-deleted-dialog.html',
+  providers: [StyleRenderer],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeletedCardsDialog {
+  // eslint-disable-next-line max-params
   constructor(
+    private electronService: ElectronService,
+    readonly sRenderer: StyleRenderer,
     public dialogRef: LyDialogRef,
+    private ngZone: NgZone,
+    private _cd: ChangeDetectorRef,
+    private store: Store<{ theCards: CardState }>,
     @Inject(LY_DIALOG_DATA) public cards: Card[],
   ) {}
+
+  readonly classes = this.sRenderer.renderSheet((_theme: ThemeVariables) => {
+    return {
+      root: lyl`{
+        table {
+          width: 100%
+          min-width: 300px
+          th, td {
+            padding: 0 16px
+          }
+        }
+      }`,
+    }
+  }, 'root')
 
   columns = [
     {
       columnDef: 'sysname',
       header: 'name',
       cell: (card: Card) => `${card.sysname}`,
-    },
-    {
-      columnDef: 'username',
-      header: 'username',
-      cell: (card: Card) => `${card.username}`,
-    },
-    {
-      columnDef: 'password',
-      header: 'password',
-      cell: (card: Card) => `${card.password}`,
     },
     {
       columnDef: 'url',
@@ -466,4 +474,57 @@ export class DeletedCardsDialog {
   ]
 
   displayedColumns = this.columns.map(c => c.columnDef)
+
+  viewMenu(card: Card) {
+    const menu = new this.electronService.remote.Menu()
+    menu.append(
+      new this.electronService.remote.MenuItem({
+        label: 'restore',
+        click: () => {
+          this.restoreCard(card)
+        },
+      }),
+    )
+    menu.append(
+      new this.electronService.remote.MenuItem({
+        label: 'delete',
+        click: () => {
+          this.del(card)
+        },
+      }),
+    )
+
+    menu.popup()
+  }
+
+  del(card: Card) {
+    this.electronService.remote.dialog
+      .showMessageBox(this.electronService.remote.BrowserWindow.getFocusedWindow(), {
+        type: 'question',
+        title: 'confirm',
+        message: 'delete card',
+        detail: 'are you sure to delete this card?',
+        buttons: ['yes', 'cancel'],
+        defaultId: 0,
+        cancelId: 1,
+        noLink: true,
+      })
+      .then(result => {
+        if (result.response === 0) {
+          this.ngZone.run(() => {
+            this.store.dispatch(remove({ card }))
+            this.cards = this.cards.filter(c => c.id !== card.id)
+            this._cd.detectChanges()
+          })
+        }
+      })
+  }
+
+  restoreCard(card: Card) {
+    this.ngZone.run(() => {
+      this.store.dispatch(restore({ card }))
+      this.cards = this.cards.filter(c => c.id !== card.id)
+      this._cd.detectChanges()
+    })
+  }
 }

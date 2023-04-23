@@ -6,8 +6,6 @@ export interface Card {
   url: string
   width?: number // BrowserWindow width
   height?: number // BrowserWindow height
-  passwordSee?: boolean
-  panelOpened?: boolean
 }
 
 export interface CardState {

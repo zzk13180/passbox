@@ -17,19 +17,12 @@ export const initCards = createAction(
 export const add = createAction('[Card List] AddItem', props<{ cards: Card[] }>())
 export const modify = createAction('[Card List] ModifyItem', props<{ card: Card }>())
 export const remove = createAction('[Card List] RemoveItem', props<{ card: Card }>())
-export const togglePasswordSee = createAction(
-  '[Card List] TogglePasswordSee',
-  props<{ card: Card }>(),
-)
-export const togglePanelOpened = createAction(
-  '[Card List] TogglePanelOpened',
-  props<{ card: Card }>(),
-)
 export const sort = createAction(
   '[Card List] Sort',
   props<{ previousIndex: number; currentIndex: number }>(),
 )
 export const search = createAction('[Card List] Search', props<{ term: string }>())
+export const restore = createAction('[Card List] Restore', props<{ card: Card }>())
 
 // reducers
 export const initialState: CardState = {
@@ -60,18 +53,6 @@ export function cardReducer(state: CardState, action: Action) {
         ? state.deletedItems.filter((item: Card) => item.id !== card.id)
         : [...state.deletedItems, card],
     })),
-    on(togglePasswordSee, (state, { card }) => ({
-      ...state,
-      items: state.items.map((item: Card) =>
-        item.id === card.id ? { ...item, passwordSee: !item.passwordSee } : item,
-      ),
-    })),
-    on(togglePanelOpened, (state, { card }) => ({
-      ...state,
-      items: state.items.map((item: Card) =>
-        item.id === card.id ? { ...item, panelOpened: !item.panelOpened } : item,
-      ),
-    })),
     on(sort, (state, { previousIndex, currentIndex }) => {
       const items = [...state.items]
       const [removed] = items.splice(previousIndex, 1)
@@ -81,6 +62,11 @@ export function cardReducer(state: CardState, action: Action) {
     on(search, (state, { term }) => ({
       ...state,
       term,
+    })),
+    on(restore, (state, { card }) => ({
+      ...state,
+      items: [card, ...state.items],
+      deletedItems: state.deletedItems.filter((item: Card) => item.id !== card.id),
     })),
   )
   return _reducer(state, action)
