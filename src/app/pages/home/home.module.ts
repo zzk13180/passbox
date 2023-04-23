@@ -31,14 +31,15 @@ import { HomeComponent, AddDialog, DeletedCardsDialog } from './home.component'
 import { SearchComponent } from './search.component'
 import { HomeRoutingModule } from './home-routing.module'
 import { homePasswordComponent } from './password'
+import { PasswordSet } from './password-set-dialog.component'
 
 function themeNameProviderFactory() {
-  if (typeof localStorage === 'object') {
-    const themeName = localStorage.getItem('theme-name')
-    if (themeName) {
-      return themeName
-    }
-  }
+  // if (typeof localStorage === 'object') {
+  //   const themeName = localStorage.getItem('theme-name')
+  //   if (themeName) {
+  //     return themeName
+  //   }
+  // }
   return 'minima-light'
 }
 
@@ -49,6 +50,7 @@ function themeNameProviderFactory() {
     AddDialog,
     DeletedCardsDialog,
     homePasswordComponent,
+    PasswordSet,
   ],
   entryComponents: [AddDialog, DeletedCardsDialog],
   imports: [

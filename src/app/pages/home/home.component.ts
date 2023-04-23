@@ -32,6 +32,7 @@ import {
   selectDeletedCards,
   selectSearchTerm,
 } from '../../services'
+import { PasswordSet } from './password-set-dialog.component'
 
 const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
   const expansion = ref.selectorsOf(EXPANSION_STYLES)
@@ -71,6 +72,11 @@ const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
         }
       }`
     },
+    dialog: lyl`{
+      width: 100vw
+      height: 100vh
+      border-radius: 0
+    }`,
   }
 }
 
@@ -87,6 +93,7 @@ export class HomeComponent implements OnInit {
   cards$: Observable<Array<Card>>
   deletedCards$: Observable<Array<Card>>
   searchTerm$: Observable<string>
+  private password: string
 
   // eslint-disable-next-line max-params
   constructor(
@@ -129,7 +136,7 @@ export class HomeComponent implements OnInit {
           },
           {
             id: uuid(),
-            sysname: 'https://translate.google.com/',
+            sysname: 'example - translate.google.com',
             username: 'example',
             password: 'example',
             url: 'https://translate.google.com/',
@@ -187,6 +194,22 @@ export class HomeComponent implements OnInit {
           })
         }
       })
+  }
+
+  setPassword() {
+    const dialogRef = this._dialog.open<PasswordSet, { password: string }>(PasswordSet, {
+      width: null,
+      height: null,
+      maxWidth: null,
+      maxHeight: null,
+      containerClass: this.classes.dialog,
+      data: {
+        password: this.password,
+      },
+    })
+    dialogRef.afterClosed.subscribe(result => {
+      console.log(result)
+    })
   }
 
   openBrowser(card: Card, event?: Event): void {
