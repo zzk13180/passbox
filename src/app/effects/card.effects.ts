@@ -12,7 +12,7 @@ import {
   modify,
   remove,
   search,
-  initCards,
+  restore,
   selectCards,
 } from '../services/ngrx.service'
 
@@ -28,13 +28,12 @@ export class CardEffects {
   card = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(initCards, add, modify, remove, sort),
+        ofType(add, modify, remove, sort, restore),
         debounceTime(300),
-        withLatestFrom(this.store.select('theCards').pipe(select(selectCards))),
-        tap(([_action, cards]) => {
-          console.log('card effect')
-          this.dbService.setItem(StorageKey.cards, cards)
-          this.electronService.changeTray(cards)
+        withLatestFrom(this.store.select('theCards')),
+        tap(([_action, theCards]) => {
+          this.dbService.setItem(StorageKey.cards, theCards)
+          this.electronService.changeTray(theCards.items)
         }),
       ),
     { dispatch: false },
@@ -47,7 +46,6 @@ export class CardEffects {
         debounceTime(300),
         withLatestFrom(this.store.select('theCards').pipe(select(selectCards))),
         tap(([_action, cards]) => {
-          console.log('search effect')
           this.electronService.changeTray(cards)
         }),
       ),

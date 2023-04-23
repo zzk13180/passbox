@@ -18,7 +18,7 @@
   "scripts": {
     "dev": "concurrently --raw \"npm run ng:serve\" \"npm run electron:serve\"",
     "build": "npm run tsc-main && ng build -c production && electron-builder build",
-    "ng:serve": "ng serve",
+    "ng:serve": "ng serve -c development --hmr",
     "electron:serve": "wait-on tcp:4200 && npm run tsc-main && npx electron . --serve",
     "tsc-main": "tsc -p tsconfig.serve.json",
     "postinstall": "electron-builder install-app-deps",
@@ -89,6 +89,7 @@
     "concurrently": "^8.0.1",
     "pako": "^2.1.0",
     "@types/pako": "^2.0.0",
+    "fuse.js": "^6.6.2",
     "gh-pages": "^5.0.0"
   },
   "config": {

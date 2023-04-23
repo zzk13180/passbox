@@ -24,11 +24,6 @@ Oh hi there! 😄
         <span class="spacer"></span>
         <span>add</span>
       </button>
-      <button ly-button ly-menu-item (click)="openDialog('deletedShow')">
-        <ly-icon>delete</ly-icon>
-        <span class="spacer"></span>
-        <span>show deleted</span>
-      </button>
       <button ly-button ly-menu-item (click)="exportData($event)">
         <ly-icon>file_download</ly-icon>
         <span class="spacer"></span>
@@ -39,47 +34,46 @@ Oh hi there! 😄
         <span class="spacer"></span>
         <span>import</span>
       </button>
+      <button ly-button ly-menu-item (click)="showDeletedCards()">
+        <ly-icon>delete</ly-icon>
+        <span class="spacer"></span>
+        <span>show deleted</span>
+      </button>
     </ly-menu>
   </ng-template>
 
   <ly-accordion
-    cdkDropList
-    [withClass]="classes.expansion"
+    [withClass]="classes.accordion"
     [hasToggle]="false"
+    cdkDropList
     (cdkDropListDropped)="drop($event)"
   >
     <ly-expansion-panel
       cdkDrag
-      *ngFor="let card of cards$ | async; index as i"
-      [expanded]="card.panelOpened"
-      (afterCollapse)="togglePanelOpened(card)"
-      (afterExpand)="togglePanelOpened(card)"
+      [class]="classes.panelafter"
+      *ngFor="let card of cards$ | async; let i = index; trackBy: trackByFn"
       (contextmenu)="viewMenu(card)"
     >
-      <ly-expansion-panel-header>
-        <ly-panel-title>{{ card.sysname }}</ly-panel-title>
+      <ly-expansion-panel-header homeMouseToggleDirective>
+        <ly-panel-title [class]="classes.title">
+          <span lyTyp="caption" class="home-panel-index">{{ i + 1 }}</span>
+          <ng-container>
+            {{ card.sysname }}
+          </ng-container>
+        </ly-panel-title>
         <button ly-button bg="primary" (click)="openBrowser(card, $event)">
           <ly-icon>send</ly-icon>
         </button>
       </ly-expansion-panel-header>
-      <div>
-        <ly-paper>
-          <ly-list>
-            <button ly-list-item (click)="copy(card, 'username')">
-              <ly-icon (click)="seeAccount($event)" ly-list-icon>account_box</ly-icon>
-              <span ly-line>{{ card.username }}</span>
-            </button>
-            <button ly-list-item (click)="copy(card, 'password')">
-              <ly-icon (click)="togglePasswordSee($event, card)" ly-list-icon>
-                {{ card.passwordSee ? 'visibility_off' : 'visibility' }}
-              </ly-icon>
-              <span ly-line>{{
-                card.passwordSee ? card.password : getPasswordOffStr(card)
-              }}</span>
-            </button>
-          </ly-list>
-        </ly-paper>
-      </div>
+      <ly-paper>
+        <ly-list>
+          <button ly-list-item (click)="copy(card, 'username')">
+            <ly-icon (click)="seeAccount($event)" ly-list-icon>account_box</ly-icon>
+            <span ly-line>{{ card.username }}</span>
+          </button>
+          <home-password [card]="card" (click)="copy(card, 'password')"></home-password>
+        </ly-list>
+      </ly-paper>
     </ly-expansion-panel>
   </ly-accordion>
 

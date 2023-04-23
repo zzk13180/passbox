@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core'
 import * as remote from '@electron/remote'
 import type { clipboard, ipcRenderer } from 'electron'
 import type { Card } from '../models'
+import type { StorageKey } from '../enums/storageKey'
 
 @Injectable({
   providedIn: 'root',
@@ -41,11 +42,11 @@ export class ElectronService {
     this.ipcRenderer.send('change-tray', cards)
   }
 
-  storageSave(key: string, value: string): Promise<void> {
+  storageSave(key: StorageKey, value: string): Promise<void> {
     return this.ipcRenderer.invoke('storage-save', key, value)
   }
 
-  storageGet(key: string): Promise<string> {
+  storageGet(key: StorageKey): Promise<string> {
     return this.ipcRenderer.invoke('storage-get', key)
   }
 }

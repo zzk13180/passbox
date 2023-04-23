@@ -7,7 +7,7 @@ import {
   ViewChild,
   NgZone,
 } from '@angular/core'
-import { StyleRenderer, ThemeVariables, LyTheme2, ThemeRef, lyl } from '@alyle/ui'
+import { StyleRenderer, lyl, ThemeVariables, ThemeRef, LyTheme2 } from '@alyle/ui'
 import { CdkDragDrop } from '@angular/cdk/drag-drop'
 import { LyDialog, LyDialogRef, LY_DIALOG_DATA } from '@alyle/ui/dialog'
 import { STYLES as EXPANSION_STYLES } from '@alyle/ui/expansion'
@@ -27,10 +27,52 @@ import {
   modify,
   remove,
   search,
+  restore,
   selectCards,
-  togglePasswordSee,
-  togglePanelOpened,
+  selectDeletedCards,
+  selectSearchTerm,
 } from '../../services'
+
+const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
+  const expansion = ref.selectorsOf(EXPANSION_STYLES)
+  return {
+    $name: 'home-panel',
+    title: () => lyl`{
+      display: block
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+    }`,
+    panelafter: () => lyl`{
+      &::after {
+        transition: border ${theme.animations.durations.entering}ms ${theme.animations.curves.standard}
+        content: ''
+        position: absolute
+        top: 0
+        bottom: 0
+        ${theme.before}: 0
+        border-${theme.before}: 3px solid transparent
+      }
+    }`,
+    accordion: () => {
+      return lyl`{
+        ${expansion.expanded} {
+          ${expansion.panelHeader} {
+            height: 64px
+          }
+          &${expansion.panel} {
+            &::after {
+              border-${theme.before}: 3px solid ${theme.primary.default}
+            }
+          }
+          ${expansion.panelHeader} ${expansion.panelTitle} {
+            color: ${theme.primary.default}
+          }
+        }
+      }`
+    },
+  }
+}
 
 @Component({
   selector: 'app-home',
@@ -41,55 +83,70 @@ import {
 })
 export class HomeComponent implements OnInit {
   @ViewChild('sb') sb: LySnackBar
-
-  readonly classes = this._theme.addStyleSheet(this.getStyle())
-  private theTerm = ''
+  classes: any
   cards$: Observable<Array<Card>>
+  deletedCards$: Observable<Array<Card>>
+  searchTerm$: Observable<string>
 
   // eslint-disable-next-line max-params
   constructor(
     readonly sRenderer: StyleRenderer,
+    private _theme: LyTheme2,
     private electronService: ElectronService,
     private dbService: DbService,
     private _dialog: LyDialog,
-    private _theme: LyTheme2,
     private ngZone: NgZone,
     private _cd: ChangeDetectorRef,
     private store: Store<{ theCards: CardState }>,
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    this.cards$ = this.store.select('theCards').pipe(select(selectCards))
-    let cards: Card[] | null = null
+  ngOnInit() {
+    this.classes = this._theme.addStyleSheet(STYLES)
+    const theCardsStore = this.store.select('theCards')
+    this.cards$ = theCardsStore.pipe(select(selectCards))
+    this.deletedCards$ = theCardsStore.pipe(select(selectDeletedCards))
+    this.searchTerm$ = theCardsStore.pipe(select(selectSearchTerm))
+    this.initTheCards()
+  }
+
+  private async initTheCards(): Promise<void> {
+    let theCards: CardState | null = null
     try {
-      cards = await this.dbService.getItem(StorageKey.cards)
+      theCards = await this.dbService.getItem(StorageKey.cards)
     } catch (_) {}
-    if (!cards || !cards.length) {
-      cards = [
-        {
-          id: uuid(),
-          sysname: 'bing.com',
-          username: 'example',
-          password: 'example',
-          url: 'https://www.bing.com/',
-          width: 800,
-          height: 600,
-        },
-        {
-          id: uuid(),
-          sysname: 'https://translate.google.com/',
-          username: 'example',
-          password: 'example',
-          url: 'https://translate.google.com/',
-          width: 1300,
-          height: 650,
-        },
-      ]
+    if (!theCards) {
+      theCards = {
+        term: '',
+        items: [
+          {
+            id: uuid(),
+            sysname: 'example - bing.com',
+            username: 'example',
+            password: 'example',
+            url: 'https://www.bing.com/',
+            width: 800,
+            height: 600,
+          },
+          {
+            id: uuid(),
+            sysname: 'https://translate.google.com/',
+            username: 'example',
+            password: 'example',
+            url: 'https://translate.google.com/',
+            width: 1300,
+            height: 650,
+          },
+        ],
+        deletedItems: [],
+      }
     }
-    this.store.dispatch(initCards({ cards }))
+    this.store.dispatch(initCards({ theCards }))
   }
 
   copy(card: Card, field: string): void {
+    if (!card[field]) {
+      return
+    }
     this.electronService.copyText(card[field])
     this.sb.open({
       msg: `${CardFieldMap[field]} is copied`,
@@ -136,27 +193,7 @@ export class HomeComponent implements OnInit {
     if (event) {
       event.stopPropagation()
     }
-    if (!card.url || card.url.indexOf('.') === -1) {
-      this.sb.open({ msg: 'invalid url' })
-      return
-    }
-    let url = undefined
-
-    if (card.url.startsWith('http')) {
-      try {
-        url = new URL(card.url).href
-      } catch (error) {}
-    } else {
-      try {
-        url = new URL(`https://${card.url}`).href
-      } catch (error) {}
-    }
-
-    if (url) {
-      this.electronService.openBrowser({ ...card, url })
-    } else {
-      this.sb.open({ msg: 'invalid url' })
-    }
+    this.electronService.openBrowser(card)
   }
 
   openDialog(flag: string, card?: Card) {
@@ -190,11 +227,17 @@ export class HomeComponent implements OnInit {
       })
   }
 
+  showDeletedCards() {
+    let data: Card[] = []
+    this.deletedCards$.subscribe(cards => (data = cards)).unsubscribe()
+    this._dialog.open<DeletedCardsDialog, Card[]>(DeletedCardsDialog, { data })
+  }
+
   async exportData(event: Event): Promise<void> {
     event.stopPropagation()
     try {
-      const cards = await this.dbService.getItem(StorageKey.cards)
-      this.downloadByData(JSON.stringify(cards), 'passbox-data.json')
+      const theCards: CardState = await this.dbService.getItem(StorageKey.cards)
+      this.downloadByData(JSON.stringify(theCards), 'passbox-data.json')
     } catch (_) {
       this.sb.open({ msg: 'export data failed' })
     }
@@ -244,14 +287,17 @@ export class HomeComponent implements OnInit {
       })
   }
 
-  private async addCards(addCards: Card[], from: string): Promise<void> {
-    const existCards = await this.dbService.getItem(StorageKey.cards)
-    const keys = ['sysname', 'username', 'password', 'url']
+  private addCards(addCards: Card[], from: string): void {
     const cards: Card[] = []
+    let existCards: Card[] = []
+    const subscriber = this.cards$.subscribe({
+      next: c => (existCards = c),
+    })
+    subscriber.unsubscribe()
+    const keys = ['sysname', 'username', 'password', 'url']
     addCards.forEach(card => {
-      const isAvailable = keys.some(key => card[key] && typeof card[key] === 'string')
-      const even = (element: Card) => element.id === card.id
-      const isNotExist = from === 'html' || !existCards.some(even)
+      const isAvailable = keys.some(key => card[key])
+      const isNotExist = from === 'html' || !existCards.some(c => c.id === card.id)
       if (isNotExist && isAvailable) {
         cards.push(card)
       }
@@ -281,23 +327,6 @@ export class HomeComponent implements OnInit {
     event.stopPropagation()
   }
 
-  togglePanelOpened(card: Card): void {
-    this.store.dispatch(togglePanelOpened({ card }))
-  }
-
-  togglePasswordSee(event: Event, card: Card): void {
-    event.stopPropagation()
-    this.store.dispatch(togglePasswordSee({ card }))
-  }
-
-  getPasswordOffStr(card: Card): string {
-    const len =
-      card.password && card.password.length && card.password.length > 5
-        ? card.password.length
-        : 6
-    return new Array(len + 1).join('*')
-  }
-
   viewMenu(card: Card) {
     const menu = new this.electronService.remote.Menu()
     menu.append(
@@ -324,61 +353,32 @@ export class HomeComponent implements OnInit {
         },
       }),
     )
+    // menu.append(
+    //   new this.electronService.remote.MenuItem({
+    //     label: 'open',
+    //     click: () => {
+    //       this.openBrowser(card)
+    //     },
+    //   }),
+    // )
     menu.popup()
   }
 
   drop(event: CdkDragDrop<Card[]>) {
-    if (!this.theTerm) {
-      const { previousIndex, currentIndex } = event
+    const { previousIndex, currentIndex } = event
+    let term = ''
+    this.searchTerm$.subscribe(t => (term = t)).unsubscribe()
+    if (!term) {
       this.store.dispatch(sort({ previousIndex, currentIndex }))
     }
   }
 
   onSearch(term: string) {
-    this.theTerm = term
     this.store.dispatch(search({ term }))
   }
 
-  private getStyle() {
-    return (theme: ThemeVariables, ref: ThemeRef) => {
-      const expansion = ref.selectorsOf(EXPANSION_STYLES)
-      const { before } = theme
-      return {
-        expansion: () => lyl`{
-          ${expansion.panel} {
-            &::after {
-              transition: border ${theme.animations.durations.entering}ms ${theme.animations.curves.standard}
-              content: ''
-              position: absolute
-              top: 0
-              bottom: 0
-              ${before}: 0
-              border-${before}: 2px solid transparent
-            }
-          }
-          ${expansion.panelHeader} {
-            height: 54px
-          }
-          ${expansion.panelTitle} {
-            font-weight: 500
-          }
-          ${expansion.expanded} {
-            ${expansion.panelHeader} {
-              height: 64px
-            }
-            &${expansion.panel} {
-              background: ${theme.background.secondary}
-              &::after {
-                border-${before}: 2px solid ${theme.primary.default}
-              }
-            }
-            ${expansion.panelHeader} ${expansion.panelTitle} {
-              color: ${theme.primary.default}
-            }
-          }
-        }`,
-      }
-    }
+  trackByFn(_index: number, item: Card): string {
+    return item.id
   }
 
   private downloadByData(
@@ -422,5 +422,109 @@ export class AddDialog {
 
   constructor(public dialogRef: LyDialogRef, @Inject(LY_DIALOG_DATA) public data: Card) {
     this._if = false
+  }
+}
+
+/*🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
+show deleted cards dialog 😄
+🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅*/
+
+@Component({
+  templateUrl: './card-deleted-dialog.html',
+  providers: [StyleRenderer],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class DeletedCardsDialog {
+  // eslint-disable-next-line max-params
+  constructor(
+    private electronService: ElectronService,
+    readonly sRenderer: StyleRenderer,
+    public dialogRef: LyDialogRef,
+    private ngZone: NgZone,
+    private _cd: ChangeDetectorRef,
+    private store: Store<{ theCards: CardState }>,
+    @Inject(LY_DIALOG_DATA) public cards: Card[],
+  ) {}
+
+  readonly classes = this.sRenderer.renderSheet((_theme: ThemeVariables) => {
+    return {
+      root: lyl`{
+        table {
+          width: 100%
+          min-width: 300px
+          th, td {
+            padding: 0 16px
+          }
+        }
+      }`,
+    }
+  }, 'root')
+
+  columns = [
+    {
+      columnDef: 'sysname',
+      header: 'name',
+      cell: (card: Card) => `${card.sysname}`,
+    },
+    {
+      columnDef: 'url',
+      header: 'url',
+      cell: (card: Card) => `${card.url}`,
+    },
+  ]
+
+  displayedColumns = this.columns.map(c => c.columnDef)
+
+  viewMenu(card: Card) {
+    const menu = new this.electronService.remote.Menu()
+    menu.append(
+      new this.electronService.remote.MenuItem({
+        label: 'restore',
+        click: () => {
+          this.restoreCard(card)
+        },
+      }),
+    )
+    menu.append(
+      new this.electronService.remote.MenuItem({
+        label: 'delete',
+        click: () => {
+          this.del(card)
+        },
+      }),
+    )
+
+    menu.popup()
+  }
+
+  del(card: Card) {
+    this.electronService.remote.dialog
+      .showMessageBox(this.electronService.remote.BrowserWindow.getFocusedWindow(), {
+        type: 'question',
+        title: 'confirm',
+        message: 'delete card',
+        detail: 'are you sure to delete this card?',
+        buttons: ['yes', 'cancel'],
+        defaultId: 0,
+        cancelId: 1,
+        noLink: true,
+      })
+      .then(result => {
+        if (result.response === 0) {
+          this.ngZone.run(() => {
+            this.store.dispatch(remove({ card }))
+            this.cards = this.cards.filter(c => c.id !== card.id)
+            this._cd.detectChanges()
+          })
+        }
+      })
+  }
+
+  restoreCard(card: Card) {
+    this.ngZone.run(() => {
+      this.store.dispatch(restore({ card }))
+      this.cards = this.cards.filter(c => c.id !== card.id)
+      this._cd.detectChanges()
+    })
   }
 }

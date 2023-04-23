@@ -1,10 +1,19 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
+import { HttpClientModule } from '@angular/common/http'
 import { DragDropModule } from '@angular/cdk/drag-drop'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import {
+  LyTheme2,
+  StyleRenderer,
+  LY_THEME,
+  LY_THEME_NAME,
+  LyExpansionIconModule,
+} from '@alyle/ui'
+import { MinimaLight, MinimaDark } from '@alyle/ui/themes/minima'
 import { LyTabsModule } from '@alyle/ui/tabs'
 import { LyIconModule } from '@alyle/ui/icon'
-import { LyExpansionIconModule, LyCommonModule } from '@alyle/ui'
 import { LyExpansionModule } from '@alyle/ui/expansion'
 import { LyTypographyModule } from '@alyle/ui/typography'
 import { LyButtonModule } from '@alyle/ui/button'
@@ -17,16 +26,36 @@ import { LyMenuModule } from '@alyle/ui/menu'
 import { LyDividerModule } from '@alyle/ui/divider'
 import { LyListModule } from '@alyle/ui/list'
 import { LySelectModule } from '@alyle/ui/select'
-import { LyAvatarModule } from '@alyle/ui/avatar'
-import { HomeComponent, AddDialog } from './home.component'
+import { LyTableModule } from '@alyle/ui/table'
+import { HomeComponent, AddDialog, DeletedCardsDialog } from './home.component'
 import { SearchComponent } from './search.component'
 import { HomeRoutingModule } from './home-routing.module'
+import { homePasswordComponent } from './password'
+
+function themeNameProviderFactory() {
+  if (typeof localStorage === 'object') {
+    const themeName = localStorage.getItem('theme-name')
+    if (themeName) {
+      return themeName
+    }
+  }
+  return 'minima-light'
+}
 
 @NgModule({
-  declarations: [HomeComponent, AddDialog, SearchComponent],
-  entryComponents: [AddDialog],
+  declarations: [
+    HomeComponent,
+    SearchComponent,
+    AddDialog,
+    DeletedCardsDialog,
+    homePasswordComponent,
+  ],
+  entryComponents: [AddDialog, DeletedCardsDialog],
   imports: [
     CommonModule,
+    HomeRoutingModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
     DragDropModule,
     LyTabsModule,
     LyIconModule,
@@ -34,23 +63,26 @@ import { HomeRoutingModule } from './home-routing.module'
     LyTypographyModule,
     LyButtonModule,
     LyExpansionIconModule,
-    CommonModule,
     FormsModule,
     LyDialogModule,
     LyGridModule,
-    LyButtonModule,
     LyTypographyModule,
     LyFieldModule,
-    LyCommonModule,
     LySelectModule,
     LySnackBarModule,
     LyToolbarModule,
     LyMenuModule,
     LyDividerModule,
     LyListModule,
-    LyAvatarModule,
+    LyTableModule,
     ReactiveFormsModule,
-    HomeRoutingModule,
+  ],
+  providers: [
+    [LyTheme2],
+    [StyleRenderer],
+    { provide: LY_THEME_NAME, useFactory: themeNameProviderFactory },
+    { provide: LY_THEME, useClass: MinimaLight, multi: true }, // name: `minima-light`
+    { provide: LY_THEME, useClass: MinimaDark, multi: true }, // name: `minima-dark`
   ],
   exports: [HomeComponent],
 })
