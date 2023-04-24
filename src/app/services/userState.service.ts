@@ -3,7 +3,7 @@ import { StorageKey } from '../enums/storageKey'
 import { ElectronService } from './electron.service'
 import { CryptoFunctionService } from './cryptoFunction.service'
 
-export interface UseState {
+export interface UserState {
   isRequiredLogin: boolean
   password: string
   salt: string
@@ -12,39 +12,42 @@ export interface UseState {
 @Injectable({
   providedIn: 'root',
 })
-export class UseStateService {
-  private useState: UseState
+export class UserStateService {
+  private userState: UserState
   private userPassword: string
   constructor(
     private cryptoFunctionService: CryptoFunctionService,
     private electronService: ElectronService,
   ) {
-    this.useState = {
+    this.userState = {
       isRequiredLogin: false,
       password: '',
       salt: '',
     }
   }
 
-  async getUseState(): Promise<UseState> {
-    const str: string = await this.electronService.storageGet(StorageKey.useState)
+  async getUserState(): Promise<UserState> {
+    const str: string = await this.electronService.storageGet(StorageKey.userState)
     try {
-      this.useState = JSON.parse(str)
+      this.userState = JSON.parse(str)
     } catch (_) {
       const { password, salt } = await this.generatePassworAndSalt()
-      this.useState = {
+      this.userState = {
         isRequiredLogin: false,
         password,
         salt,
       }
-      await this.setUseState(this.useState)
+      await this.setUserState(this.userState)
     }
-    return this.useState
+    return this.userState
   }
 
-  async setUseState(useState: UseState): Promise<void> {
-    await this.electronService.storageSave(StorageKey.useState, JSON.stringify(useState))
-    this.useState = useState
+  async setUserState(userState: UserState): Promise<void> {
+    await this.electronService.storageSave(
+      StorageKey.userState,
+      JSON.stringify(userState),
+    )
+    this.userState = userState
   }
 
   getUserPassword(): string {
@@ -52,11 +55,11 @@ export class UseStateService {
   }
 
   async setUserPassword(userPassword: string): Promise<void> {
-    await this.setUseState({ ...this.useState, isRequiredLogin: true })
+    await this.setUserState({ ...this.userState, isRequiredLogin: true })
     this.userPassword = userPassword
   }
 
-  private async generatePassworAndSalt(): Promise<Omit<UseState, 'isRequiredLogin'>> {
+  private async generatePassworAndSalt(): Promise<Omit<UserState, 'isRequiredLogin'>> {
     const bytes = await this.cryptoFunctionService.randomBytes(35)
     let password = ''
     let salt = ''

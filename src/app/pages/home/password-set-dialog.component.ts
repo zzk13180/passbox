@@ -8,7 +8,7 @@ import {
   AfterViewInit,
 } from '@angular/core'
 import { LyDialogRef, LY_DIALOG_DATA } from '@alyle/ui/dialog'
-import { UseStateService, DbService, ElectronService } from '../../services'
+import { UserStateService, DbService, ElectronService } from '../../services'
 import { StorageKey } from '../../enums/storageKey'
 import type { NgModel } from '@angular/forms'
 import type { CardState } from '../../models'
@@ -24,7 +24,7 @@ export class PasswordSet implements AfterViewInit {
   // eslint-disable-next-line max-params
   constructor(
     public dialogRef: LyDialogRef,
-    private useStateService: UseStateService,
+    private userStateService: UserStateService,
     private dbService: DbService,
     private ngZone: NgZone,
     private _cd: ChangeDetectorRef,
@@ -92,14 +92,14 @@ export class PasswordSet implements AfterViewInit {
     try {
       theCards = await this.dbService.getItem(StorageKey.cards)
     } catch (_) {}
-    await this.useStateService.setUserPassword(this._password)
+    await this.userStateService.setUserPassword(this._password)
     try {
       theCards && (await this.dbService.setItem(StorageKey.cards, theCards))
     } catch (_) {}
   }
 
   private async login(): Promise<boolean> {
-    await this.useStateService.setUserPassword(this._password)
+    await this.userStateService.setUserPassword(this._password)
     try {
       await this.dbService.getItem(StorageKey.cards)
     } catch (_) {

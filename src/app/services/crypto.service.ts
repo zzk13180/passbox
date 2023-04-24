@@ -7,8 +7,8 @@ import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey'
 import { CryptoService as CryptoServiceAbstraction } from '../models/abstractions/crypto.service'
 import { Utils } from '../misc/utils'
 import { CryptoFunctionService } from './cryptoFunction.service'
-import { UseStateService } from './userstate.service'
-import type { UseState } from './userstate.service'
+import { UserStateService } from './userstate.service'
+import type { UserState } from './userstate.service'
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +20,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
   constructor(
     private cryptoFunctionService: CryptoFunctionService,
-    private useStateService: UseStateService,
+    private userStateService: UserStateService,
   ) {}
 
   private async makeKey(): Promise<SymmetricCryptoKey> {
@@ -114,7 +114,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     return this.cryptoFunctionService.aesDecryptFast(fastParams)
   }
 
-  private initPassword(userstate: UseState): void {
+  private initPassword(userstate: UserState): void {
     const { password: passwordStr, salt: saltStr, isRequiredLogin } = userstate
 
     const salt = new ArrayBuffer(21)
@@ -127,7 +127,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     if (isRequiredLogin) {
       const encoder = new TextEncoder()
-      const userPassword = this.useStateService.getUserPassword()
+      const userPassword = this.userStateService.getUserPassword()
       const userPasswordBuffer = encoder.encode(userPassword).buffer
       const tmp = new Uint8Array(password.byteLength + userPasswordBuffer.byteLength)
       tmp.set(new Uint8Array(userPasswordBuffer), 0)
@@ -140,7 +140,7 @@ export class CryptoService implements CryptoServiceAbstraction {
   }
 
   private async checkPassword(): Promise<void> {
-    const userstate: UseState = await this.useStateService.getUseState()
+    const userstate: UserState = await this.userStateService.getUserState()
     if (!this.password || !this.salt || userstate.isRequiredLogin) {
       this.password = null
       this.salt = null

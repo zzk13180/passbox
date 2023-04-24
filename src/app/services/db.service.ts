@@ -21,10 +21,8 @@ export class DbService {
       const str = await this.cryptoService.decryptToUtf8(value)
       result = JSON.parse(str)
     } catch (_) {
-      console.log('err', _)
       throw new Error('Error while getting data from db')
     }
-    console.log('result', result)
     return result
   }
 
@@ -36,10 +34,8 @@ export class DbService {
       const encryptValue = await this.cryptoService.encrypt(JSON.stringify(value))
       await this.electronService.storageSave(key, JSON.stringify(encryptValue))
     } catch (_) {
-      console.log('err', _)
       throw new Error('Error while setting data to db')
     }
-    console.log('set item', key, value)
     return Promise.resolve(true)
   }
 }

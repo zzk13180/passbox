@@ -30,7 +30,7 @@ import {
   selectCards,
   selectDeletedCards,
   selectSearchTerm,
-  UseStateService,
+  UserStateService,
   DbService,
 } from '../../services'
 import { PasswordSet } from './password-set-dialog.component'
@@ -104,7 +104,7 @@ export class HomeComponent implements OnInit {
     private ngZone: NgZone,
     private _cd: ChangeDetectorRef,
     private store: Store<{ theCards: CardState }>,
-    private useStateService: UseStateService,
+    private userStateService: UserStateService,
     private dbService: DbService,
   ) {}
 
@@ -114,7 +114,7 @@ export class HomeComponent implements OnInit {
     this.cards$ = theCardsStore.pipe(select(selectCards))
     this.deletedCards$ = theCardsStore.pipe(select(selectDeletedCards))
     this.searchTerm$ = theCardsStore.pipe(select(selectSearchTerm))
-    const { isRequiredLogin } = await this.useStateService.getUseState()
+    const { isRequiredLogin } = await this.userStateService.getUserState()
     if (isRequiredLogin) {
       this.setPassword(true)
     } else {
