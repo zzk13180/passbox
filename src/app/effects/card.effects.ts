@@ -13,7 +13,6 @@ import {
   remove,
   search,
   restore,
-  initCards,
   selectCards,
 } from '../services/ngrx.service'
 
@@ -43,7 +42,7 @@ export class CardEffects {
   search = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(initCards, search),
+        ofType(search),
         debounceTime(300),
         withLatestFrom(this.store.select('theCards').pipe(select(selectCards))),
         tap(([_action, cards]) => {

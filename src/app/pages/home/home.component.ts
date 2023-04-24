@@ -20,17 +20,18 @@ import { StorageKey } from '../../enums/storageKey'
 import { Card, CardState, CardFieldMap } from '../../models'
 import {
   ElectronService,
-  DbService,
-  initCards,
   add,
   sort,
   modify,
   remove,
   search,
   restore,
+  initCards,
   selectCards,
   selectDeletedCards,
   selectSearchTerm,
+  UseStateService,
+  DbService,
 } from '../../services'
 import { PasswordSet } from './password-set-dialog.component'
 
@@ -99,67 +100,49 @@ export class HomeComponent implements OnInit {
     readonly sRenderer: StyleRenderer,
     private _theme: LyTheme2,
     private electronService: ElectronService,
-    private dbService: DbService,
     private _dialog: LyDialog,
     private ngZone: NgZone,
     private _cd: ChangeDetectorRef,
     private store: Store<{ theCards: CardState }>,
+    private useStateService: UseStateService,
+    private dbService: DbService,
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.classes = this._theme.addStyleSheet(STYLES)
     const theCardsStore = this.store.select('theCards')
     this.cards$ = theCardsStore.pipe(select(selectCards))
     this.deletedCards$ = theCardsStore.pipe(select(selectDeletedCards))
     this.searchTerm$ = theCardsStore.pipe(select(selectSearchTerm))
-    this.initTheCards()
-  }
-
-  // TODO: refactor this method
-  private async initTheCards(): Promise<void> {
-    // TODO : check need set password
-    // this.setPassword(true)
-    let theCards: CardState | null = null
-    try {
-      theCards = (await this.dbService.getItem(StorageKey.cards)) as CardState
-    } catch (_) {}
-    if (!theCards) {
-      theCards = {
-        term: '',
-        items: [
-          {
-            id: uuid(),
-            sysname: 'example - bing.com',
-            username: 'example',
-            password: 'example',
-            url: 'https://www.bing.com/',
-            width: 800,
-            height: 600,
-          },
-          {
-            id: uuid(),
-            sysname: 'example - translate.google.com',
-            username: 'example',
-            password: 'example',
-            url: 'https://translate.google.com/',
-            width: 1300,
-            height: 650,
-          },
-        ],
-        deletedItems: [],
-      }
+    const { isRequiredLogin } = await this.useStateService.getUseState()
+    if (isRequiredLogin) {
+      this.setPassword(true)
+    } else {
+      this.initTheCards()
     }
-    this.store.dispatch(initCards({ theCards }))
   }
 
-  setPassword(login?: boolean) {
-    this._dialog.open<PasswordSet, { login: boolean }>(PasswordSet, {
+  private async initTheCards(): Promise<void> {
+    try {
+      const theCards = await this.dbService.getItem(StorageKey.cards)
+      if (theCards) {
+        this.store.dispatch(initCards({ theCards }))
+      }
+    } catch (_) {}
+  }
+
+  setPassword(isLogin?: boolean) {
+    const dialogRef = this._dialog.open<PasswordSet, { isLogin: boolean }>(PasswordSet, {
       width: null,
       height: null,
       maxWidth: null,
       maxHeight: null,
       containerClass: this.classes.dialog,
-      data: { login },
+      data: { isLogin },
+      disableClose: true,
+    })
+    dialogRef.afterClosed.subscribe(result => {
+      result && this.initTheCards()
     })
   }
 
@@ -253,11 +236,12 @@ export class HomeComponent implements OnInit {
     this._dialog.open<DeletedCardsDialog, Card[]>(DeletedCardsDialog, { data })
   }
 
-  async exportData(event: Event): Promise<void> {
+  exportData(event: Event): void {
     event.stopPropagation()
     try {
-      const theCards = await this.dbService.getItem(StorageKey.cards)
-      this.downloadByData(JSON.stringify(theCards), 'passbox-data.json')
+      let cards: Card[] = []
+      this.cards$.subscribe(cs => (cards = cs)).unsubscribe()
+      this.downloadByData(JSON.stringify(cards), 'passbox-data-json.json')
     } catch (_) {
       this.sb.open({ msg: 'export data failed' })
     }
@@ -270,7 +254,7 @@ export class HomeComponent implements OnInit {
         title: 'import data',
         filters: [
           {
-            name: 'passboxdata',
+            name: 'passbox',
             extensions: ['json', 'html'],
           },
         ],
@@ -295,14 +279,8 @@ export class HomeComponent implements OnInit {
           } catch (error) {
             this.sb.open({ msg: 'invalid data' })
           }
-          if (cards && toString.call(cards) === '[object Array]') {
-            try {
-              await this.addCards(cards, ext)
-            } catch (error) {
-              this.sb.open({ msg: 'invalid data' })
-            }
-            this.sb.open({ msg: 'import success' })
-          }
+          this.addCards(cards, ext)
+          this.sb.open({ msg: 'import success' })
         }
       })
   }

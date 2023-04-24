@@ -49,4 +49,8 @@ export class ElectronService {
   storageGet(key: StorageKey): Promise<string> {
     return this.ipcRenderer.invoke('storage-get', key)
   }
+
+  storageClear(): Promise<void> {
+    return this.ipcRenderer.invoke('storage-clear')
+  }
 }

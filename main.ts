@@ -195,6 +195,10 @@ class WindowMain {
     ipcMain.handle('storage-save', (event: Event, key: string, value: string): void => {
       return this.store.set(key, value)
     })
+
+    ipcMain.handle('storage-clear', (_): void => {
+      return this.store.clear()
+    })
   }
 
   async openBrowser(card: Card): Promise<boolean> {

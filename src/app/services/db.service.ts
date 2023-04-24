@@ -13,7 +13,7 @@ export class DbService {
     private electronService: ElectronService,
   ) {}
 
-  async getItem(key: StorageKey): Promise<CardState | string> {
+  async getItem(key: StorageKey): Promise<CardState> {
     const data = await this.electronService.storageGet(key)
     let result = null
     try {
@@ -21,37 +21,25 @@ export class DbService {
       const str = await this.cryptoService.decryptToUtf8(value)
       result = JSON.parse(str)
     } catch (_) {
+      console.log('err', _)
       throw new Error('Error while getting data from db')
     }
+    console.log('result', result)
     return result
   }
 
-  async setItem(key: StorageKey, value: any, password?: string): Promise<boolean> {
+  async setItem(key: StorageKey, value: CardState): Promise<boolean> {
     if (!key || !value) {
       throw new Error('Key or value is not defined')
     }
     try {
-      const encryptValue = await this.cryptoService.encrypt(
-        JSON.stringify(value),
-        password,
-      )
+      const encryptValue = await this.cryptoService.encrypt(JSON.stringify(value))
       await this.electronService.storageSave(key, JSON.stringify(encryptValue))
     } catch (_) {
+      console.log('err', _)
       throw new Error('Error while setting data to db')
     }
+    console.log('set item', key, value)
     return Promise.resolve(true)
-  }
-
-  // TODO
-  async changePassword(password?: string) {
-    try {
-      const theCards: CardState = (await this.getItem(StorageKey.cards)) as CardState
-      if (theCards) {
-        this.setItem(StorageKey.cards, JSON.stringify(theCards), password)
-      }
-      this.setItem(StorageKey.loginRequired, 'true')
-    } catch (_) {
-      this.setItem(StorageKey.loginRequired, 'true', password)
-    }
   }
 }
