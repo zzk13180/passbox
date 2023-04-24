@@ -50,7 +50,7 @@ class Main {
           this.windowMain.win.webContents.openDevTools()
           this.windowMain.win.loadURL('http://localhost:4200')
         } else {
-          this.windowMain.win.webContents.openDevTools()
+          // this.windowMain.win.webContents.openDevTools()
           this.windowMain.win.loadURL(`file://${path.join(__dirname, 'dist/index.html')}`)
         }
       },
@@ -75,7 +75,7 @@ class WindowMain {
   ) {
     this.store = new Store({
       defaults: {},
-      name: 'user-data',
+      name: 'passbox',
     })
   }
 

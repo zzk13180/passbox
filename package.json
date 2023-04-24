@@ -6,13 +6,16 @@
     "name": "zhangzhankui",
     "email": "zzk13180@gmail.com"
   },
-  "version": "0.1.0",
+  "version": "1.0.0-alpha",
   "main": "main.js",
   "private": true,
   "keywords": [
     "Electron",
     "Angular",
     "@alyle/ui",
+    "ngrx",
+    "tool",
+    "password manager",
     "passbox"
   ],
   "scripts": {
