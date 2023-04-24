@@ -7,10 +7,10 @@
   <a href="LICENSE">
     <img src="https://zzk13180.github.io/passbox/license-MIT-informational.svg" alt="LICENSE">
   </a>
-  <a href="https://zzk13180.github.io/seed">
-    <img src="https://zzk13180.github.io/passbox/wwebsite-up-brightgreen.svg" alt="website">
+  <a href="https://zzk13180.github.io/passbox">
+    <img src="https://zzk13180.github.io/passbox/website-up-brightgreen.svg" alt="website">
   </a>
-  <a href="">
+  <a href="https://github.com/zzk13180/passbox/releases">
     <img src="https://zzk13180.github.io/passbox/v1.svg" alt="downloaded">
   </a>
 <p>
@@ -20,7 +20,7 @@
 <p align="center">
   <sub>
     downloaded from
-    <a href="" target="_blank">GitHub Releases</a></em>
+    <a href="https://github.com/zzk13180/passbox/releases" target="_blank">GitHub Releases</a></em>
   </sub>
 </p>
 
