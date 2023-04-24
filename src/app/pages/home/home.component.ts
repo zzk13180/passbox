@@ -93,7 +93,6 @@ export class HomeComponent implements OnInit {
   cards$: Observable<Array<Card>>
   deletedCards$: Observable<Array<Card>>
   searchTerm$: Observable<string>
-  private password: string
 
   // eslint-disable-next-line max-params
   constructor(
@@ -116,10 +115,13 @@ export class HomeComponent implements OnInit {
     this.initTheCards()
   }
 
+  // TODO: refactor this method
   private async initTheCards(): Promise<void> {
+    // TODO : check need set password
+    // this.setPassword(true)
     let theCards: CardState | null = null
     try {
-      theCards = await this.dbService.getItem(StorageKey.cards)
+      theCards = (await this.dbService.getItem(StorageKey.cards)) as CardState
     } catch (_) {}
     if (!theCards) {
       theCards = {
@@ -148,6 +150,17 @@ export class HomeComponent implements OnInit {
       }
     }
     this.store.dispatch(initCards({ theCards }))
+  }
+
+  setPassword(login?: boolean) {
+    this._dialog.open<PasswordSet, { login: boolean }>(PasswordSet, {
+      width: null,
+      height: null,
+      maxWidth: null,
+      maxHeight: null,
+      containerClass: this.classes.dialog,
+      data: { login },
+    })
   }
 
   copy(card: Card, field: string): void {
@@ -194,22 +207,6 @@ export class HomeComponent implements OnInit {
           })
         }
       })
-  }
-
-  setPassword() {
-    const dialogRef = this._dialog.open<PasswordSet, { password: string }>(PasswordSet, {
-      width: null,
-      height: null,
-      maxWidth: null,
-      maxHeight: null,
-      containerClass: this.classes.dialog,
-      data: {
-        password: this.password,
-      },
-    })
-    dialogRef.afterClosed.subscribe(result => {
-      console.log(result)
-    })
   }
 
   openBrowser(card: Card, event?: Event): void {
@@ -259,7 +256,7 @@ export class HomeComponent implements OnInit {
   async exportData(event: Event): Promise<void> {
     event.stopPropagation()
     try {
-      const theCards: CardState = await this.dbService.getItem(StorageKey.cards)
+      const theCards = await this.dbService.getItem(StorageKey.cards)
       this.downloadByData(JSON.stringify(theCards), 'passbox-data.json')
     } catch (_) {
       this.sb.open({ msg: 'export data failed' })

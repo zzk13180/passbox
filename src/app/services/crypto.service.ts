@@ -114,7 +114,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     return this.cryptoFunctionService.aesDecryptFast(fastParams)
   }
 
-  private async init(): Promise<void> {
+  private async init(userPassword?: string): Promise<void> {
     let password = null
     let salt = null
     const passwordStr = await this.electronService.storageGet(StorageKey.password)
@@ -143,6 +143,14 @@ export class CryptoService implements CryptoServiceAbstraction {
       await this.electronService.storageSave(StorageKey.password, s1)
       await this.electronService.storageSave(StorageKey.salt, s2)
     }
+    if (userPassword) {
+      const encoder = new TextEncoder()
+      const userPasswordBuffer = encoder.encode(userPassword).buffer
+      const tmp = new Uint8Array(password.byteLength + userPasswordBuffer.byteLength)
+      tmp.set(new Uint8Array(userPasswordBuffer), 0)
+      tmp.set(new Uint8Array(password), userPasswordBuffer.byteLength)
+      password = tmp.buffer.slice(0, 14)
+    }
     this.password = password
     this.salt = salt
   }
@@ -154,20 +162,23 @@ export class CryptoService implements CryptoServiceAbstraction {
     return !!saltStr != null
   }
 
-  private async checkPassword() {
+  private async checkPassword(password?: string): Promise<void> {
     const isExist = await this.fileExists()
-    if (!this.password || !this.salt || !isExist) {
+    if (!this.password || !this.salt || !isExist || password) {
       this.password = null
       this.salt = null
-      await this.init()
+      await this.init(password)
     }
   }
 
-  async encrypt(plainValue: string | ArrayBuffer): Promise<CipherString> {
+  async encrypt(
+    plainValue: string | ArrayBuffer,
+    password?: string,
+  ): Promise<CipherString> {
     if (plainValue == null) {
       return Promise.resolve(null)
     }
-    await this.checkPassword()
+    await this.checkPassword(password)
 
     let plainBuf: ArrayBuffer
     if (typeof plainValue === 'string') {

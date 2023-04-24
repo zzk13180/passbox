@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core'
+import { StorageKey } from '../enums/storageKey'
 import { CryptoService } from './crypto.service'
 import { ElectronService } from './electron.service'
 import type { CardState } from '../models'
-import type { StorageKey } from '../enums/storageKey'
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,7 @@ export class DbService {
     private electronService: ElectronService,
   ) {}
 
-  async getItem(key: StorageKey): Promise<CardState> {
+  async getItem(key: StorageKey): Promise<CardState | string> {
     const data = await this.electronService.storageGet(key)
     let result = null
     try {
@@ -26,16 +26,32 @@ export class DbService {
     return result
   }
 
-  async setItem(key: StorageKey, value: any): Promise<boolean> {
+  async setItem(key: StorageKey, value: any, password?: string): Promise<boolean> {
     if (!key || !value) {
       throw new Error('Key or value is not defined')
     }
     try {
-      const encryptValue = await this.cryptoService.encrypt(JSON.stringify(value))
+      const encryptValue = await this.cryptoService.encrypt(
+        JSON.stringify(value),
+        password,
+      )
       await this.electronService.storageSave(key, JSON.stringify(encryptValue))
     } catch (_) {
       throw new Error('Error while setting data to db')
     }
     return Promise.resolve(true)
+  }
+
+  // TODO
+  async changePassword(password?: string) {
+    try {
+      const theCards: CardState = (await this.getItem(StorageKey.cards)) as CardState
+      if (theCards) {
+        this.setItem(StorageKey.cards, JSON.stringify(theCards), password)
+      }
+      this.setItem(StorageKey.loginRequired, 'true')
+    } catch (_) {
+      this.setItem(StorageKey.loginRequired, 'true', password)
+    }
   }
 }
