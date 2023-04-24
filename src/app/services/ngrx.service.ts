@@ -7,7 +7,6 @@ import {
   createSelector,
 } from '@ngrx/store'
 import Fuse from 'fuse.js'
-import { v4 as uuid } from 'uuid'
 import { Card, CardState } from '../models'
 
 // actions
@@ -27,26 +26,7 @@ export const restore = createAction('[Card List] Restore', props<{ card: Card }>
 
 const initialState: CardState = {
   term: '',
-  items: [
-    {
-      id: uuid(),
-      sysname: 'example - bing.com',
-      username: 'example',
-      password: 'example',
-      url: 'https://www.bing.com/',
-      width: 800,
-      height: 600,
-    },
-    {
-      id: uuid(),
-      sysname: 'example - translate.google.com',
-      username: 'example',
-      password: 'example',
-      url: 'https://translate.google.com/',
-      width: 1300,
-      height: 650,
-    },
-  ],
+  items: [],
   deletedItems: [],
 }
 // reducers

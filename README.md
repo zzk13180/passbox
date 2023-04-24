@@ -11,7 +11,7 @@
     <img src="https://zzk13180.github.io/passbox/website-up-brightgreen.svg" alt="website">
   </a>
   <a href="https://github.com/zzk13180/passbox/releases">
-    <img src="https://zzk13180.github.io/passbox/v1.svg" alt="downloaded">
+    <img src="https://zzk13180.github.io/passbox/v1.svg" alt="download">
   </a>
 <p>
 
@@ -19,7 +19,7 @@
 
 <p align="center">
   <sub>
-    downloaded from
+    download from
     <a href="https://github.com/zzk13180/passbox/releases" target="_blank">GitHub Releases</a></em>
   </sub>
 </p>

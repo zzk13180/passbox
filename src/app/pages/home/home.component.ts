@@ -128,7 +128,33 @@ export class HomeComponent implements OnInit {
       if (theCards) {
         this.store.dispatch(initCards({ theCards }))
       }
-    } catch (_) {}
+    } catch (_) {
+      const initialState: CardState = {
+        term: '',
+        items: [
+          {
+            id: uuid(),
+            sysname: 'example - bing.com',
+            username: 'example',
+            password: 'example',
+            url: 'https://www.bing.com/',
+            width: 800,
+            height: 600,
+          },
+          {
+            id: uuid(),
+            sysname: 'example - translate.google.com',
+            username: 'example',
+            password: 'example',
+            url: 'https://translate.google.com/',
+            width: 1300,
+            height: 650,
+          },
+        ],
+        deletedItems: [],
+      }
+      this.store.dispatch(initCards({ theCards: initialState }))
+    }
   }
 
   setPassword(isLogin?: boolean) {
