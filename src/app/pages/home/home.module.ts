@@ -27,6 +27,7 @@ import { LyDividerModule } from '@alyle/ui/divider'
 import { LyListModule } from '@alyle/ui/list'
 import { LySelectModule } from '@alyle/ui/select'
 import { LyTableModule } from '@alyle/ui/table'
+import { LyTooltipModule } from '@alyle/ui/tooltip'
 import { HomeComponent, AddDialog, DeletedCardsDialog } from './home.component'
 import { SearchComponent } from './search.component'
 import { HomeRoutingModule } from './home-routing.module'
@@ -77,6 +78,7 @@ function themeNameProviderFactory() {
     LyDividerModule,
     LyListModule,
     LyTableModule,
+    LyTooltipModule,
     ReactiveFormsModule,
   ],
   providers: [

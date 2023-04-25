@@ -32,9 +32,15 @@
 
 - **Storage encrypted message**
 - **Manage your account and password**
+- **Import browser bookmarks or favorites**
 - **Easy open URLs view web pages or files**
-- **Quickly open websites in the system tray**
-- **Manage your tools website simply and cleanly**
+- **Open a website or file using the system tray**
+
+## TODO
+
+- [ ] **Export encrypted data**
+- [ ] **Drag and drop files to import data or generate a card**
+- [ ] **Crop images, play videos or more features...**
 
 ## Development
 

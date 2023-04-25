@@ -259,6 +259,7 @@ class WindowMain {
       )
     }
     this.tray.setToolTip('passbox')
+    this.changeTrayMenu()
     const toggleWindow = () => {
       if (!this.win) {
         return
@@ -301,9 +302,7 @@ class WindowMain {
       ...this.menuItems,
     ]
     this.contextMenu = Menu.buildFromTemplate(menuItemOptions)
-    if (process.platform !== 'darwin') {
-      this.tray.setContextMenu(this.contextMenu)
-    }
+    this.tray.setContextMenu(this.contextMenu)
   }
 }
 

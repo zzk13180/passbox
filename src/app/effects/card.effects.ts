@@ -26,29 +26,24 @@ export class CardEffects {
     private dbService: DbService,
   ) {}
 
-  card = createEffect(
+  storeTheCards = createEffect(
     () =>
       this.actions$.pipe(
         ofType(add, modify, remove, sort, restore),
         debounceTime(300),
         withLatestFrom(this.store.select('theCards')),
-        tap(([_action, theCards]) => {
-          this.dbService.setItem(StorageKey.cards, theCards)
-          this.electronService.changeTray(theCards.items)
-        }),
+        tap(([_action, theCards]) => this.dbService.setItem(StorageKey.cards, theCards)),
       ),
     { dispatch: false },
   )
 
-  search = createEffect(
+  changeTray = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(initCards, search),
+        ofType(initCards, search, add, modify, remove, sort, restore),
         debounceTime(300),
         withLatestFrom(this.store.select('theCards').pipe(select(selectCards))),
-        tap(([_action, cards]) => {
-          this.electronService.changeTray(cards)
-        }),
+        tap(([_action, cards]) => this.electronService.changeTray(cards)),
       ),
     { dispatch: false },
   )

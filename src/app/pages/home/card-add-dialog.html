@@ -5,17 +5,37 @@ Oh hi there! 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅-->
 <div ly-dialog-content style="padding: 15px 24px 0 24px">
   <ly-field appearance="outlined" [lyWidth]="1">
-    <input lyNativeControl placeholder="name" [(ngModel)]="data.sysname" />
+    <input
+      lyNativeControl
+      placeholder="name"
+      (keydown.enter)="dialogRef.close(data)"
+      [(ngModel)]="data.sysname"
+    />
   </ly-field>
   <ly-field appearance="outlined" [lyWidth]="1">
-    <input lyNativeControl placeholder="username" [(ngModel)]="data.username" />
+    <input
+      lyNativeControl
+      placeholder="username"
+      (keydown.enter)="dialogRef.close(data)"
+      [(ngModel)]="data.username"
+    />
   </ly-field>
   <ly-field appearance="outlined" [lyWidth]="1">
-    <input lyNativeControl placeholder="password" [(ngModel)]="data.password" />
+    <input
+      lyNativeControl
+      placeholder="password"
+      (keydown.enter)="dialogRef.close(data)"
+      [(ngModel)]="data.password"
+    />
   </ly-field>
 
   <ly-field appearance="outlined" [lyWidth]="1" *ngIf="!_if; else _else">
-    <input lyNativeControl placeholder="url" [(ngModel)]="data.url" />
+    <input
+      lyNativeControl
+      placeholder="url"
+      (keydown.enter)="dialogRef.close(data)"
+      [(ngModel)]="data.url"
+    />
     <button ly-button lySuffix appearance="icon" (click)="_if = !_if">
       <ly-icon>settings</ly-icon>
     </button>
@@ -23,13 +43,20 @@ Oh hi there! 😄
 
   <ng-template #_else>
     <ly-field appearance="outlined" [lyWidth]=".49">
-      <input lyNativeControl placeholder="width" type="number" [(ngModel)]="data.width" />
+      <input
+        lyNativeControl
+        placeholder="width"
+        type="number"
+        (keydown.enter)="dialogRef.close(data)"
+        [(ngModel)]="data.width"
+      />
     </ly-field>
     <ly-field appearance="outlined" [lyWidth]=".49">
       <input
         lyNativeControl
         placeholder="height"
         type="number"
+        (keydown.enter)="dialogRef.close(data)"
         [(ngModel)]="data.height"
       />
       <button ly-button lySuffix appearance="icon" (click)="_if = !_if">
