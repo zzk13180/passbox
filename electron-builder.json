@@ -8,8 +8,7 @@
   "files": [
     "**/*",
     "!**/*.ts",
-    "!LICENSE.md",
-    "!package.json",
+    "!LICENSE",
     "!pnpm-lock.yaml",
     "!src/",
     "!angular.json",
@@ -20,7 +19,8 @@
     "!tslint.json",
     "!README.md",
     "!main.js.map",
-    ".*/**/*"
+    "!.*/**/*",
+    "!.*"
   ],
   "win": {
     "icon": "dist/assets/icons",
