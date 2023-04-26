@@ -44,6 +44,7 @@ const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
       white-space: nowrap
       overflow: hidden
       text-overflow: ellipsis
+      margin-right: 56px
     }`,
     panelafter: () => lyl`{
       &::after {
@@ -128,33 +129,7 @@ export class HomeComponent implements OnInit {
       if (theCards) {
         this.store.dispatch(initCards({ theCards }))
       }
-    } catch (_) {
-      const initialState: CardState = {
-        term: '',
-        items: [
-          {
-            id: uuid(),
-            sysname: 'example - bing.com',
-            username: 'example',
-            password: 'example',
-            url: 'https://www.bing.com/',
-            width: 800,
-            height: 600,
-          },
-          {
-            id: uuid(),
-            sysname: 'example - translate.google.com',
-            username: 'example',
-            password: 'example',
-            url: 'https://translate.google.com/',
-            width: 1300,
-            height: 650,
-          },
-        ],
-        deletedItems: [],
-      }
-      this.store.dispatch(initCards({ theCards: initialState }))
-    }
+    } catch (_) {}
   }
 
   setPassword(isLogin?: boolean) {
@@ -355,9 +330,9 @@ export class HomeComponent implements OnInit {
     const menu = new this.electronService.remote.Menu()
     menu.append(
       new this.electronService.remote.MenuItem({
-        label: 'add',
+        label: 'open',
         click: () => {
-          this.add()
+          this.openBrowser(card)
         },
       }),
     )
@@ -377,14 +352,6 @@ export class HomeComponent implements OnInit {
         },
       }),
     )
-    // menu.append(
-    //   new this.electronService.remote.MenuItem({
-    //     label: 'open',
-    //     click: () => {
-    //       this.openBrowser(card)
-    //     },
-    //   }),
-    // )
     menu.popup()
   }
 

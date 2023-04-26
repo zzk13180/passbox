@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http'
 import { DragDropModule } from '@angular/cdk/drag-drop'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { ScrollingModule } from '@angular/cdk/scrolling'
 import {
   LyTheme2,
   StyleRenderer,
@@ -63,7 +64,7 @@ function themeNameProviderFactory() {
     LyTabsModule,
     LyIconModule,
     LyExpansionModule,
-    LyTypographyModule,
+    ScrollingModule,
     LyButtonModule,
     LyExpansionIconModule,
     FormsModule,

@@ -53,38 +53,36 @@ Oh hi there! 😄
     cdkDropList
     (cdkDropListDropped)="drop($event)"
   >
-    <ly-expansion-panel
-      cdkDrag
-      [class]="classes.panelafter"
-      *ngFor="let card of cards$ | async; let i = index; trackBy: trackByFn"
-      (contextmenu)="viewMenu(card)"
+    <cdk-virtual-scroll-viewport
+      itemSize="48"
+      appendOnly
+      style="height: calc(100vh - 56px); width: 100vw; overflow-x: hidden"
     >
-      <ly-expansion-panel-header homeMouseToggleDirective>
-        <ly-panel-title [class]="classes.title">
-          <span lyTyp="caption" class="home-panel-index">{{ i + 1 }}</span>
-          <ng-container>
-            {{ card.sysname }}
-          </ng-container>
-        </ly-panel-title>
-        <button
-          ly-button
-          bg="primary"
-          (click)="openBrowser(card, $event)"
-          [lyTooltip]="card.url"
-        >
-          <ly-icon>send</ly-icon>
-        </button>
-      </ly-expansion-panel-header>
-      <ly-paper>
-        <ly-list>
-          <button ly-list-item (click)="copy(card, 'username')">
-            <ly-icon (click)="seeAccount($event)" ly-list-icon>account_box</ly-icon>
-            <span ly-line>{{ card.username }}</span>
-          </button>
-          <home-password [card]="card" (click)="copy(card, 'password')"></home-password>
-        </ly-list>
-      </ly-paper>
-    </ly-expansion-panel>
+      <ly-expansion-panel
+        cdkDrag
+        [class]="classes.panelafter"
+        *cdkVirtualFor="let card of cards$ | async; let i = index; trackBy: trackByFn"
+        (contextmenu)="viewMenu(card)"
+      >
+        <ly-expansion-panel-header style="width: 100vw">
+          <ly-panel-title [class]="classes.title">
+            <span lyTyp="caption" class="home-panel-index">{{ i + 1 }}</span>
+            <ng-container>
+              <span>{{ card.sysname }}</span>
+            </ng-container>
+          </ly-panel-title>
+        </ly-expansion-panel-header>
+        <ly-paper>
+          <ly-list>
+            <button ly-list-item (click)="copy(card, 'username')">
+              <ly-icon (click)="seeAccount($event)" ly-list-icon>account_box</ly-icon>
+              <span ly-line>{{ card.username }}</span>
+            </button>
+            <home-password [card]="card" (click)="copy(card, 'password')"></home-password>
+          </ly-list>
+        </ly-paper>
+      </ly-expansion-panel>
+    </cdk-virtual-scroll-viewport>
   </ly-accordion>
 
   <ng-template ly-snack-bar #sb="lySnackBar" [duration]="1000" let-msg="msg">
