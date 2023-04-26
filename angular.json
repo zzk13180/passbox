@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "passbox": "pnpm"
+    "passbox": "pnpm",
+    "analytics": "733af7a2-ebcc-4cba-9e18-dcd051bb9421"
   },
   "newProjectRoot": "projects",
   "projects": {
