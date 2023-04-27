@@ -114,7 +114,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     return this.cryptoFunctionService.aesDecryptFast(fastParams)
   }
 
-  private initPassword(userstate: UserState): void {
+  private initPassword(userstate: UserState, userPassword?: string): void {
     const { password: passwordStr, salt: saltStr, isRequiredLogin } = userstate
 
     const salt = new ArrayBuffer(21)
@@ -125,9 +125,8 @@ export class CryptoService implements CryptoServiceAbstraction {
       .split(',')
       .map((item, i) => new DataView(password).setUint8(i, Number(item)))
 
-    if (isRequiredLogin) {
+    if (isRequiredLogin && userPassword) {
       const encoder = new TextEncoder()
-      const userPassword = this.userStateService.getUserPassword()
       const userPasswordBuffer = encoder.encode(userPassword).buffer
       const tmp = new Uint8Array(password.byteLength + userPasswordBuffer.byteLength)
       tmp.set(new Uint8Array(userPasswordBuffer), 0)
@@ -141,11 +140,8 @@ export class CryptoService implements CryptoServiceAbstraction {
 
   private async checkPassword(): Promise<void> {
     const userstate: UserState = await this.userStateService.getUserState()
-    if (!this.password || !this.salt || userstate.isRequiredLogin) {
-      this.password = null
-      this.salt = null
-      this.initPassword(userstate)
-    }
+    const userPassword = this.userStateService.getUserPassword()
+    this.initPassword(userstate, userPassword)
   }
 
   async encrypt(plainValue: string | ArrayBuffer): Promise<CipherString> {
@@ -170,6 +166,21 @@ export class CryptoService implements CryptoServiceAbstraction {
 
   async decryptToUtf8(cipherString: CipherString): Promise<string> {
     await this.checkPassword()
+    const result = await this.aesDecryptToUtf8(
+      cipherString.encryptionType,
+      cipherString.data,
+      cipherString.iv,
+      cipherString.mac,
+    )
+    return result
+  }
+
+  async decryptToUtf8WithExternalUserState(
+    cipherString: CipherString,
+    userState: UserState,
+    userPassword?: string,
+  ): Promise<string> {
+    this.initPassword(userState, userPassword)
     const result = await this.aesDecryptToUtf8(
       cipherString.encryptionType,
       cipherString.data,

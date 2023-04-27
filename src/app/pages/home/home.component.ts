@@ -33,9 +33,12 @@ import {
   UserState,
   UserStateService,
   DbService,
+  CryptoService,
 } from '../../services'
+import { CipherString } from '../../models/domain/cipherString'
 import { PasswordSet } from './password-set-dialog.component'
 import { SelectExportDialog } from './select-export-dialog'
+import { ImportPasswordDialog } from './import-password-dialog'
 
 const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
   const expansion = ref.selectorsOf(EXPANSION_STYLES)
@@ -109,6 +112,7 @@ export class HomeComponent implements OnInit {
     private store: Store<{ theCards: CardState }>,
     private userStateService: UserStateService,
     private dbService: DbService,
+    private cryptoService: CryptoService,
   ) {}
 
   async ngOnInit() {
@@ -244,7 +248,7 @@ export class HomeComponent implements OnInit {
     const dialogRef = this._dialog.open<SelectExportDialog>(SelectExportDialog, {
       width: 320,
     })
-    dialogRef.afterClosed.subscribe(result => {
+    dialogRef.afterClosed.pipe(filter(result => !!result)).subscribe(result => {
       switch (result.option) {
         case 'plain':
           this.exportDataPlain()
@@ -339,27 +343,87 @@ export class HomeComponent implements OnInit {
           const filePath = result.filePaths[0]
           const data = await this.electronService.readFile(filePath)
           const { toString } = Object.prototype
-          let cards: Card[] | null = null
           const ext = filePath.split('.').pop()
           try {
             if (ext !== 'json') {
-              cards = this.html2cards(data)
+              const cards = this.html2cards(data)
+              if (!cards.length || toString.call(cards[0]) !== '[object Object]') {
+                throw new Error('invalid data')
+              }
+              this.importAddCards(cards, ext)
             } else {
-              cards = JSON.parse(data)
-            }
-            if (!cards.length || toString.call(cards[0]) !== '[object Object]') {
-              throw new Error('invalid data')
+              let jsonData = null
+              try {
+                jsonData = JSON.parse(data)
+              } catch (_) {
+                throw new Error('invalid data')
+              }
+              if (jsonData && jsonData.items && jsonData.items.length) {
+                this.importAddCards(jsonData.items, ext)
+              } else if (jsonData && jsonData.cards && jsonData.userState) {
+                this.json2cards(jsonData)
+              } else {
+                throw new Error('invalid data')
+              }
             }
           } catch (error) {
-            this.sb.open({ msg: 'invalid data' })
+            this.sb.open({ msg: error.message })
           }
-          this.addCards(cards, ext)
-          this.sb.open({ msg: 'import success' })
         }
       })
   }
 
-  private addCards(addCards: Card[], from: string): void {
+  // TODO: refactor
+  private json2cards(data: {
+    [StorageKey.cards]: CipherString
+    [StorageKey.userState]: UserState
+  }): void {
+    const { isRequiredLogin } = data.userState as UserState
+    if (isRequiredLogin) {
+      this.sb.open({ msg: 'need password' })
+      const dialogRef = this._dialog.open<ImportPasswordDialog>(ImportPasswordDialog, {
+        width: 320,
+      })
+      dialogRef.afterClosed.pipe(filter(result => !!result)).subscribe(async result => {
+        let str = ''
+        try {
+          str = await this.cryptoService.decryptToUtf8WithExternalUserState(
+            data.cards,
+            data.userState,
+            result.password,
+          )
+        } catch (_) {
+          this.sb.open({ msg: 'failed : password error' })
+          return
+        }
+        let res = null
+        try {
+          res = JSON.parse(str)
+        } catch (_) {
+          this.sb.open({ msg: 'failed : invalid data' })
+        }
+        this.importAddCards(res.items, 'json')
+      })
+    } else {
+      try {
+        this.cryptoService
+          .decryptToUtf8WithExternalUserState(data.cards, data.userState)
+          .then(str => {
+            let res = null
+            try {
+              res = JSON.parse(str)
+            } catch (_) {
+              this.sb.open({ msg: 'failed : invalid data' })
+            }
+            this.importAddCards(res.items, 'json')
+          })
+      } catch (_) {
+        this.sb.open({ msg: 'failed : password error' })
+      }
+    }
+  }
+
+  private importAddCards(addCards: Card[], from: string): void {
     const cards: Card[] = []
     let existCards: Card[] = []
     const subscriber = this.cards$.subscribe({
@@ -375,6 +439,7 @@ export class HomeComponent implements OnInit {
       }
     })
     this.store.dispatch(add({ cards }))
+    this.sb.open({ msg: 'import success' })
   }
 
   private html2cards(html: string): Card[] {

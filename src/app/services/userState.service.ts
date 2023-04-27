@@ -18,31 +18,34 @@ export class UserStateService {
   constructor(
     private cryptoFunctionService: CryptoFunctionService,
     private electronService: ElectronService,
-  ) {
-    this.userState = {
-      isRequiredLogin: false,
-      password: '',
-      salt: '',
-    }
-  }
+  ) {}
 
   async getUserState(): Promise<UserState> {
+    // every time we get the user state from the storage, we need to check if the file is corrupted
     const str: string = await this.electronService.storageGet(StorageKey.userState)
+    let userState: UserState = null
     try {
-      this.userState = JSON.parse(str)
+      userState = JSON.parse(str)
     } catch (_) {
-      const { password, salt } = await this.generatePassworAndSalt()
-      this.userState = {
-        isRequiredLogin: false,
-        password,
-        salt,
-      }
-      await this.setUserState(this.userState)
+      userState = await this.initUserState()
     }
+    if (!userState || !userState.password || !userState.salt) {
+      userState = await this.initUserState()
+    }
+    await this.setUserState(userState)
     return this.userState
   }
 
-  async setUserState(userState: UserState): Promise<void> {
+  private async initUserState(): Promise<UserState> {
+    const { password, salt } = await this.generatePassworAndSalt()
+    return {
+      isRequiredLogin: false,
+      password,
+      salt,
+    }
+  }
+
+  private async setUserState(userState: UserState): Promise<void> {
     await this.electronService.storageSave(
       StorageKey.userState,
       JSON.stringify(userState),
@@ -55,7 +58,10 @@ export class UserStateService {
   }
 
   async setUserPassword(userPassword: string): Promise<void> {
-    await this.setUserState({ ...this.userState, isRequiredLogin: true })
+    await this.setUserState({
+      ...this.userState,
+      isRequiredLogin: true,
+    })
     this.userPassword = userPassword
   }
 
