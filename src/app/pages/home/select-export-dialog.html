@@ -1,0 +1,22 @@
+<div ly-dialog-content style="padding: 24px">
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+    <ly-field>
+      <ly-select placeholder="select a type" formControlName="option">
+        <ly-option value="encrypted">encrypted data</ly-option>
+        <ly-option value="plain">plain data</ly-option>
+        <ly-option value="html">bookmarks</ly-option>
+      </ly-select>
+      <ly-error>required</ly-error>
+    </ly-field>
+    <button
+      ly-button
+      bg="primary"
+      raised
+      type="submit"
+      [disabled]="!myForm.valid"
+      style="margin-left: 10px"
+    >
+      submit
+    </button>
+  </form>
+</div>

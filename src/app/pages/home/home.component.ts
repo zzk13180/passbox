@@ -30,10 +30,12 @@ import {
   selectCards,
   selectDeletedCards,
   selectSearchTerm,
+  UserState,
   UserStateService,
   DbService,
 } from '../../services'
 import { PasswordSet } from './password-set-dialog.component'
+import { SelectExportDialog } from './select-export-dialog'
 
 const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
   const expansion = ref.selectorsOf(EXPANSION_STYLES)
@@ -239,10 +241,81 @@ export class HomeComponent implements OnInit {
 
   exportData(event: Event): void {
     event.stopPropagation()
+    const dialogRef = this._dialog.open<SelectExportDialog>(SelectExportDialog, {
+      width: 320,
+    })
+    dialogRef.afterClosed.subscribe(result => {
+      switch (result.option) {
+        case 'plain':
+          this.exportDataPlain()
+          break
+        case 'encrypted':
+          this.exportEncryptedData()
+          break
+        case 'html':
+          this.exportDataHtml()
+          break
+        default:
+          this.exportEncryptedData()
+          break
+      }
+    })
+  }
+
+  private async exportDataPlain() {
     try {
-      let cards: Card[] = []
-      this.cards$.subscribe(cs => (cards = cs)).unsubscribe()
-      this.downloadByData(JSON.stringify(cards), 'passbox-data-json.json')
+      const theCards: CardState = await this.dbService.getItem(StorageKey.cards)
+      this.downloadByData(JSON.stringify(theCards), 'passbox-data.json')
+    } catch (_) {
+      this.sb.open({ msg: 'export data failed' })
+    }
+  }
+
+  private async exportDataHtml() {
+    const templateFn = (str: string) => `
+    <!DOCTYPE NETSCAPE-Bookmark-file-1>
+    <!-- This is an automatically generated file.
+          It will be read and overwritten.
+          DO NOT EDIT! -->
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self'; script-src 'none'; img-src data: *; object-src 'none'"></meta>
+    <TITLE>Bookmarks</TITLE>
+    <H1>passbox</H1>
+    <DL><p>
+      <DT><H3>passbox</H3>
+        <DL><p>
+        ${str}
+      </DL><p>
+    </DL>`
+    try {
+      const theCards: CardState = await this.dbService.getItem(StorageKey.cards)
+      let str = ''
+      theCards.items.forEach(card => {
+        if (card.sysname && card.url) {
+          str += `<DT><A HREF="${card.url}">${card.sysname}</A>\n`
+        }
+      })
+      this.downloadByData(templateFn(str), 'passbox-bookmarks.html')
+    } catch (_) {
+      this.sb.open({ msg: 'export data failed' })
+    }
+  }
+
+  private async exportEncryptedData() {
+    try {
+      const theCardsStr: string = await this.electronService.storageGet(StorageKey.cards)
+      const userStateStr: string = await this.electronService.storageGet(
+        StorageKey.userState,
+      )
+      const data: {
+        [StorageKey.cards]: CardState
+        [StorageKey.userState]: UserState
+      } = {
+        cards: JSON.parse(theCardsStr),
+        userState: JSON.parse(userStateStr),
+      }
+      this.downloadByData(JSON.stringify(data), 'passbox-data.json')
     } catch (_) {
       this.sb.open({ msg: 'export data failed' })
     }

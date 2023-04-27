@@ -13,7 +13,7 @@ export class DbService {
     private electronService: ElectronService,
   ) {}
 
-  async getItem(key: StorageKey): Promise<CardState> {
+  async getItem(key: StorageKey.cards): Promise<CardState> {
     const data = await this.electronService.storageGet(key)
     let result = null
     try {
@@ -26,7 +26,7 @@ export class DbService {
     return result
   }
 
-  async setItem(key: StorageKey, value: CardState): Promise<boolean> {
+  async setItem(key: StorageKey.cards, value: CardState): Promise<boolean> {
     if (!key || !value) {
       throw new Error('Key or value is not defined')
     }

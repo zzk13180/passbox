@@ -34,6 +34,7 @@ import { SearchComponent } from './search.component'
 import { HomeRoutingModule } from './home-routing.module'
 import { homePasswordComponent } from './password'
 import { PasswordSet } from './password-set-dialog.component'
+import { SelectExportDialog } from './select-export-dialog'
 
 function themeNameProviderFactory() {
   // if (typeof localStorage === 'object') {
@@ -53,6 +54,7 @@ function themeNameProviderFactory() {
     DeletedCardsDialog,
     homePasswordComponent,
     PasswordSet,
+    SelectExportDialog,
   ],
   entryComponents: [AddDialog, DeletedCardsDialog],
   imports: [

@@ -36,12 +36,6 @@
 - **Easy open URLs view web pages or files**
 - **Open a website or file using the system tray**
 
-## TODO
-
-- [ ] **Export encrypted data**
-- [ ] **Drag and drop files to import data or generate a card**
-- [ ] **Crop images, play videos or more features...**
-
 ## Development
 
 ```bash
