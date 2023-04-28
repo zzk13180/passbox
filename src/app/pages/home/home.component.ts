@@ -16,7 +16,7 @@ import { Observable } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import { Store, select } from '@ngrx/store'
 import { v4 as uuid } from 'uuid'
-import { StorageKey } from '../../enums/storageKey'
+import { StorageKey, DBError } from '../../enums/storageKey'
 import { Card, CardState, CardFieldMap } from '../../models'
 import {
   ElectronService,
@@ -135,7 +135,36 @@ export class HomeComponent implements OnInit {
       if (theCards) {
         this.store.dispatch(initCards({ theCards }))
       }
-    } catch (_) {}
+    } catch (err) {
+      // init cards only if there is no data in db
+      if (err.message === DBError.noData) {
+        const theCards: CardState = {
+          items: [
+            {
+              id: uuid(),
+              sysname: 'Right-click to open the official website.',
+              url: 'https://zzk13180.github.io/passbox/',
+              username: '',
+              password: '',
+              width: 800,
+              height: 600,
+            },
+            {
+              id: uuid(),
+              sysname: 'All user data is stored in this file.',
+              url: `${this.electronService.remote.app.getPath('userData')}\\passbox.json`,
+              username: '',
+              password: '',
+              width: 800,
+              height: 600,
+            },
+          ],
+          deletedItems: [],
+          term: '',
+        }
+        this.store.dispatch(initCards({ theCards }))
+      }
+    }
   }
 
   setPassword(isLogin?: boolean) {
