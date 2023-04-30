@@ -541,10 +541,6 @@ export class HomeComponent implements OnInit {
     event.stopPropagation()
   }
 
-  refresh(): void {
-    this.electronService.remote.getCurrentWindow().reload()
-  }
-
   viewMenu(card: Card) {
     const menu = new this.electronService.remote.Menu()
     menu.append(

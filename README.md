@@ -28,14 +28,8 @@
   </sub>
 </p>
 
-|     gif1      |     gif2      |     gif3      |
-| :-----------: | :-----------: | :-----------: |
-| ![](test.gif) | ![](test.gif) | ![](test.gif) |
+<br>
 
-## Development
-
-```bash
-pnpm i
-pnpm dev
-pnpm build
-```
+<p align='center'>
+  <img src="screenshots.png" alt='preview'>
+</p>
