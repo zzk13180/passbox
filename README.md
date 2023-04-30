@@ -33,13 +33,13 @@
 
 ## Features
 
-- **Storage encrypted message**
+- **Store encrypted messages**
 - **Import/export browser bookmarks**
 - **Export the encrypted file and import it to another computer to migrate the data securely**
-- **Open webpage or file with app/system-tray**
-- **Use the tool website easy and sweet**
-- **No store your password. When you set a password, only you can decrypt it.**
-- **Drag and drop in the file to save the link and name, and supported file can open**
+- **Open a webpage or file with an app/system tray**
+- **Use the tool website easily and sweetly**
+- **We do not store your password. When you set a password, only you can decrypt it.**
+- **Drag and drop a file to save the link and name, and supported files can be opened.**
 
 <br>
 
