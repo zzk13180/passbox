@@ -30,6 +30,19 @@
 
 <br>
 
+
+## Features
+
+- **Storage encrypted message**
+- **Import/export browser bookmarks**
+- **Export the encrypted file and import it to another computer to migrate the data securely**
+- **Open webpage or file with app/system-tray**
+- **Use the tool website easy and sweet**
+- **No store your password. When you set a password, only you can decrypt it.**
+- **Drag and drop in the file to save the link and name, and supported file can open**
+
+<br>
+
 <p align='center'>
-  <img src="screenshots.png" alt='preview'>
+  <img src="https://zzk13180.github.io/passbox/preview.png" alt='preview'>
 </p>
