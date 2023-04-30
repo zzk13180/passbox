@@ -9,7 +9,6 @@ import {
 import Fuse from 'fuse.js'
 import { Card, CardState } from '../models'
 
-// actions
 export const initCards = createAction(
   '[Card List] InitCards',
   props<{ theCards: CardState }>(),
@@ -29,7 +28,6 @@ const initialState: CardState = {
   items: [],
   deletedItems: [],
 }
-// reducers
 export function cardReducer(state: CardState, action: Action) {
   const _reducer = createReducer(
     initialState,
@@ -74,14 +72,14 @@ export function cardReducer(state: CardState, action: Action) {
 
 const searchHandler = (cards: Card[], term: string): Card[] => {
   const fuse = new Fuse(cards, {
-    keys: ['sysname'],
-    threshold: 0.4,
+    keys: ['title', 'description'],
+    threshold: 0.3,
+    minMatchCharLength: 2,
   })
   const result = fuse.search(term).map(item => item.item)
   return result
 }
 
-// selectors
 export const selectCards = createSelector(
   (state: CardState) => state.items,
   (state: CardState) => state.term,

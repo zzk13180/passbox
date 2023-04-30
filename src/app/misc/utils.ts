@@ -109,7 +109,6 @@ export class Utils {
     return String.fromCharCode.apply(null, new Uint8Array(buffer))
   }
 
-  // ref: https://stackoverflow.com/a/40031979/1090359
   static fromBufferToHex(buffer: ArrayBuffer): string {
     if (Utils.isNode || Utils.isNativeScript) {
       return Buffer.from(buffer).toString('hex')

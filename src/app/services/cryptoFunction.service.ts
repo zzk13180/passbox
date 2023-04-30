@@ -1,4 +1,4 @@
-import * as Crypto from 'crypto'
+import * as Crypto from 'node:crypto'
 import { Injectable } from '@angular/core'
 import * as pako from 'pako'
 import { CryptoFunctionService as CryptoFunctionServiceAbstraction } from '../models/abstractions/cryptoFunction.service'
@@ -13,7 +13,7 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
   crypto: typeof Crypto
 
   constructor() {
-    this.crypto = window.require('crypto')
+    this.crypto = window.require('node:crypto')
   }
 
   pbkdf2(
@@ -56,7 +56,6 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
     return this.hkdfExpand(prk, info, outputByteSize, algorithm)
   }
 
-  // ref: https://tools.ietf.org/html/rfc5869
   async hkdfExpand(
     prk: ArrayBuffer,
     info: string | ArrayBuffer,

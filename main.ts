@@ -17,12 +17,12 @@ const remote = require('@electron/remote/main')
 
 interface Card {
   id: string
-  sysname: string
-  username: string
-  password: string
+  title: string
+  description: string
+  secret: string
   url: string
-  width?: number // BrowserWindow width
-  height?: number // BrowserWindow height
+  width?: number
+  height?: number
 }
 
 class Main {
@@ -50,7 +50,6 @@ class Main {
           this.windowMain.win.webContents.openDevTools()
           this.windowMain.win.loadURL('http://localhost:4200')
         } else {
-          // this.windowMain.win.webContents.openDevTools()
           this.windowMain.win.loadURL(`file://${path.join(__dirname, 'dist/index.html')}`)
         }
       },
@@ -166,12 +165,14 @@ class WindowMain {
       this.menuItems = []
       this.cards = cards || []
       this.cards.forEach(card => {
-        this.menuItems.push({
-          label: card.sysname,
-          click: () => {
-            this.openBrowser(card)
-          },
-        })
+        if (card && card.title) {
+          this.menuItems.push({
+            label: card.title,
+            click: () => {
+              this.openBrowser(card)
+            },
+          })
+        }
       })
       this.changeTrayMenu()
     })

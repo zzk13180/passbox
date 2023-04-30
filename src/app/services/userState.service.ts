@@ -21,7 +21,6 @@ export class UserStateService {
   ) {}
 
   async getUserState(): Promise<UserState> {
-    // every time we get the user state from the storage, we need to check if the file is corrupted
     const str: string = await this.electronService.storageGet(StorageKey.userState)
     let userState: UserState = null
     try {

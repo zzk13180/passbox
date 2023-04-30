@@ -16,9 +16,12 @@
   flex: 1 1 auto;
 }
 
-.home-panel-index {
+.home-drag-handle {
   position: absolute;
-  top: -2px;
-  left: 4px;
-  font-size: 12px;
+  left: 0;
+  top: 0;
+  width: 54px;
+  height: 54px;
+  cursor: move;
+  background: transparent;
 }

@@ -7,25 +7,25 @@ Oh hi there! 😄
   <ly-field appearance="outlined" [lyWidth]="1">
     <input
       lyNativeControl
-      placeholder="name"
+      placeholder="title"
       (keydown.enter)="dialogRef.close(data)"
-      [(ngModel)]="data.sysname"
+      [(ngModel)]="data.title"
     />
   </ly-field>
   <ly-field appearance="outlined" [lyWidth]="1">
     <input
       lyNativeControl
-      placeholder="username"
+      placeholder="description"
       (keydown.enter)="dialogRef.close(data)"
-      [(ngModel)]="data.username"
+      [(ngModel)]="data.description"
     />
   </ly-field>
   <ly-field appearance="outlined" [lyWidth]="1">
     <input
       lyNativeControl
-      placeholder="password"
+      placeholder="secret"
       (keydown.enter)="dialogRef.close(data)"
-      [(ngModel)]="data.password"
+      [(ngModel)]="data.secret"
     />
   </ly-field>
 

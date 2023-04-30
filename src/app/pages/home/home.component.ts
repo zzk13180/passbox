@@ -2,6 +2,7 @@ import {
   Component,
   OnInit,
   Inject,
+  ElementRef,
   ChangeDetectorRef,
   ChangeDetectionStrategy,
   ViewChild,
@@ -45,13 +46,34 @@ const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
   return {
     $name: 'home-panel',
     title: () => lyl`{
-      display: block
-      white-space: nowrap
-      overflow: hidden
-      text-overflow: ellipsis
-      margin-right: 56px
+      margin: 0
+      width: 100%
+      height: 54px
+      line-height: 54px
+      position: relative
+      top: 0
+      left: 0
+      &>span {
+        margin: 0 0 0 16px
+        width: calc(100% - 32px)
+        cursor: pointer
+        overflow: hidden
+        white-space: nowrap
+        text-overflow: ellipsis
+        span {
+          cursor: text
+        }
+      }
     }`,
-    panelafter: () => lyl`{
+    panel: () => lyl`{
+      ${expansion.panelHeader} {
+        height: 54px
+        width: 100vw
+        padding: 0
+      }
+      ${expansion.panelTitle} {
+        font-weight: 500
+      }
       &::after {
         transition: border ${theme.animations.durations.entering}ms ${theme.animations.curves.standard}
         content: ''
@@ -59,23 +81,27 @@ const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
         top: 0
         bottom: 0
         ${theme.before}: 0
-        border-${theme.before}: 3px solid transparent
+        border-${theme.before}: 2px solid transparent
       }
     }`,
     accordion: () => {
       return lyl`{
         ${expansion.expanded} {
           ${expansion.panelHeader} {
-            height: 64px
+            height: 54px
           }
           &${expansion.panel} {
             &::after {
-              border-${theme.before}: 3px solid ${theme.primary.default}
+              border-${theme.before}: 2px solid ${theme.primary.default}
             }
           }
           ${expansion.panelHeader} ${expansion.panelTitle} {
             color: ${theme.primary.default}
           }
+        }
+        ${expansion.panelBody} {
+          padding: 0
+          width: 100vw
         }
       }`
     },
@@ -109,6 +135,7 @@ export class HomeComponent implements OnInit {
     private _dialog: LyDialog,
     private ngZone: NgZone,
     private _cd: ChangeDetectorRef,
+    private _el: ElementRef,
     private store: Store<{ theCards: CardState }>,
     private userStateService: UserStateService,
     private dbService: DbService,
@@ -127,6 +154,29 @@ export class HomeComponent implements OnInit {
     } else {
       this.initTheCards()
     }
+    this._el.nativeElement.addEventListener('drop', (e: DragEvent) => {
+      if (e.dataTransfer.files.length > 0) {
+        const file = e.dataTransfer.files[0]
+        const { name, path } = file
+        if (name && path) {
+          const cards = [
+            {
+              id: uuid(),
+              title: name,
+              description: '',
+              secret: '',
+              url: path,
+              width: 800,
+              height: 600,
+            },
+          ]
+          this.store.dispatch(add({ cards }))
+        }
+      }
+    })
+    this._el.nativeElement.addEventListener('dragover', (e: DragEvent) => {
+      e.preventDefault()
+    })
   }
 
   private async initTheCards(): Promise<void> {
@@ -136,33 +186,28 @@ export class HomeComponent implements OnInit {
         this.store.dispatch(initCards({ theCards }))
       }
     } catch (err) {
-      // init cards only if there is no data in db
       if (err.message === DBError.noData) {
-        const theCards: CardState = {
-          items: [
-            {
-              id: uuid(),
-              sysname: 'Right-click to open the official website.',
-              url: 'https://zzk13180.github.io/passbox/',
-              username: '',
-              password: '',
-              width: 800,
-              height: 600,
-            },
-            {
-              id: uuid(),
-              sysname: 'All user data is stored in this file.',
-              url: `${this.electronService.remote.app.getPath('userData')}\\passbox.json`,
-              username: '',
-              password: '',
-              width: 800,
-              height: 600,
-            },
-          ],
-          deletedItems: [],
-          term: '',
-        }
-        this.store.dispatch(initCards({ theCards }))
+        const cards = [
+          {
+            id: uuid(),
+            title: 'Right-click to open the official website.',
+            url: 'https://zzk13180.github.io/passbox/',
+            description: '',
+            secret: '',
+            width: 800,
+            height: 600,
+          },
+          {
+            id: uuid(),
+            title: 'All user data is stored in this file.',
+            url: `${this.electronService.remote.app.getPath('userData')}/passbox.json`,
+            description: '',
+            secret: '',
+            width: 800,
+            height: 600,
+          },
+        ]
+        this.store.dispatch(add({ cards }))
       }
     }
   }
@@ -180,6 +225,10 @@ export class HomeComponent implements OnInit {
     dialogRef.afterClosed.subscribe(result => {
       result && this.initTheCards()
     })
+  }
+
+  copyText(event: Event) {
+    event.stopPropagation()
   }
 
   copy(card: Card, field: string): void {
@@ -240,9 +289,9 @@ export class HomeComponent implements OnInit {
       .open<AddDialog, Card>(AddDialog, {
         data: {
           id: card?.id ?? uuid(),
-          sysname: card?.sysname ?? '',
-          username: card?.username ?? '',
-          password: card?.password ?? '',
+          title: card?.title ?? '',
+          description: card?.description ?? '',
+          secret: card?.secret ?? '',
           url: card?.url ?? '',
           width: card?.width ?? 800,
           height: card?.height ?? 600,
@@ -325,8 +374,8 @@ export class HomeComponent implements OnInit {
       const theCards: CardState = await this.dbService.getItem(StorageKey.cards)
       let str = ''
       theCards.items.forEach(card => {
-        if (card.sysname && card.url) {
-          str += `<DT><A HREF="${card.url}">${card.sysname}</A>\n`
+        if (card.title && card.url) {
+          str += `<DT><A HREF="${card.url}">${card.title}</A>\n`
         }
       })
       this.downloadByData(templateFn(str), 'passbox-bookmarks.html')
@@ -402,7 +451,6 @@ export class HomeComponent implements OnInit {
       })
   }
 
-  // TODO: refactor
   private json2cards(data: {
     [StorageKey.cards]: CipherString
     [StorageKey.userState]: UserState
@@ -459,7 +507,7 @@ export class HomeComponent implements OnInit {
       next: c => (existCards = c),
     })
     subscriber.unsubscribe()
-    const keys = ['sysname', 'username', 'password', 'url']
+    const keys = ['title', 'description', 'secret', 'url']
     addCards.forEach(card => {
       const isAvailable = keys.some(key => card[key])
       const isNotExist = from === 'html' || !existCards.some(c => c.id === card.id)
@@ -479,9 +527,9 @@ export class HomeComponent implements OnInit {
     atags.forEach(atag => {
       const card: Card = {
         id: uuid(),
-        sysname: atag.innerText || '',
-        username: '',
-        password: '',
+        title: atag.innerText || '',
+        description: '',
+        secret: '',
         url: atag.getAttribute('href') || '',
       }
       cards.push(card)
@@ -491,6 +539,10 @@ export class HomeComponent implements OnInit {
 
   seeAccount(event: Event): void {
     event.stopPropagation()
+  }
+
+  refresh(): void {
+    this.electronService.remote.getCurrentWindow().reload()
   }
 
   viewMenu(card: Card) {
@@ -620,9 +672,9 @@ export class DeletedCardsDialog {
 
   columns = [
     {
-      columnDef: 'sysname',
-      header: 'name',
-      cell: (card: Card) => `${card.sysname}`,
+      columnDef: 'title',
+      header: 'title',
+      cell: (card: Card) => `${card.title}`,
     },
     {
       columnDef: 'url',

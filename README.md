@@ -20,21 +20,17 @@
 <p align="center">
   <sub>
     download from
-    <a href="https://github.com/zzk13180/passbox/releases" target="_blank">GitHub Releases</a></em>
+    <a href="https://github.com/zzk13180/passbox/releases" target="_blank">GitHub Releases.</a>
+  </sub>
+  <sub>
+    more information in
+    <a href="https://zzk13180.github.io/passbox" target="_blank">Documentation🚀</a>
   </sub>
 </p>
 
 |     gif1      |     gif2      |     gif3      |
 | :-----------: | :-----------: | :-----------: |
 | ![](test.gif) | ![](test.gif) | ![](test.gif) |
-
-## Features
-
-- **Storage encrypted message**
-- **Manage your account and password**
-- **Import browser bookmarks or favorites**
-- **Easy open URLs view web pages or files**
-- **Open a website or file using the system tray**
 
 ## Development
 

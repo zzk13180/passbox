@@ -62,7 +62,7 @@ export class PasswordSet implements AfterViewInit {
       .then(async result => {
         if (result.response === 0) {
           await this.electronService.storageClear()
-          this.dialogRef.close()
+          this.dialogRef.close(true)
         }
       })
   }

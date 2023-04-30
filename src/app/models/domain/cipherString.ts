@@ -15,7 +15,6 @@ export class CipherString {
     mac?: string,
   ) {
     if (data != null) {
-      // data and header
       const encType = encryptedStringOrType as EncryptionType
 
       if (iv != null) {
@@ -24,7 +23,6 @@ export class CipherString {
         this.encryptedString = `${encType}.${data}`
       }
 
-      // mac
       if (mac != null) {
         this.encryptedString += `|${mac}`
       }

@@ -1,11 +1,11 @@
 export interface Card {
   id: string
-  sysname: string
-  username: string
-  password: string
+  title: string
+  description: string
+  secret: string
   url: string
-  width?: number // BrowserWindow width
-  height?: number // BrowserWindow height
+  width?: number
+  height?: number
 }
 
 export interface CardState {
@@ -15,6 +15,6 @@ export interface CardState {
 }
 
 export enum CardFieldMap {
-  username = 'username',
-  password = 'password',
+  title = 'title',
+  description = 'description',
 }

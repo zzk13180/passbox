@@ -9,12 +9,6 @@ svg.svg-icon-search {
     fill: #252b3a;
     transition: all cubic-bezier(0.645, 0.045, 0.355, 1) 300ms;
   }
-
-  &:hover {
-    path {
-      fill: #5e7ce0;
-    }
-  }
 }
 
 svg.svg-icon-clear {
@@ -104,6 +98,10 @@ svg.svg-icon-clear {
         }
       }
     }
+
+    &:focus-visible {
+      outline: unset;
+    }
   }
 
   .icon {
@@ -114,7 +112,7 @@ svg.svg-icon-clear {
     position: absolute;
     width: auto;
     pointer-events: all;
-    cursor: pointer;
+    cursor: default;
     height: 100%;
     line-height: 28px;
     padding: 0 12px;

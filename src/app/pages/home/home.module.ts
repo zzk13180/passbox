@@ -32,20 +32,10 @@ import { LyTooltipModule } from '@alyle/ui/tooltip'
 import { HomeComponent, AddDialog, DeletedCardsDialog } from './home.component'
 import { SearchComponent } from './search.component'
 import { HomeRoutingModule } from './home-routing.module'
-import { homePasswordComponent } from './password'
+import { homeSecretComponent } from './secret'
 import { PasswordSet } from './password-set-dialog.component'
 import { SelectExportDialog } from './select-export-dialog'
 import { ImportPasswordDialog } from './import-password-dialog'
-
-function themeNameProviderFactory() {
-  // if (typeof localStorage === 'object') {
-  //   const themeName = localStorage.getItem('theme-name')
-  //   if (themeName) {
-  //     return themeName
-  //   }
-  // }
-  return 'minima-light'
-}
 
 @NgModule({
   declarations: [
@@ -53,7 +43,7 @@ function themeNameProviderFactory() {
     SearchComponent,
     AddDialog,
     DeletedCardsDialog,
-    homePasswordComponent,
+    homeSecretComponent,
     PasswordSet,
     SelectExportDialog,
     ImportPasswordDialog,
@@ -89,9 +79,9 @@ function themeNameProviderFactory() {
   providers: [
     [LyTheme2],
     [StyleRenderer],
-    { provide: LY_THEME_NAME, useFactory: themeNameProviderFactory },
-    { provide: LY_THEME, useClass: MinimaLight, multi: true }, // name: `minima-light`
-    { provide: LY_THEME, useClass: MinimaDark, multi: true }, // name: `minima-dark`
+    { provide: LY_THEME_NAME, useFactory: () => 'minima-light' },
+    { provide: LY_THEME, useClass: MinimaLight, multi: true },
+    { provide: LY_THEME, useClass: MinimaDark, multi: true },
   ],
   exports: [HomeComponent],
 })
