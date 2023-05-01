@@ -27,7 +27,6 @@
     <a href="https://zzk13180.github.io/passbox" target="_blank">Documentation🚀</a>
   </sub>
 </p>
-
 ### Features
 
 - Passbox在本地运行，无需互联网。  
@@ -45,8 +44,6 @@
    1. 您可以把云盘链接存入passbox，随时方便的打开它。  
    1. 导入/导出为浏览器书签。  
 
-### Features
-
 - Passbox runs locally and does not require the internet.  
 - Passbox uses the AES encryption algorithm to encrypt data and then saves it in a local file.  
 - The initial password is randomly generated and will be saved to a local file.  
@@ -61,8 +58,6 @@
    1. Save the exported encrypted file to the cloud for easy synchronization of data between different devices.  
    1. You can store cloud disk links in Passbox and open them easily at any time.  
    1. Import/export as browser bookmarks.  
-
-<br>
 
 <p align='center'>
   <img src="https://zzk13180.github.io/passbox/preview.png" alt='preview'>
