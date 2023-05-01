@@ -28,7 +28,7 @@
   </sub>
 </p>
 
-<br>
+### Features
 
 - Passbox在本地运行，无需互联网。  
 - Passbox使用AES加密算法对数据进行加密，然后将其保存在本地文件中。  
@@ -45,7 +45,7 @@
    1. 您可以把云盘链接存入passbox，随时方便的打开它。  
    1. 导入/导出为浏览器书签。  
 
-<br>
+### Features
 
 - Passbox runs locally and does not require the internet.  
 - Passbox uses the AES encryption algorithm to encrypt data and then saves it in a local file.  
