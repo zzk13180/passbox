@@ -36,14 +36,14 @@
 - 推荐您设置密码，这样您的密码只会存在于程序运行时内存中，更安全。  
 - 使用passbox，您可以：  
    1. 存储您的敏感数据，方便快捷地查看和修改。  
-   2. 存储您收藏的网址，在干净的窗口打开它。  
-   3. 存储您常用的文件地址，方便您打开。  
-   4. 在系统托盘中打开网址或文件。  
-   5. 轻松愉快的使用工具网站。  
-   6. 拖入文件存储文件的链接和名称。  
-   7. 把导出的加密文件存入云盘，方便您在不同设备间同步数据。  
-   8. 您可以把云盘链接存入passbox，随时方便的打开它。  
-   9. 导入/导出为浏览器书签。  
+   1. 存储您收藏的网址，在干净的窗口打开它。  
+   1. 存储您常用的文件地址，方便您打开。  
+   1. 在系统托盘中打开网址或文件。  
+   1. 轻松愉快的使用工具网站。  
+   1. 拖入文件存储文件的链接和名称。  
+   1. 把导出的加密文件存入云盘，方便您在不同设备间同步数据。  
+   1. 您可以把云盘链接存入passbox，随时方便的打开它。  
+   1. 导入/导出为浏览器书签。  
 
 <br>
 
@@ -53,14 +53,14 @@
 - recommend you set a password so that your password will only exist in the program’s running memory, which is more secure.  
 - With Passbox, you can:  
    1. Store your sensitive data for easy viewing and modification.  
-   2. Store your favorite URLs and open them in a clean window.  
-   3. Store your frequently used file addresses for easy opening.  
-   4. Open URLs or files in the system tray.  
-   5. Use tool websites easily and sweetly.  
-   6. Drag files to store links and names of files.  
-   7. Save the exported encrypted file to the cloud for easy synchronization of data between different devices.  
-   8. You can store cloud disk links in Passbox and open them easily at any time.  
-   9. Import/export as browser bookmarks.  
+   1. Store your favorite URLs and open them in a clean window.  
+   1. Store your frequently used file addresses for easy opening.  
+   1. Open URLs or files in the system tray.  
+   1. Use tool websites easily and sweetly.  
+   1. Drag files to store links and names of files.  
+   1. Save the exported encrypted file to the cloud for easy synchronization of data between different devices.  
+   1. You can store cloud disk links in Passbox and open them easily at any time.  
+   1. Import/export as browser bookmarks.  
 
 <br>
 
