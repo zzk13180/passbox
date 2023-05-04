@@ -15,6 +15,7 @@ import { BrowserMenu } from './menu'
 
 const Store = require('electron-store')
 const remote = require('@electron/remote/main')
+const contextMenu = require('electron-context-menu')
 
 interface Card {
   id: string
@@ -182,7 +183,14 @@ class WindowMain {
       ),
     })
     const menuTemplate = new BrowserMenu(win).init()
-    win.setMenu(Menu.buildFromTemplate(menuTemplate))
+    // win.setMenu(Menu.buildFromTemplate(menuTemplate)
+    contextMenu({
+      prepend: () => menuTemplate,
+      window: win,
+    })
+    win.on('closed', () => {
+      win.destroy()
+    })
     win.loadURL(url)
     return Promise.resolve(true)
   }

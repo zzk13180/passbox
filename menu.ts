@@ -31,11 +31,6 @@ export class BrowserMenu {
       label: '&View',
       submenu: [
         {
-          label: 'Copy Current URL',
-          accelerator: 'CmdOrCtrl+L',
-          click: (): void => clipboard.writeText(this.win.webContents.getURL()),
-        },
-        {
           label: 'Back',
           accelerator: this.isOSX() ? 'Cmd+Left' : 'Alt+Left',
           click: (): void => this.goBack(),
@@ -144,6 +139,11 @@ export class BrowserMenu {
         },
       ],
     }
-    return [viewMenu]
+    const copyUrl: MenuItemConstructorOptions = {
+      label: 'Copy Current URL',
+      accelerator: 'CmdOrCtrl+L',
+      click: (): void => clipboard.writeText(this.win.webContents.getURL()),
+    }
+    return [copyUrl, viewMenu]
   }
 }

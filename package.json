@@ -33,6 +33,7 @@
     "lint:stylelint": "stylelint --cache --fix \"**/*.{less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/ --config .stylelintrc.json"
   },
   "dependencies": {
+    "electron-context-menu": "^3.6.1",
     "@electron/remote": "^2.0.9",
     "electron-store": "^8.1.0"
   },
