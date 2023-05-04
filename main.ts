@@ -26,7 +26,7 @@ interface Card {
 }
 
 class Main {
-  private windowMain: WindowMain
+  windowMain: WindowMain
 
   constructor() {
     remote.initialize()
@@ -44,94 +44,42 @@ class Main {
   }
 
   bootstrap() {
-    this.windowMain.init().then(
-      () => {
-        if (this.isServer) {
-          this.windowMain.win.webContents.openDevTools()
-          this.windowMain.win.loadURL('http://localhost:4200')
-        } else {
-          this.windowMain.win.loadURL(`file://${path.join(__dirname, 'dist/index.html')}`)
-        }
-      },
-      err => console.error(err),
-    )
+    this.windowMain.init()
+    remote.enable(this.windowMain.win.webContents)
+    if (this.isServer) {
+      this.windowMain.win.webContents.openDevTools()
+      this.windowMain.win.loadURL('http://localhost:4200')
+    } else {
+      this.windowMain.win.loadURL(`file://${path.join(__dirname, 'dist/index.html')}`)
+    }
   }
 }
 
 class WindowMain {
   win: BrowserWindow
   isQuitting = false
-  tray: Tray
-  contextMenu: Menu
-  menuItems: Array<MenuItemConstructorOptions> = []
-  cards: Array<Card> = []
-  store: typeof Store
+  private tray: Tray
+  private contextMenu: Menu
+  private menuItems: Array<MenuItemConstructorOptions> = []
+  private cards: Array<Card> = []
 
   constructor(
     private isServe = false,
-    private defaultWidth = 430,
-    private defaultHeight = 500,
-  ) {
-    this.store = new Store({
+    private store = new Store({
       defaults: {},
       name: 'passbox',
-    })
+    }),
+  ) {}
+
+  init() {
+    this.createWindow()
+    this.enableTray()
   }
 
-  init(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      try {
-        if (!app.requestSingleInstanceLock()) {
-          app.quit()
-          app.exit(0)
-        }
-
-        app.on('second-instance', () => {
-          if (this.win) {
-            this.win.focus()
-            if (this.win.isMinimized() || !this.win.isVisible()) {
-              this.win.restore()
-            }
-            this.win.once('ready-to-show', () => {
-              this.win.show()
-            })
-          }
-        })
-
-        app.on('ready', async () => {
-          await this.createWindow()
-          await this.enableTray()
-          resolve(true)
-        })
-
-        app.on('window-all-closed', () => {
-          if (process.platform !== 'darwin' || this.isQuitting) {
-            app.quit()
-            app.exit(0)
-          }
-        })
-
-        app.on('activate', async () => {
-          if (this.win === null) {
-            await this.createWindow()
-          }
-        })
-
-        app.on('before-quit', () => {
-          this.isQuitting = true
-        })
-      } catch (e) {
-        reject(e)
-      }
-    })
-  }
-
-  createWindow(): void {
+  private createWindow(): void {
     this.win = new BrowserWindow({
-      width: this.defaultWidth,
-      height: this.defaultHeight,
-      minWidth: this.defaultWidth,
-      minHeight: this.defaultHeight,
+      width: 430,
+      height: 500,
       icon: path.join(
         __dirname,
         `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
@@ -141,7 +89,6 @@ class WindowMain {
         nodeIntegration: true,
       },
     })
-    remote.enable(this.win.webContents)
 
     Menu.setApplicationMenu(null)
 
@@ -202,7 +149,7 @@ class WindowMain {
     })
   }
 
-  async openBrowser(card: Card): Promise<boolean> {
+  private async openBrowser(card: Card): Promise<boolean> {
     const { href, protocol, pathname } = parse(card.url)
     let url = ''
     if (protocol) {
@@ -212,7 +159,7 @@ class WindowMain {
       try {
         // eslint-disable-next-line no-new
         new URL(url)
-        const ok = await lookupDnsOk(pathname)
+        const ok = await this.lookupDnsOk(pathname)
         if (!ok) {
           url = ''
         }
@@ -237,7 +184,7 @@ class WindowMain {
     return Promise.resolve(true)
   }
 
-  enableTray(): void {
+  private enableTray(): void {
     if (this.tray) {
       return
     }
@@ -278,7 +225,7 @@ class WindowMain {
     })
   }
 
-  changeTrayMenu(): void {
+  private changeTrayMenu(): void {
     const initMenuItemOptions: Array<MenuItemConstructorOptions> = [
       {
         label: 'quit',
@@ -305,21 +252,61 @@ class WindowMain {
     this.contextMenu = Menu.buildFromTemplate(menuItemOptions)
     this.tray.setContextMenu(this.contextMenu)
   }
-}
 
-async function lookupDnsOk(pathname: string): Promise<boolean> {
-  const result: boolean = await new Promise(resolve => {
-    dns.lookup(pathname, (err, _ip) => {
-      if (!err) {
-        resolve(true)
-      } else {
-        resolve(false)
-      }
+  private async lookupDnsOk(pathname: string): Promise<boolean> {
+    const result: boolean = await new Promise(resolve => {
+      dns.lookup(pathname, (err, _ip) => {
+        if (!err) {
+          resolve(true)
+        } else {
+          resolve(false)
+        }
+      })
+      setTimeout(() => resolve(false), 2 * 1000)
     })
-    setTimeout(() => resolve(false), 2 * 1000)
-  })
-  return result
+    return result
+  }
 }
 
 const main = new Main()
-main.bootstrap()
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin' || main.windowMain.isQuitting) {
+    app.quit()
+    app.exit(0)
+  }
+})
+
+app.on('before-quit', () => {
+  main.windowMain.isQuitting = true
+})
+
+app.on('ready', () => {
+  main.bootstrap()
+})
+
+app.on('activate', (_e, hasVisibleWindows: boolean) => {
+  if (!main.windowMain.win) {
+    main.bootstrap()
+  } else if (process.platform === 'darwin' && !hasVisibleWindows) {
+    main.windowMain.win.show()
+  }
+})
+
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+  app.exit(0)
+} else {
+  app.on('second-instance', () => {
+    const { win } = main.windowMain
+    if (win) {
+      win.focus()
+      if (win.isMinimized() || !win.isVisible()) {
+        win.restore()
+      }
+      win.once('ready-to-show', () => {
+        win.show()
+      })
+    }
+  })
+}
