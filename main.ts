@@ -11,6 +11,7 @@ import {
   BrowserWindow,
   MenuItemConstructorOptions,
 } from 'electron'
+import { BrowserMenu } from './menu'
 
 const Store = require('electron-store')
 const remote = require('@electron/remote/main')
@@ -180,6 +181,8 @@ class WindowMain {
         `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
       ),
     })
+    const menuTemplate = new BrowserMenu(win).init()
+    win.setMenu(Menu.buildFromTemplate(menuTemplate))
     win.loadURL(url)
     return Promise.resolve(true)
   }

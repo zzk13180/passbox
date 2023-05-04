@@ -18,7 +18,7 @@
     "!tsconfig.serve.json",
     "!tslint.json",
     "!README.md",
-    "!main.js.map",
+    "!*.map",
     "!.*/**/*",
     "!.*"
   ],
