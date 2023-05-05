@@ -7,13 +7,17 @@ import {
   createSelector,
 } from '@ngrx/store'
 import Fuse from 'fuse.js'
+import { v4 as uuid } from 'uuid'
 import { Card, CardState } from '../models'
 
 export const initCards = createAction(
   '[Card List] InitCards',
   props<{ theCards: CardState }>(),
 )
-export const add = createAction('[Card List] AddItem', props<{ cards: Card[] }>())
+export const add = createAction(
+  '[Card List] AddItem',
+  props<{ cards: Omit<Card, 'id'>[] }>(),
+)
 export const modify = createAction('[Card List] ModifyItem', props<{ card: Card }>())
 export const remove = createAction('[Card List] RemoveItem', props<{ card: Card }>())
 export const sort = createAction(
@@ -36,7 +40,7 @@ export function cardReducer(state: CardState, action: Action) {
     })),
     on(add, (state, { cards }) => ({
       ...state,
-      items: [...cards, ...state.items],
+      items: [...cards.map(item => ({ ...item, id: uuid() })), ...state.items],
     })),
     on(modify, (state, { card }) => ({
       ...state,

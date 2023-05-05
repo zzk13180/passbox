@@ -27,6 +27,7 @@
     "ng": "ng",
     "commit": "cz",
     "gh": "gh-pages -d dist",
+    "check": "tsc --noEmit -p tsconfig.json",
     "lint": "pnpm lint:eslint && pnpm lint:prettier && pnpm lint:stylelint",
     "lint:eslint": "eslint --cache --max-warnings 0 \"**/*.{cjs,ts,tsx}\" --fix",
     "lint:prettier": "prettier --write \"**/*.{cjs,json,tsx,html,css,scss}\"",

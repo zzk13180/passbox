@@ -25,6 +25,11 @@ export class ElectronService {
     }
   }
 
+  async getUserDataPath(): Promise<string> {
+    const result = await this.ipcRenderer.invoke('get-user-data-path')
+    return result
+  }
+
   async readFile(path: string): Promise<string> {
     const result = await this.ipcRenderer.invoke('read-file', path)
     return result

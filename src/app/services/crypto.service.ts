@@ -5,7 +5,7 @@ import { CipherString } from '../models/domain/cipherString'
 import { EncryptedObject } from '../models/domain/encryptedObject'
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey'
 import { CryptoService as CryptoServiceAbstraction } from '../models/abstractions/crypto.service'
-import { Utils } from '../misc/utils'
+import { CryptoUtils } from '../utils/crypto.util'
 import { CryptoFunctionService } from './cryptoFunction.service'
 import { UserStateService } from './userstate.service'
 import type { UserState } from './userstate.service'
@@ -158,9 +158,9 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     const encObj = await this.aesEncrypt(plainBuf)
-    const iv = Utils.fromBufferToB64(encObj.iv)
-    const data = Utils.fromBufferToB64(encObj.data)
-    const mac = encObj.mac != null ? Utils.fromBufferToB64(encObj.mac) : null
+    const iv = CryptoUtils.fromBufferToB64(encObj.iv)
+    const data = CryptoUtils.fromBufferToB64(encObj.data)
+    const mac = encObj.mac != null ? CryptoUtils.fromBufferToB64(encObj.mac) : null
     return new CipherString(encObj.key.encType, data, iv, mac)
   }
 

@@ -1,6 +1,6 @@
 import { EncryptionType } from '../../enums/encryptionType'
 
-import { Utils } from '../../misc/utils'
+import { CryptoUtils } from '../../utils/crypto.util'
 
 export class SymmetricCryptoKey {
   key: ArrayBuffer
@@ -52,13 +52,13 @@ export class SymmetricCryptoKey {
     }
 
     if (this.key != null) {
-      this.keyB64 = Utils.fromBufferToB64(this.key)
+      this.keyB64 = CryptoUtils.fromBufferToB64(this.key)
     }
     if (this.encKey != null) {
-      this.encKeyB64 = Utils.fromBufferToB64(this.encKey)
+      this.encKeyB64 = CryptoUtils.fromBufferToB64(this.encKey)
     }
     if (this.macKey != null) {
-      this.macKeyB64 = Utils.fromBufferToB64(this.macKey)
+      this.macKeyB64 = CryptoUtils.fromBufferToB64(this.macKey)
     }
   }
 }

@@ -1,7 +1,6 @@
 import * as path from 'node:path'
 import * as fs from 'node:fs'
-import * as dns from 'node:dns'
-import { parse } from 'node:url'
+import { parse, URL } from 'node:url'
 import {
   app,
   Tray,
@@ -37,6 +36,7 @@ class Main {
       app.setPath('userData', `${appDataPath}/passbox-user-data`)
       app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
     }
+    Menu.setApplicationMenu(null)
     this.windowMain = new WindowMain(this.isServer)
   }
 
@@ -92,8 +92,6 @@ class WindowMain {
       },
     })
 
-    Menu.setApplicationMenu(null)
-
     this.win.on('closed', () => {
       this.win.destroy()
     })
@@ -108,6 +106,10 @@ class WindowMain {
           app.dock.hide()
         }
       }
+    })
+
+    ipcMain.handle('get-user-data-path', (): string => {
+      return this.store.path ?? ''
     })
 
     ipcMain.on('change-tray', (event: Event, cards: Array<Card>) => {
@@ -151,20 +153,20 @@ class WindowMain {
     })
   }
 
-  private async openBrowser(card: Card): Promise<boolean> {
+  private openBrowser(card: Card): Promise<boolean> {
     const { href, protocol, pathname } = parse(card.url)
     let url = ''
     if (protocol) {
       url = href
     } else if (pathname) {
-      url = `http://${href}`
+      if (!pathname.startsWith('/')) {
+        url = `http://${href}`
+      } else {
+        url = `file://${href}`
+      }
       try {
         // eslint-disable-next-line no-new
         new URL(url)
-        const ok = await this.lookupDnsOk(pathname)
-        if (!ok) {
-          url = ''
-        }
       } catch (_) {
         url = ''
       }
@@ -183,14 +185,11 @@ class WindowMain {
       ),
     })
     const menuTemplate = new BrowserMenu(win).init()
-    // win.setMenu(Menu.buildFromTemplate(menuTemplate)
     contextMenu({
       prepend: () => menuTemplate,
       window: win,
     })
-    win.on('closed', () => {
-      win.destroy()
-    })
+    win.on('closed', () => win.destroy())
     win.loadURL(url)
     return Promise.resolve(true)
   }
@@ -262,20 +261,6 @@ class WindowMain {
     ]
     this.contextMenu = Menu.buildFromTemplate(menuItemOptions)
     this.tray.setContextMenu(this.contextMenu)
-  }
-
-  private async lookupDnsOk(pathname: string): Promise<boolean> {
-    const result: boolean = await new Promise(resolve => {
-      dns.lookup(pathname, (err, _ip) => {
-        if (!err) {
-          resolve(true)
-        } else {
-          resolve(false)
-        }
-      })
-      setTimeout(() => resolve(false), 2 * 1000)
-    })
-    return result
   }
 }
 

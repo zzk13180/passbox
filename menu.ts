@@ -11,7 +11,7 @@ export class BrowserMenu {
   }
 
   private zoomIn(): void {
-    this.win.webContents.zoomFactor += 1.0
+    this.win.webContents.zoomFactor += 0.1
   }
 
   private zoomReset(): void {

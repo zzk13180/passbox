@@ -2,7 +2,7 @@ import * as Crypto from 'node:crypto'
 import { Injectable } from '@angular/core'
 import * as pako from 'pako'
 import { CryptoFunctionService as CryptoFunctionServiceAbstraction } from '../models/abstractions/cryptoFunction.service'
-import { Utils } from '../misc/utils'
+import { CryptoUtils } from '../utils/crypto.util'
 import { DecryptParameters } from '../models/domain/decryptParameters'
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey'
 
@@ -159,8 +159,8 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
   ): DecryptParameters<ArrayBuffer> {
     const p = new DecryptParameters<ArrayBuffer>()
     p.encKey = key.encKey
-    p.data = Utils.fromB64ToArray(data).buffer
-    p.iv = Utils.fromB64ToArray(iv).buffer
+    p.data = CryptoUtils.fromB64ToArray(data).buffer
+    p.iv = CryptoUtils.fromB64ToArray(iv).buffer
 
     const macData = new Uint8Array(p.iv.byteLength + p.data.byteLength)
     macData.set(new Uint8Array(p.iv), 0)
@@ -171,7 +171,7 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
       p.macKey = key.macKey
     }
     if (mac != null) {
-      p.mac = Utils.fromB64ToArray(mac).buffer
+      p.mac = CryptoUtils.fromB64ToArray(mac).buffer
     }
 
     return p
@@ -224,7 +224,7 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
   private toArrayBuffer(value: Buffer | string | ArrayBuffer): ArrayBuffer {
     let buf: ArrayBuffer
     if (typeof value === 'string') {
-      buf = Utils.fromUtf8ToArray(value).buffer
+      buf = CryptoUtils.fromUtf8ToArray(value).buffer
     } else {
       buf = new Uint8Array(value).buffer
     }
