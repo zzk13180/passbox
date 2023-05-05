@@ -9,23 +9,25 @@ export class CryptoUtils {
     /.*\.(com|net|org|edu|uk|gov|ca|de|jp|fr|au|ru|ch|io|es|us|co|xyz|info|ly|mil)$/
 
   static init() {
-    if (Utils.inited) {
+    if (CryptoUtils.inited) {
       return
     }
-    Utils.inited = true
-    Utils.isNode =
+    CryptoUtils.inited = true
+    CryptoUtils.isNode =
       typeof process !== 'undefined' &&
       (process as any).release != null &&
       (process as any).release.name === 'node'
-    Utils.isBrowser = typeof window !== 'undefined'
-    Utils.isNativeScript = !Utils.isNode && !Utils.isBrowser
-    Utils.isAppleMobileBrowser = Utils.isBrowser && this.isAppleMobile(window)
-    Utils.global =
-      Utils.isNativeScript || (Utils.isNode && !Utils.isBrowser) ? global : window
+    CryptoUtils.isBrowser = typeof window !== 'undefined'
+    CryptoUtils.isNativeScript = !CryptoUtils.isNode && !CryptoUtils.isBrowser
+    CryptoUtils.isAppleMobileBrowser = CryptoUtils.isBrowser && this.isAppleMobile(window)
+    CryptoUtils.global =
+      CryptoUtils.isNativeScript || (CryptoUtils.isNode && !CryptoUtils.isBrowser)
+        ? global
+        : window
   }
 
   static fromB64ToArray(str: string): Uint8Array {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (CryptoUtils.isNode || CryptoUtils.isNativeScript) {
       return new Uint8Array(Buffer.from(str, 'base64'))
     } else {
       const binaryString = window.atob(str)
@@ -38,11 +40,11 @@ export class CryptoUtils {
   }
 
   static fromUrlB64ToArray(str: string): Uint8Array {
-    return Utils.fromB64ToArray(Utils.fromUrlB64ToB64(str))
+    return CryptoUtils.fromB64ToArray(CryptoUtils.fromUrlB64ToB64(str))
   }
 
   static fromHexToArray(str: string): Uint8Array {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (CryptoUtils.isNode || CryptoUtils.isNativeScript) {
       return new Uint8Array(Buffer.from(str, 'hex'))
     } else {
       const bytes = new Uint8Array(str.length / 2)
@@ -54,7 +56,7 @@ export class CryptoUtils {
   }
 
   static fromUtf8ToArray(str: string): Uint8Array {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (CryptoUtils.isNode || CryptoUtils.isNativeScript) {
       return new Uint8Array(Buffer.from(str, 'utf8'))
     } else {
       const strUtf8 = unescape(encodeURIComponent(str))
@@ -75,7 +77,7 @@ export class CryptoUtils {
   }
 
   static fromBufferToB64(buffer: ArrayBuffer): string {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (CryptoUtils.isNode || CryptoUtils.isNativeScript) {
       return Buffer.from(buffer).toString('base64')
     } else {
       let binary = ''
@@ -88,7 +90,7 @@ export class CryptoUtils {
   }
 
   static fromBufferToUrlB64(buffer: ArrayBuffer): string {
-    return Utils.fromB64toUrlB64(Utils.fromBufferToB64(buffer))
+    return CryptoUtils.fromB64toUrlB64(CryptoUtils.fromBufferToB64(buffer))
   }
 
   static fromB64toUrlB64(b64Str: string) {
@@ -96,7 +98,7 @@ export class CryptoUtils {
   }
 
   static fromBufferToUtf8(buffer: ArrayBuffer): string {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (CryptoUtils.isNode || CryptoUtils.isNativeScript) {
       return Buffer.from(buffer).toString('utf8')
     } else {
       const bytes = new Uint8Array(buffer)
@@ -110,7 +112,7 @@ export class CryptoUtils {
   }
 
   static fromBufferToHex(buffer: ArrayBuffer): string {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (CryptoUtils.isNode || CryptoUtils.isNativeScript) {
       return Buffer.from(buffer).toString('hex')
     } else {
       const bytes = new Uint8Array(buffer)
@@ -139,11 +141,11 @@ export class CryptoUtils {
   }
 
   static fromUrlB64ToUtf8(urlB64Str: string): string {
-    return Utils.fromB64ToUtf8(Utils.fromUrlB64ToB64(urlB64Str))
+    return CryptoUtils.fromB64ToUtf8(CryptoUtils.fromUrlB64ToB64(urlB64Str))
   }
 
   static fromB64ToUtf8(b64Str: string): string {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (CryptoUtils.isNode || CryptoUtils.isNativeScript) {
       return Buffer.from(b64Str, 'base64').toString('utf8')
     } else {
       return decodeURIComponent(escape(window.atob(b64Str)))
