@@ -36,7 +36,9 @@ class Main {
       app.setPath('userData', `${appDataPath}/passbox-user-data`)
       app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
     }
-    Menu.setApplicationMenu(null)
+    if (process.platform !== 'darwin') {
+      Menu.setApplicationMenu(null)
+    }
     this.windowMain = new WindowMain(this.isServer)
   }
 
@@ -190,21 +192,14 @@ class WindowMain {
       ),
     })
     const menuTemplate = new BrowserMenu(win).init()
-    win.setMenu(
-      Menu.buildFromTemplate([
-        {
-          label: 'Menu',
-          visible: false,
-          role: 'window',
-          submenu: menuTemplate,
-        },
-      ]),
-    )
     contextMenu({
       prepend: () => menuTemplate,
       window: win,
     })
-    win.setMenuBarVisibility(false)
+    if (process.platform !== 'darwin') {
+      win.setMenu(Menu.buildFromTemplate(menuTemplate))
+      win.setMenuBarVisibility(false)
+    }
     win.on('closed', () => win.destroy())
     win.loadURL(url)
     return Promise.resolve(true)
@@ -234,21 +229,19 @@ class WindowMain {
     }
     this.tray.setToolTip('passbox')
     this.changeTrayMenu()
-    const toggleWindow = () => {
-      if (!this.win) {
-        return
+    if (process.platform !== 'darwin') {
+      const toggleWindow = () => {
+        if (this.win) {
+          this.win.show()
+          this.win.focus()
+        }
       }
-      this.win.show()
-      this.win.focus()
-      if (process.platform === 'darwin') {
-        app.dock.show()
-      }
+      this.tray.on('click', () => toggleWindow())
+      this.tray.on('double-click', () => toggleWindow())
+      this.tray.on('right-click', () => {
+        this.tray.popUpContextMenu(this.contextMenu)
+      })
     }
-    this.tray.on('click', () => toggleWindow())
-    this.tray.on('double-click', () => toggleWindow())
-    this.tray.on('right-click', () => {
-      this.tray.popUpContextMenu(this.contextMenu)
-    })
   }
 
   private changeTrayMenu(): void {
@@ -271,6 +264,18 @@ class WindowMain {
       { type: 'separator' },
       { type: 'separator' },
     ]
+    if (process.platform === 'darwin') {
+      initMenuItemOptions.unshift({
+        label: 'show',
+        click: () => {
+          if (this.win) {
+            this.win.show()
+            this.win.focus()
+            app.dock.show()
+          }
+        },
+      })
+    }
     const menuItemOptions: Array<MenuItemConstructorOptions> = [
       ...initMenuItemOptions,
       ...this.menuItems,
@@ -302,6 +307,7 @@ app.on('activate', (_e, hasVisibleWindows: boolean) => {
     main.bootstrap()
   } else if (process.platform === 'darwin' && !hasVisibleWindows) {
     main.windowMain.win.show()
+    app.dock.show()
   }
 })
 
@@ -312,13 +318,16 @@ if (!app.requestSingleInstanceLock()) {
   app.on('second-instance', () => {
     const { win } = main.windowMain
     if (win) {
-      win.focus()
-      if (win.isMinimized() || !win.isVisible()) {
+      if (!win.isVisible()) {
+        win.show()
+      }
+      if (win.isMinimized()) {
         win.restore()
       }
       win.once('ready-to-show', () => {
         win.show()
       })
+      win.focus()
     }
   })
 }
