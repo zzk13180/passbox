@@ -80,6 +80,7 @@ class WindowMain {
 
   private createWindow(): void {
     this.win = new BrowserWindow({
+      show: false,
       width: 430,
       height: 500,
       icon: path.join(
@@ -90,6 +91,10 @@ class WindowMain {
         contextIsolation: false,
         nodeIntegration: true,
       },
+    })
+
+    this.win.once('ready-to-show', () => {
+      this.win.show()
     })
 
     this.win.on('closed', () => {
@@ -185,10 +190,21 @@ class WindowMain {
       ),
     })
     const menuTemplate = new BrowserMenu(win).init()
+    win.setMenu(
+      Menu.buildFromTemplate([
+        {
+          label: 'Menu',
+          visible: false,
+          role: 'window',
+          submenu: menuTemplate,
+        },
+      ]),
+    )
     contextMenu({
       prepend: () => menuTemplate,
       window: win,
     })
+    win.setMenuBarVisibility(false)
     win.on('closed', () => win.destroy())
     win.loadURL(url)
     return Promise.resolve(true)

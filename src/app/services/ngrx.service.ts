@@ -77,8 +77,6 @@ export function cardReducer(state: CardState, action: Action) {
 const searchHandler = (cards: Card[], term: string): Card[] => {
   const fuse = new Fuse(cards, {
     keys: ['title', 'description'],
-    threshold: 0.3,
-    minMatchCharLength: 2,
   })
   const result = fuse.search(term).map(item => item.item)
   return result

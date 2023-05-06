@@ -139,11 +139,27 @@ export class BrowserMenu {
         },
       ],
     }
+    const closeWindow: MenuItemConstructorOptions = {
+      label: 'Close Window',
+      accelerator: 'CmdOrCtrl+W',
+      role: 'close',
+    }
+    const minWindow: MenuItemConstructorOptions = {
+      label: 'Minimize Window',
+      accelerator: 'CmdOrCtrl+M',
+      role: 'minimize',
+    }
+    const reloadWindow: MenuItemConstructorOptions = {
+      label: 'Reload Window',
+      accelerator: 'CmdOrCtrl+R',
+      role: 'reload',
+    }
     const copyUrl: MenuItemConstructorOptions = {
       label: 'Copy Current URL',
       accelerator: 'CmdOrCtrl+L',
       click: (): void => clipboard.writeText(this.win.webContents.getURL()),
     }
-    return [copyUrl, viewMenu]
+    const templates = [closeWindow, minWindow, reloadWindow, copyUrl, viewMenu]
+    return templates
   }
 }
