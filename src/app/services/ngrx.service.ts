@@ -8,7 +8,8 @@ import {
 } from '@ngrx/store'
 import Fuse from 'fuse.js'
 import { v4 as uuid } from 'uuid'
-import { Card, CardState } from '../models'
+import { moveItemInArray } from '../utils/array.util'
+import type { Card, CardState } from '../models'
 
 export const initCards = createAction(
   '[Card List] InitCards',
@@ -57,8 +58,7 @@ export function cardReducer(state: CardState, action: Action) {
     })),
     on(sort, (state, { previousIndex, currentIndex }) => {
       const items = [...state.items]
-      const [removed] = items.splice(previousIndex, 1)
-      items.splice(currentIndex, 0, removed)
+      moveItemInArray(items, previousIndex, currentIndex)
       return { ...state, items }
     }),
     on(search, (state, { term }) => ({

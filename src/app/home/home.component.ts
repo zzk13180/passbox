@@ -7,7 +7,6 @@ import {
   NgZone,
 } from '@angular/core'
 import { StyleRenderer, lyl, ThemeVariables, ThemeRef, LyTheme2 } from '@alyle/ui'
-import { CdkDragDrop } from '@angular/cdk/drag-drop'
 import { LyDialog } from '@alyle/ui/dialog'
 import { STYLES as EXPANSION_STYLES } from '@alyle/ui/expansion'
 import { LySnackBar } from '@alyle/ui/snack-bar'
@@ -41,6 +40,8 @@ import { ExportSelectDialog } from './components/export/export-select-dialog'
 import { ImportPasswordDialog } from './components/import/import-password-dialog'
 import { PasswordSetDialog } from './components/password/password-set-dialog'
 
+import type { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop'
+
 const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
   const expansion = ref.selectorsOf(EXPANSION_STYLES)
   return {
@@ -69,6 +70,7 @@ const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
       ${expansion.panelHeader} {
         height: 54px
         width: 100vw
+        margin-right: calc(100% - 100vw)
         padding: 0
       }
       ${expansion.panelTitle} {
@@ -102,6 +104,7 @@ const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
         ${expansion.panelBody} {
           padding: 0
           width: 100vw
+          margin-right: calc(100% - 100vw)
         }
       }`
     },
@@ -126,6 +129,9 @@ export class HomeComponent implements OnInit {
   cards$: Observable<Array<Card>>
   deletedCards$: Observable<Array<Card>>
   searchTerm$: Observable<string>
+  readonly itemSize = 54
+  private previousIndex = 0
+  private distanceY = 0
 
   // eslint-disable-next-line max-params
   constructor(
@@ -218,7 +224,7 @@ export class HomeComponent implements OnInit {
     this.store.dispatch(add({ cards }))
   }
 
-  copyText(event: Event) {
+  eventStop(event: Event) {
     event.stopPropagation()
   }
 
@@ -539,12 +545,20 @@ export class HomeComponent implements OnInit {
     menu.popup()
   }
 
-  onDrop(event: CdkDragDrop<Card[]>) {
-    const { previousIndex, currentIndex } = event
-    let term = ''
-    this.searchTerm$.subscribe(t => (term = t)).unsubscribe()
-    if (!term) {
-      this.store.dispatch(sort({ previousIndex, currentIndex }))
+  onSortStarted(index: number) {
+    this.previousIndex = index
+  }
+
+  onSortMoved(event: CdkDragMove<Card>) {
+    this.distanceY = event.distance.y
+  }
+
+  onSortEnd() {
+    const y = this.distanceY
+    const difference: number = Math.round(Math.abs(y) / this.itemSize) * Math.sign(y)
+    const currentIndex: number = this.previousIndex + difference
+    if (difference !== 0 && currentIndex >= 0) {
+      this.store.dispatch(sort({ previousIndex: this.previousIndex, currentIndex }))
     }
   }
 

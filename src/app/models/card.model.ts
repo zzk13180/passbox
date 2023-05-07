@@ -17,4 +17,5 @@ export interface CardState {
 export enum CardFieldMap {
   title = 'title',
   description = 'description',
+  url = 'url',
 }

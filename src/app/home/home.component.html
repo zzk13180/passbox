@@ -47,26 +47,29 @@ Oh hi there! 😄
     </ly-menu>
   </ng-template>
 
-  <ly-accordion
-    [withClass]="classes.accordion"
-    [hasToggle]="false"
-    cdkDropList
-    (cdkDropListDropped)="onDrop($event)"
-  >
+  <ly-accordion [withClass]="classes.accordion" cdkDropList [hasToggle]="false">
     <cdk-virtual-scroll-viewport
-      itemSize="54"
-      appendOnly
+      [itemSize]="itemSize"
       style="width: 100vw; height: calc(100vh - 56px); overflow-x: hidden"
     >
       <ly-expansion-panel
         cdkDrag
+        cdkDragLockAxis="y"
+        (cdkDragStarted)="onSortStarted(i)"
+        (cdkDragMoved)="onSortMoved($event)"
+        (cdkDragReleased)="onSortEnd()"
         [class]="classes.panel"
-        *cdkVirtualFor="let card of cards$ | async; let i = index; trackBy: trackByFn"
+        *cdkVirtualFor="
+          let card of cards$ | async;
+          let i = index;
+          templateCacheSize: 0;
+          trackBy: trackByFn
+        "
         (contextmenu)="viewMenu(card)"
       >
-        <ly-expansion-panel-header [lyTooltip]="card.url" class="home-panel-header">
+        <ly-expansion-panel-header class="home-panel-header">
           <ly-panel-title [class]="classes.title">
-            <div cdkDragHandle (click)="copyText($event)" class="home-drag-handle"></div>
+            <div cdkDragHandle (click)="eventStop($event)" class="home-drag-handle"></div>
             <ng-container>
               <span lyTyp="button">{{ card.title }}</span>
             </ng-container>
@@ -80,11 +83,17 @@ Oh hi there! 😄
                 (click)="copy(card, 'description')"
                 ly-list-icon
               >
-                content_copy
+                description
               </ly-icon>
               <span ly-line>{{ card.description }}</span>
             </ly-list-item>
             <home-secret-show [card]="card" (click)="copy(card, 'secret')" />
+            <ly-list-item>
+              <ly-icon style="cursor: pointer" (click)="copy(card, 'url')" ly-list-icon>
+                link
+              </ly-icon>
+              <span ly-line>{{ card.url }}</span>
+            </ly-list-item>
           </ly-list>
         </ly-paper>
       </ly-expansion-panel>

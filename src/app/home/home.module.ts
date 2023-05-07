@@ -28,7 +28,6 @@ import { LyDividerModule } from '@alyle/ui/divider'
 import { LyListModule } from '@alyle/ui/list'
 import { LySelectModule } from '@alyle/ui/select'
 import { LyTableModule } from '@alyle/ui/table'
-import { LyTooltipModule } from '@alyle/ui/tooltip'
 import { HomeRoutingModule } from './home-routing.module'
 import { FileDropDirective } from './file-drop.directive'
 import { HomeComponent } from './home.component'
@@ -77,7 +76,6 @@ import { homeSecretShowComponent } from './components/secret-show/secret-show'
     LyDividerModule,
     LyListModule,
     LyTableModule,
-    LyTooltipModule,
     ReactiveFormsModule,
   ],
   providers: [
