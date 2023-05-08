@@ -14,7 +14,7 @@ import { Observable } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import { Store, select } from '@ngrx/store'
 import { StorageKey, DBError } from '../enums/storageKey'
-import { Card, CardState, CardFieldMap } from '../models'
+import { Card, CardState } from '../models'
 import {
   ElectronService,
   add,
@@ -40,7 +40,7 @@ import { ExportSelectDialog } from './components/export/export-select-dialog'
 import { ImportPasswordDialog } from './components/import/import-password-dialog'
 import { PasswordSetDialog } from './components/password/password-set-dialog'
 
-import type { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop'
+import type { CdkDragMove } from '@angular/cdk/drag-drop'
 
 const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
   const expansion = ref.selectorsOf(EXPANSION_STYLES)
@@ -234,7 +234,7 @@ export class HomeComponent implements OnInit {
     }
     this.electronService.copyText(card[field])
     this.sb.open({
-      msg: `${CardFieldMap[field]} is copied`,
+      msg: `${field} is copied`,
     })
   }
 

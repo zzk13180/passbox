@@ -54,7 +54,7 @@ export function cardReducer(state: CardState, action: Action) {
       items: state.items.filter((item: Card) => item.id !== card.id),
       deletedItems: state.deletedItems.some((item: Card) => item.id === card.id)
         ? state.deletedItems.filter((item: Card) => item.id !== card.id)
-        : [...state.deletedItems, card],
+        : [card, ...state.deletedItems],
     })),
     on(sort, (state, { previousIndex, currentIndex }) => {
       const items = [...state.items]

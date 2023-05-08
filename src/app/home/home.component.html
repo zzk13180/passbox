@@ -87,7 +87,7 @@ Oh hi there! 😄
               </ly-icon>
               <span ly-line>{{ card.description }}</span>
             </ly-list-item>
-            <home-secret-show [card]="card" (click)="copy(card, 'secret')" />
+            <home-secret-show [card]="card" />
             <ly-list-item>
               <ly-icon style="cursor: pointer" (click)="copy(card, 'url')" ly-list-icon>
                 link

@@ -1,10 +1,9 @@
 import * as Crypto from 'node:crypto'
-import { Injectable } from '@angular/core'
 import * as pako from 'pako'
+import { Injectable } from '@angular/core'
 import { CryptoFunctionService as CryptoFunctionServiceAbstraction } from '../models/abstractions/cryptoFunction.service'
-import { CryptoUtils } from '../utils/crypto.util'
+import { fromB64ToArray, fromUtf8ToArray } from '../utils/crypto.util'
 import { DecryptParameters } from '../models/domain/decryptParameters'
-import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey'
 
 @Injectable({
   providedIn: 'root',
@@ -43,105 +42,6 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
     })
   }
 
-  // eslint-disable-next-line max-params
-  async hkdf(
-    ikm: ArrayBuffer,
-    salt: string | ArrayBuffer,
-    info: string | ArrayBuffer,
-    outputByteSize: number,
-    algorithm: 'sha256' | 'sha512',
-  ): Promise<ArrayBuffer> {
-    const saltBuf = this.toArrayBuffer(salt)
-    const prk = await this.hmac(ikm, saltBuf, algorithm)
-    return this.hkdfExpand(prk, info, outputByteSize, algorithm)
-  }
-
-  async hkdfExpand(
-    prk: ArrayBuffer,
-    info: string | ArrayBuffer,
-    outputByteSize: number,
-    algorithm: 'sha256' | 'sha512',
-  ): Promise<ArrayBuffer> {
-    const hashLen = algorithm === 'sha256' ? 32 : 64
-    if (outputByteSize > 255 * hashLen) {
-      throw new Error('outputByteSize is too large.')
-    }
-    const prkArr = new Uint8Array(prk)
-    if (prkArr.length < hashLen) {
-      throw new Error('prk is too small.')
-    }
-    const infoBuf = this.toArrayBuffer(info)
-    const infoArr = new Uint8Array(infoBuf)
-    let runningOkmLength = 0
-    let previousT = new Uint8Array(0)
-    const n = Math.ceil(outputByteSize / hashLen)
-    const okm = new Uint8Array(n * hashLen)
-    for (let i = 0; i < n; i++) {
-      const t = new Uint8Array(previousT.length + infoArr.length + 1)
-      t.set(previousT)
-      t.set(infoArr, previousT.length)
-      t.set([i + 1], t.length - 1)
-      previousT = new Uint8Array(await this.hmac(t.buffer, prk, algorithm))
-      okm.set(previousT, runningOkmLength)
-      runningOkmLength += previousT.length
-      if (runningOkmLength >= outputByteSize) {
-        break
-      }
-    }
-    return okm.slice(0, outputByteSize).buffer
-  }
-
-  hash(
-    value: string | ArrayBuffer,
-    algorithm: 'sha1' | 'sha256' | 'sha512' | 'md5',
-  ): Promise<ArrayBuffer> {
-    const nodeValue = this.toNodeValue(value)
-    const hash = this.crypto.createHash(algorithm)
-    hash.update(nodeValue)
-    return Promise.resolve(this.toArrayBuffer(hash.digest()))
-  }
-
-  hmac(
-    value: ArrayBuffer,
-    key: ArrayBuffer,
-    algorithm: 'sha1' | 'sha256' | 'sha512',
-  ): Promise<ArrayBuffer> {
-    const nodeValue = this.toNodeBuffer(value)
-    const nodeKey = this.toNodeBuffer(key)
-    const hmac = this.crypto.createHmac(algorithm, nodeKey)
-    hmac.update(nodeValue)
-    return Promise.resolve(this.toArrayBuffer(hmac.digest()))
-  }
-
-  async compare(a: ArrayBuffer, b: ArrayBuffer): Promise<boolean> {
-    const key = await this.randomBytes(32)
-    const mac1 = await this.hmac(a, key, 'sha256')
-    const mac2 = await this.hmac(b, key, 'sha256')
-    if (mac1.byteLength !== mac2.byteLength) {
-      return false
-    }
-    const arr1 = new Uint8Array(mac1)
-    const arr2 = new Uint8Array(mac2)
-    for (let i = 0; i < arr2.length; i++) {
-      if (arr1[i] !== arr2[i]) {
-        return false
-      }
-    }
-    return true
-  }
-
-  hmacFast(
-    value: ArrayBuffer,
-    key: ArrayBuffer,
-    algorithm: 'sha1' | 'sha256' | 'sha512',
-  ): Promise<ArrayBuffer> {
-    return this.hmac(value, key, algorithm)
-  }
-
-  compareFast(a: ArrayBuffer, b: ArrayBuffer): Promise<boolean> {
-    return this.compare(a, b)
-  }
-
   aesEncrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
     const nodeData = this.toNodeBuffer(data)
     const nodeIv = this.toNodeBuffer(iv)
@@ -154,26 +54,17 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
   aesDecryptFastParameters(
     data: string,
     iv: string,
-    mac: string,
-    key: SymmetricCryptoKey,
+    key: ArrayBuffer,
   ): DecryptParameters<ArrayBuffer> {
     const p = new DecryptParameters<ArrayBuffer>()
-    p.encKey = key.encKey
-    p.data = CryptoUtils.fromB64ToArray(data).buffer
-    p.iv = CryptoUtils.fromB64ToArray(iv).buffer
+    p.encKey = key
+    p.data = fromB64ToArray(data).buffer
+    p.iv = fromB64ToArray(iv).buffer
 
     const macData = new Uint8Array(p.iv.byteLength + p.data.byteLength)
     macData.set(new Uint8Array(p.iv), 0)
     macData.set(new Uint8Array(p.data), p.iv.byteLength)
     p.macData = macData.buffer
-
-    if (key.macKey != null) {
-      p.macKey = key.macKey
-    }
-    if (mac != null) {
-      p.mac = CryptoUtils.fromB64ToArray(mac).buffer
-    }
-
     return p
   }
 
@@ -186,7 +77,11 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
     return pako.inflate(decBuf, { to: 'string' })
   }
 
-  aesDecrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
+  private aesDecrypt(
+    data: ArrayBuffer,
+    iv: ArrayBuffer,
+    key: ArrayBuffer,
+  ): Promise<ArrayBuffer> {
     const nodeData = this.toNodeBuffer(data)
     const nodeIv = this.toNodeBuffer(iv)
     const nodeKey = this.toNodeBuffer(key)
@@ -224,7 +119,7 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
   private toArrayBuffer(value: Buffer | string | ArrayBuffer): ArrayBuffer {
     let buf: ArrayBuffer
     if (typeof value === 'string') {
-      buf = CryptoUtils.fromUtf8ToArray(value).buffer
+      buf = fromUtf8ToArray(value).buffer
     } else {
       buf = new Uint8Array(value).buffer
     }

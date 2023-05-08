@@ -14,7 +14,7 @@ body:
   - type: textarea
     id: reproduction
     validations:
-      required: true
+      required: false
     attributes:
       label: Reproduction
       description: |
@@ -23,16 +23,7 @@ body:
   - type: input
     id: version
     validations:
-      required: true
+      required: false
     attributes:
       label: Affected versions
-      description: Please specify which version of the package you are using.
-
-  - type: textarea
-    id: environment
-    validations:
-      required: true
-    attributes:
-      label: Browser/OS/Node environment
-      description: |
-        Please list which browser and operating system combination(s) you are using.
+      description: Please specify which version you are using.

@@ -20,7 +20,6 @@ interface Card {
   id: string
   title: string
   description: string
-  secret: string
   url: string
   width?: number
   height?: number
@@ -65,7 +64,6 @@ class WindowMain {
   private tray: Tray
   private contextMenu: Menu
   private menuItems: Array<MenuItemConstructorOptions> = []
-  private cards: Array<Card> = []
 
   constructor(
     private isServe = false,
@@ -119,19 +117,24 @@ class WindowMain {
       return this.store.path ?? ''
     })
 
-    ipcMain.on('change-tray', (event: Event, cards: Array<Card>) => {
-      this.menuItems = []
-      this.cards = cards || []
-      this.cards.forEach(card => {
-        if (card && card.title) {
-          this.menuItems.push({
+    ipcMain.on('change-tray', (event: Event, cards: Array<Card> = []) => {
+      const menuItems: MenuItemConstructorOptions[] = []
+      // TODO : If lot of cards, tray menu will be slow. so set max menuItems length 999.
+      for (let i = 0; i < cards.length; i++) {
+        if (menuItems.length > 999) {
+          break
+        }
+        const card = cards[i]
+        if (card && card.title && card.url) {
+          menuItems.push({
             label: card.title,
             click: () => {
               this.openBrowser(card)
             },
           })
         }
-      })
+      }
+      this.menuItems = menuItems
       this.changeTrayMenu()
     })
 

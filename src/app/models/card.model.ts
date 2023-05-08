@@ -13,9 +13,3 @@ export interface CardState {
   items: Array<Card>
   deletedItems: Array<Card>
 }
-
-export enum CardFieldMap {
-  title = 'title',
-  description = 'description',
-  url = 'url',
-}
