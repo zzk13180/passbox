@@ -44,7 +44,7 @@ export class PasswordSetDialog implements AfterViewInit {
     const encoder = new TextEncoder()
     this.passwordModel.valueChanges.subscribe((password: string) => {
       const { byteLength } = encoder.encode(password)
-      if (byteLength > 14) {
+      if (byteLength > 64) {
         this.passwordModel.control.setErrors({ maxbyte: true })
       }
     })

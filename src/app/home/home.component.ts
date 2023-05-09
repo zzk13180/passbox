@@ -171,18 +171,18 @@ export class HomeComponent implements OnInit {
       if (err.message === DBError.noData) {
         const cards = [
           {
-            title: 'Right-click to open the official website.',
+            title: 'example::official-website',
             url: 'https://zzk13180.github.io/passbox/',
-            description: '',
-            secret: '',
+            description: 'Right-click to open the official website.',
+            secret: 'example',
             width: 800,
             height: 600,
           },
           {
-            title: 'All user data is stored in this file.',
+            title: 'example::user-data',
             url: await this.electronService.getUserDataPath(),
-            description: '',
-            secret: '',
+            description: 'All user data is stored in this file.',
+            secret: 'example',
             width: 800,
             height: 600,
           },

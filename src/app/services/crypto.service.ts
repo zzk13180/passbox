@@ -53,10 +53,10 @@ export class CryptoService implements CryptoServiceAbstraction {
   private initPassword(userstate: UserState, userPassword?: string): void {
     const { password: passwordStr, salt: saltStr, isRequiredLogin } = userstate
 
-    const salt = new ArrayBuffer(21)
+    const salt = new ArrayBuffer(23)
     saltStr.split(',').map((item, i) => new DataView(salt).setUint8(i, Number(item)))
 
-    let password = new ArrayBuffer(14)
+    let password = new ArrayBuffer(64)
     passwordStr
       .split(',')
       .map((item, i) => new DataView(password).setUint8(i, Number(item)))
@@ -67,7 +67,7 @@ export class CryptoService implements CryptoServiceAbstraction {
       const tmp = new Uint8Array(password.byteLength + userPasswordBuffer.byteLength)
       tmp.set(new Uint8Array(userPasswordBuffer), 0)
       tmp.set(new Uint8Array(password), userPasswordBuffer.byteLength)
-      password = tmp.buffer.slice(0, 14)
+      password = tmp.buffer.slice(0, 64)
     }
 
     this.password = password
