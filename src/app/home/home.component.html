@@ -78,20 +78,14 @@ Oh hi there! 😄
         <ly-paper>
           <ly-list>
             <ly-list-item>
-              <ly-icon
-                style="cursor: pointer"
-                (click)="copy(card, 'description')"
-                ly-list-icon
-              >
+              <ly-icon (click)="copy(card, 'description')" ly-list-icon>
                 description
               </ly-icon>
               <span ly-line>{{ card.description }}</span>
             </ly-list-item>
             <home-secret-show [card]="card" />
             <ly-list-item>
-              <ly-icon style="cursor: pointer" (click)="copy(card, 'url')" ly-list-icon>
-                link
-              </ly-icon>
+              <ly-icon (click)="copy(card, 'url')" ly-list-icon>link</ly-icon>
               <span ly-line>{{ card.url }}</span>
             </ly-list-item>
           </ly-list>

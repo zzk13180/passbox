@@ -55,15 +55,12 @@ const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
       top: 0
       left: 0
       &>span {
-        margin: 0 0 0 16px
-        width: calc(100% - 32px)
+        width: calc(100% - 20px)
+        text-indent: 20px
         cursor: pointer
         overflow: hidden
         white-space: nowrap
         text-overflow: ellipsis
-        span {
-          cursor: text
-        }
       }
     }`,
     panel: () => lyl`{
@@ -84,6 +81,10 @@ const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
         bottom: 0
         ${theme.before}: 0
         border-${theme.before}: 2px solid transparent
+      }
+      ly-icon {
+       cursor: pointer
+       user-select: none
       }
     }`,
     accordion: () => {

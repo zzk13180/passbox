@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core'
 import { StorageKey } from '../enums/storageKey'
+import { fromStrToB64, fromB64ToStr } from '../utils/crypto.util'
 import { ElectronService } from './electron.service'
 import { CryptoFunctionService } from './cryptoFunction.service'
 
@@ -24,8 +25,7 @@ export class UserStateService {
     const str: string = await this.electronService.storageGet(StorageKey.userState)
     let userState: UserState = null
     try {
-      const data = JSON.parse(str)
-      userState = { isRequiredLogin: data.a, password: data.b, salt: data.c }
+      userState = JSON.parse(fromB64ToStr(str))
     } catch (_) {
       userState = await this.initUserState()
     }
@@ -46,14 +46,9 @@ export class UserStateService {
   }
 
   private async setUserState(userState: UserState): Promise<void> {
-    await this.electronService.storageSave(
-      StorageKey.userState,
-      JSON.stringify({
-        a: userState.isRequiredLogin,
-        b: userState.password,
-        c: userState.salt,
-      }),
-    )
+    const str = JSON.stringify(userState)
+    const base64 = fromStrToB64(str)
+    await this.electronService.storageSave(StorageKey.userState, base64)
     this.userState = userState
   }
 
