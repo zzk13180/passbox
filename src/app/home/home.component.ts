@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef,
   ChangeDetectionStrategy,
   ViewChild,
+  HostListener,
   NgZone,
 } from '@angular/core'
 import { StyleRenderer, lyl, ThemeVariables, ThemeRef, LyTheme2 } from '@alyle/ui'
@@ -239,6 +240,8 @@ export class HomeComponent implements OnInit {
     })
   }
 
+  @HostListener('window:keydown.meta.d')
+  @HostListener('window:keydown.control.d')
   add() {
     this.ngZone.run(() => {
       this.openDialog('add')
