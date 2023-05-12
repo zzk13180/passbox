@@ -36,7 +36,9 @@
 
 # Passbox
 
-A simpler way to manage your sensitive information and links.
+This software promises to be permanently free and open source.  
+You are welcome to use and contribute to it.  
+If you have any questions, please submit an issue.
 
 ## Getting Started
 
