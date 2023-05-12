@@ -11,7 +11,7 @@ import { StyleRenderer, lyl, ThemeVariables, ThemeRef, LyTheme2 } from '@alyle/u
 import { LyDialog } from '@alyle/ui/dialog'
 import { STYLES as EXPANSION_STYLES } from '@alyle/ui/expansion'
 import { LySnackBar } from '@alyle/ui/snack-bar'
-import { Observable } from 'rxjs'
+import { Observable, take } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import { Store, select } from '@ngrx/store'
 import { StorageKey, DBError } from '../enums/storageKey'
@@ -26,7 +26,6 @@ import {
   initCards,
   selectCards,
   selectDeletedCards,
-  selectSearchTerm,
   UserState,
   UserStateService,
   DbService,
@@ -34,6 +33,7 @@ import {
 } from '../services'
 import { CipherString } from '../models/domain/cipherString'
 import { downloadByData } from '../utils/download.util'
+import { fromB64ToStr } from '../utils/crypto.util'
 import { html2cards } from './home.util'
 import { CardAddDialog } from './components/card-add/card-add-dialog'
 import { CardDeletedDialog } from './components/card-deleted/card-deleted-dialog'
@@ -130,7 +130,6 @@ export class HomeComponent implements OnInit {
   classes: any
   cards$: Observable<Array<Card>>
   deletedCards$: Observable<Array<Card>>
-  searchTerm$: Observable<string>
   readonly itemSize = 54
   private previousIndex = 0
   private distanceY = 0
@@ -154,7 +153,6 @@ export class HomeComponent implements OnInit {
     const theCardsStore = this.store.select('theCards')
     this.cards$ = theCardsStore.pipe(select(selectCards))
     this.deletedCards$ = theCardsStore.pipe(select(selectDeletedCards))
-    this.searchTerm$ = theCardsStore.pipe(select(selectSearchTerm))
     const { isRequiredLogin } = await this.userStateService.getUserState()
     if (isRequiredLogin) {
       this.setPassword(true)
@@ -282,6 +280,13 @@ export class HomeComponent implements OnInit {
     if (event) {
       event.stopPropagation()
     }
+    if (!card.url) {
+      this.ngZone.run(() => {
+        this.sb.open({ msg: 'error: url is empty' })
+        this._cd.detectChanges()
+      })
+      return
+    }
     this.electronService.openBrowser(card)
   }
 
@@ -302,24 +307,26 @@ export class HomeComponent implements OnInit {
       .subscribe(card => {
         let msg = ''
         if (flag === 'add') {
-          this.store.dispatch(add({ cards: [card] }))
+          if (this.checkCardIsAvailable(card)) {
+            this.store.dispatch(add({ cards: [card] }))
+          }
           msg = 'add success'
         }
         if (flag === 'modify') {
           this.store.dispatch(modify({ card }))
           msg = 'modify success'
         }
-        this.sb.open({
-          msg,
-        })
+        this.sb.open({ msg })
         this._cd.markForCheck()
       })
   }
 
   showDeletedCards() {
-    let data: Card[] = []
-    this.deletedCards$.subscribe(cards => (data = cards)).unsubscribe()
-    this._dialog.open<CardDeletedDialog, Card[]>(CardDeletedDialog, { data })
+    this.deletedCards$.pipe(take(1)).subscribe(data => {
+      this._dialog.open<CardDeletedDialog, Card[]>(CardDeletedDialog, {
+        data,
+      })
+    })
   }
 
   exportData(event: Event): void {
@@ -349,8 +356,8 @@ export class HomeComponent implements OnInit {
     try {
       const theCards: CardState = await this.dbService.getItem(StorageKey.cards)
       downloadByData(JSON.stringify(theCards), 'passbox-data.json')
-    } catch (_) {
-      this.sb.open({ msg: 'export data failed' })
+    } catch (err) {
+      this.sb.open({ msg: `export data failed : ${err.message}` })
     }
   }
 
@@ -380,8 +387,8 @@ export class HomeComponent implements OnInit {
         }
       })
       downloadByData(templateFn(str), 'passbox-bookmarks.html')
-    } catch (_) {
-      this.sb.open({ msg: 'export data failed' })
+    } catch (err) {
+      this.sb.open({ msg: `export data failed : ${err.message}` })
     }
   }
 
@@ -391,16 +398,13 @@ export class HomeComponent implements OnInit {
       const userStateStr: string = await this.electronService.storageGet(
         StorageKey.userState,
       )
-      const data: {
-        [StorageKey.cards]: CardState
-        [StorageKey.userState]: UserState
-      } = {
-        cards: JSON.parse(theCardsStr),
-        userState: JSON.parse(userStateStr),
+      const data = {
+        cards: theCardsStr,
+        userState: userStateStr,
       }
       downloadByData(JSON.stringify(data), 'passbox-data.json')
-    } catch (_) {
-      this.sb.open({ msg: 'export data failed' })
+    } catch (err) {
+      this.sb.open({ msg: `export data failed : ${err.message}` })
     }
   }
 
@@ -429,7 +433,7 @@ export class HomeComponent implements OnInit {
               if (!cards.length || toString.call(cards[0]) !== '[object Object]') {
                 throw new Error('invalid data')
               }
-              this.addCards(cards)
+              this.addImportedCards(cards)
             } else {
               let jsonData = null
               try {
@@ -438,9 +442,9 @@ export class HomeComponent implements OnInit {
                 throw new Error('invalid data')
               }
               if (jsonData && jsonData.items && jsonData.items.length) {
-                this.addCards(jsonData.items)
+                this.addImportedCards(jsonData.items)
               } else if (jsonData && jsonData.cards && jsonData.userState) {
-                this.json2cards(jsonData)
+                this.encryptedData2cards(jsonData)
               } else {
                 throw new Error('invalid data')
               }
@@ -452,11 +456,20 @@ export class HomeComponent implements OnInit {
       })
   }
 
-  private json2cards(data: {
-    [StorageKey.cards]: CipherString
-    [StorageKey.userState]: UserState
+  private encryptedData2cards(data: {
+    [StorageKey.cards]: string
+    [StorageKey.userState]: string
   }): void {
-    const { isRequiredLogin } = data.userState as UserState
+    let cards: CipherString = null
+    let userState: UserState = null
+    try {
+      cards = JSON.parse(data.cards)
+      userState = JSON.parse(fromB64ToStr(data.userState))
+    } catch (_) {
+      this.sb.open({ msg: 'failed : invalid data' })
+      return
+    }
+    const { isRequiredLogin } = userState as UserState
     if (isRequiredLogin) {
       this.sb.open({ msg: 'need password' })
       const dialogRef = this._dialog.open<ImportPasswordDialog>(ImportPasswordDialog, {
@@ -466,8 +479,8 @@ export class HomeComponent implements OnInit {
         let str = ''
         try {
           str = await this.cryptoService.decryptToUtf8WithExternalUserState(
-            data.cards,
-            data.userState,
+            cards,
+            userState,
             result.password,
           )
         } catch (_) {
@@ -480,12 +493,12 @@ export class HomeComponent implements OnInit {
         } catch (_) {
           this.sb.open({ msg: 'failed : invalid data' })
         }
-        this.addCards(res.items)
+        this.addImportedCards(res.items)
       })
     } else {
       try {
         this.cryptoService
-          .decryptToUtf8WithExternalUserState(data.cards, data.userState)
+          .decryptToUtf8WithExternalUserState(cards, userState)
           .then(str => {
             let res = null
             try {
@@ -493,31 +506,39 @@ export class HomeComponent implements OnInit {
             } catch (_) {
               this.sb.open({ msg: 'failed : invalid data' })
             }
-            this.addCards(res.items)
+            this.addImportedCards(res.items)
           })
       } catch (_) {
-        this.sb.open({ msg: 'failed : password error' })
+        this.sb.open({ msg: 'failed : invalid data' })
       }
     }
   }
 
-  private addCards(addCards: Card[]): void {
-    const cards: Card[] = []
-    let existCards: Card[] = []
-    const subscriber = this.cards$.subscribe({
-      next: c => (existCards = c),
-    })
-    subscriber.unsubscribe()
-    const keys = ['title', 'description', 'secret', 'url']
-    addCards.forEach(card => {
-      const isAvailable = keys.some(key => card[key])
-      const isNotExist = !existCards.some(c => c.id === card.id)
-      if (isNotExist && isAvailable) {
-        cards.push(card)
+  private addImportedCards(importedCards: Card[]): void {
+    const checkCardIsExist = (card: Card, cards: Card[]) => {
+      if (card.id) {
+        return cards.some(item => item.id === card.id)
       }
+      return cards.some(
+        item =>
+          item.url === card.url &&
+          item.title === card.title &&
+          item.secret === card.secret &&
+          item.description === card.description,
+      )
+    }
+    this.cards$.pipe(take(1)).subscribe(cards => {
+      const cardsToImport = importedCards.filter(
+        card => this.checkCardIsAvailable(card) && !checkCardIsExist(card, cards),
+      )
+      this.store.dispatch(add({ cards: cardsToImport }))
+      this.sb.open({ msg: 'import success' })
     })
-    this.store.dispatch(add({ cards }))
-    this.sb.open({ msg: 'import success' })
+  }
+
+  private checkCardIsAvailable(card: Card): boolean {
+    const keys = ['title', 'description', 'secret', 'url']
+    return keys.some(key => card[key])
   }
 
   viewMenu(card: Card) {

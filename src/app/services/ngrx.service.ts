@@ -100,8 +100,3 @@ export const selectDeletedCards = createSelector(
   (state: CardState) => state.deletedItems,
   deletedItems => deletedItems,
 )
-
-export const selectSearchTerm = createSelector(
-  (state: CardState) => state.term,
-  term => term,
-)
