@@ -42,7 +42,7 @@ If you have any questions, please submit an issue.
 
 ## Getting Started
 
-install [nodejs](https://nodejs.org) and [pnpm](https://pnpm.js.org/)
+install [nodejs](https://nodejs.org) and [pnpm](https://pnpm.io/)
 
 ```shell
 pnpm i
