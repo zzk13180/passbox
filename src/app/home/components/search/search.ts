@@ -15,6 +15,7 @@ import {
   Output,
   Renderer2,
   ViewChild,
+  HostListener,
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { fromEvent, Subject, Subscription } from 'rxjs'
@@ -96,10 +97,10 @@ export class SearchComponent
     this.onTouch()
   }
 
-  clickSearch(term) {
-    if (!this.disabled) {
-      this.searchFn.emit(term)
-    }
+  @HostListener('window:keydown.meta.f')
+  @HostListener('window:keydown.control.f')
+  inputfocus() {
+    this.filterInputElement.nativeElement.focus()
   }
 
   registerFilterChange() {

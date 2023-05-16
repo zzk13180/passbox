@@ -36,9 +36,7 @@ export class PasswordSetDialog implements AfterViewInit {
     public data: {
       isLogin: boolean
     },
-  ) {
-    this.see = !this.data.isLogin
-  }
+  ) {}
 
   ngAfterViewInit(): void {
     const encoder = new TextEncoder()
