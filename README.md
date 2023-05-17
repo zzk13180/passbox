@@ -31,7 +31,7 @@
 <br>
 
 <p align='center'>
-  <img src="https://zzk13180.github.io/passbox/preview-1.png" alt='preview'>
+  <img src="https://zzk13180.github.io/passbox/preview.png" alt='preview'>
 </p>
 
 # Passbox
