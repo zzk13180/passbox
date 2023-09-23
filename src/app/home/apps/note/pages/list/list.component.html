@@ -1,0 +1,7 @@
+<div class="notes-page">
+  <div class="mat-elevation-z2 notes-page-list" *ngFor="let note of notes" matRipple>
+    <p class="title" (click)="onNoteClick(note)">
+      {{ note.title || 'New Note' }}
+    </p>
+  </div>
+</div>

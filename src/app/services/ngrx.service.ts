@@ -38,6 +38,7 @@ export function cardReducer(state: CardState, action: Action) {
     initialState,
     on(initCards, (_state, { theCards }) => ({
       ...theCards,
+      term: '', // reset search term when init
     })),
     on(add, (state, { cards }) => ({
       ...state,
@@ -76,7 +77,7 @@ export function cardReducer(state: CardState, action: Action) {
 
 const searchHandler = (cards: Card[], term: string): Card[] => {
   const fuse = new Fuse(cards, {
-    keys: ['title'],
+    keys: ['title', 'description', 'url'],
     threshold: 0.4,
     sortFn: (a, b) => a.score - b.score,
   })

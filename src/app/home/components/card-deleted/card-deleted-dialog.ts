@@ -52,6 +52,11 @@ export class CardDeletedDialog {
       cell: (card: Card) => `${card.title}`,
     },
     {
+      columnDef: 'description',
+      header: 'description',
+      cell: (card: Card) => `${card.description}`,
+    },
+    {
       columnDef: 'url',
       header: 'url',
       cell: (card: Card) => `${card.url}`,

@@ -8,7 +8,7 @@ card add form dialog 😄
     <input
       lyNativeControl
       placeholder="title"
-      (keydown.enter)="dialogRef.close(data)"
+      (keydown.shift.enter)="dialogRef.close(data)"
       [(ngModel)]="data.title"
     />
   </ly-field>
@@ -16,7 +16,7 @@ card add form dialog 😄
     <input
       lyNativeControl
       placeholder="description"
-      (keydown.enter)="dialogRef.close(data)"
+      (keydown.shift.enter)="dialogRef.close(data)"
       [(ngModel)]="data.description"
     />
   </ly-field>
@@ -25,7 +25,7 @@ card add form dialog 😄
       lyNativeControl
       placeholder="secret"
       [type]="!see ? 'password' : 'text'"
-      (keydown.enter)="dialogRef.close(data)"
+      (keydown.shift.enter)="dialogRef.close(data)"
       [(ngModel)]="data.secret"
     />
     <button ly-button appearance="icon" lySuffix (click)="see = !see" tabindex="-1">
@@ -37,7 +37,7 @@ card add form dialog 😄
     <input
       lyNativeControl
       placeholder="url"
-      (keydown.enter)="dialogRef.close(data)"
+      (keydown.shift.enter)="dialogRef.close(data)"
       [(ngModel)]="data.url"
     />
     <button ly-button lySuffix appearance="icon" (click)="_if = !_if">
@@ -51,7 +51,7 @@ card add form dialog 😄
         lyNativeControl
         placeholder="width"
         type="number"
-        (keydown.enter)="dialogRef.close(data)"
+        (keydown.shift.enter)="dialogRef.close(data)"
         [(ngModel)]="data.width"
       />
     </ly-field>
@@ -60,7 +60,7 @@ card add form dialog 😄
         lyNativeControl
         placeholder="height"
         type="number"
-        (keydown.enter)="dialogRef.close(data)"
+        (keydown.shift.enter)="dialogRef.close(data)"
         [(ngModel)]="data.height"
       />
       <button ly-button lySuffix appearance="icon" (click)="_if = !_if" tabindex="-1">
@@ -70,22 +70,10 @@ card add form dialog 😄
   </ng-template>
 
   <ly-grid container justify="end" ly-dialog-actions>
-    <button
-      ly-button
-      color="primary"
-      type="button"
-      (click)="dialogRef.close()"
-      (keydown.escape)="dialogRef.close()"
-    >
+    <button ly-button color="primary" type="button" (click)="dialogRef.close()">
       cancel
     </button>
-    <button
-      ly-button
-      color="primary"
-      type="submit"
-      (click)="dialogRef.close(data)"
-      (keydown.enter)="dialogRef.close(data)"
-    >
+    <button ly-button color="primary" type="submit" (click)="dialogRef.close(data)">
       submit
     </button>
   </ly-grid>

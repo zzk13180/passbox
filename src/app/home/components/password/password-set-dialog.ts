@@ -54,7 +54,7 @@ export class PasswordSetDialog implements AfterViewInit {
         type: 'question',
         title: 'confirm',
         message: 'reset data',
-        detail: 'reset will lose all data ! are you sure ?',
+        detail: '⚠️ reset will lose all data ! are you sure ?',
         buttons: ['yes', 'cancel'],
         defaultId: 1,
         cancelId: 1,

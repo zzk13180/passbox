@@ -1,0 +1,20 @@
+.notes-page {
+  padding: 20px 20px 0;
+
+  .notes-page-list {
+    height: 40px;
+    overflow: hidden;
+    padding: 0 16px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    position: relative;
+
+    .title {
+      cursor: pointer;
+      line-height: 40px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}

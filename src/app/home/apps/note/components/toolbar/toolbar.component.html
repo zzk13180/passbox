@@ -1,0 +1,21 @@
+<div id="note-toolbar">
+  <div class="left">
+    <button mat-icon-button routerLink="/home">
+      <mat-icon>home</mat-icon>
+    </button>
+    <button mat-icon-button (click)="openAppsDialog()">
+      <mat-icon>apps</mat-icon>
+    </button>
+  </div>
+
+  <div class="draggable"></div>
+
+  <div class="right">
+    <button mat-icon-button (click)="addNewNote()">
+      <mat-icon>add</mat-icon>
+    </button>
+    <button mat-icon-button routerLink="/apps/note/list">
+      <mat-icon>list</mat-icon>
+    </button>
+  </div>
+</div>

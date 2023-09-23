@@ -117,7 +117,7 @@ class WindowMain {
       return this.store.path ?? ''
     })
 
-    ipcMain.on('change-tray', (event: Event, cards: Array<Card> = []) => {
+    ipcMain.on('change-tray', (_, cards: Array<Card> = []) => {
       const menuItems: MenuItemConstructorOptions[] = []
       // TODO : If lot of cards, tray menu will be slow. so set max menuItems length 999.
       for (let i = 0; i < cards.length; i++) {
@@ -138,7 +138,7 @@ class WindowMain {
       this.changeTrayMenu()
     })
 
-    ipcMain.handle('read-file', (_event: Event, path: string): string => {
+    ipcMain.handle('read-file', (_, path: string): string => {
       let data = ''
       try {
         data = fs.readFileSync(path, 'utf8')
@@ -146,15 +146,15 @@ class WindowMain {
       return data
     })
 
-    ipcMain.on('open-browser', (event: Event, card: Card) => {
+    ipcMain.on('open-browser', (_, card: Card) => {
       this.openBrowser(card)
     })
 
-    ipcMain.handle('storage-get', (event, key: string): string => {
+    ipcMain.handle('storage-get', (_, key: string): string => {
       return this.store.get(key, '')
     })
 
-    ipcMain.handle('storage-save', (event: Event, key: string, value: string): void => {
+    ipcMain.handle('storage-save', (_, key: string, value: string): void => {
       return this.store.set(key, value)
     })
 

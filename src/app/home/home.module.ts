@@ -36,6 +36,7 @@ import { CardDeletedDialog } from './components/card-deleted/card-deleted-dialog
 import { ExportSelectDialog } from './components/export/export-select-dialog'
 import { ImportPasswordDialog } from './components/import/import-password-dialog'
 import { PasswordSetDialog } from './components/password/password-set-dialog'
+import { AppsDialog } from './components/apps-dialog/apps-dialog'
 import { SearchComponent } from './components/search/search'
 import { homeSecretShowComponent } from './components/secret-show/secret-show'
 
@@ -47,11 +48,11 @@ import { homeSecretShowComponent } from './components/secret-show/secret-show'
     CardDeletedDialog,
     homeSecretShowComponent,
     PasswordSetDialog,
+    AppsDialog,
     ExportSelectDialog,
     ImportPasswordDialog,
     FileDropDirective,
   ],
-  entryComponents: [CardAddDialog, CardDeletedDialog],
   imports: [
     CommonModule,
     HomeRoutingModule,

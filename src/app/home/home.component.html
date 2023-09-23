@@ -5,44 +5,45 @@ Oh hi there! 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅-->
 
 <div homeFileDrop (fileDrop)="onFileDrop($event)" class="container">
-  <ly-toolbar position="static" bg="primary">
+  <ly-toolbar position="static" bg="primary" style="padding: 0">
+    <ly-icon class="menu-btn-left" (click)="openAppsDialog()">apps</ly-icon>
+    <search class="home-search" (searchFn)="onSearch($event)" style="padding: 0" />
     <button
-      class="menu-btn"
+      class="menu-btn-right"
       color="primary:contrast"
       ly-button
       appearance="icon"
       [lyMenuTriggerFor]="clipboard"
     >
-      <ly-icon>menu</ly-icon>
+      <ly-icon>more_vert</ly-icon>
     </button>
-    <search class="home-search" (searchFn)="onSearch($event)"></search>
   </ly-toolbar>
   <ng-template #clipboard let-M>
     <ly-menu [ref]="M" [lyWidth]="180">
       <button ly-button ly-menu-item (click)="openDialog('add')">
         <ly-icon>note_add</ly-icon>
         <span class="spacer"></span>
-        <span>add「Ctrl + D」</span>
-      </button>
-      <button ly-button ly-menu-item (click)="showDeletedCards()">
-        <ly-icon>delete</ly-icon>
-        <span class="spacer"></span>
-        <span>show deleted</span>
+        <span>Add「Ctrl + D」</span>
       </button>
       <button ly-button ly-menu-item (click)="setPassword()">
         <ly-icon>lock</ly-icon>
         <span class="spacer"></span>
-        <span>set password</span>
+        <span>Set password</span>
+      </button>
+      <button ly-button ly-menu-item (click)="showDeletedCards()">
+        <ly-icon>delete</ly-icon>
+        <span class="spacer"></span>
+        <span>Show deleted</span>
       </button>
       <button ly-button ly-menu-item (click)="exportData($event)">
-        <ly-icon>import_export</ly-icon>
+        <ly-icon>file_upload</ly-icon>
         <span class="spacer"></span>
-        <span>export</span>
+        <span>Export</span>
       </button>
       <button ly-button ly-menu-item (click)="importData($event)">
-        <ly-icon>import_export</ly-icon>
+        <ly-icon>file_download</ly-icon>
         <span class="spacer"></span>
-        <span>import</span>
+        <span>Import</span>
       </button>
     </ly-menu>
   </ng-template>

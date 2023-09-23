@@ -40,6 +40,7 @@ import { CardDeletedDialog } from './components/card-deleted/card-deleted-dialog
 import { ExportSelectDialog } from './components/export/export-select-dialog'
 import { ImportPasswordDialog } from './components/import/import-password-dialog'
 import { PasswordSetDialog } from './components/password/password-set-dialog'
+import { AppsDialog } from './components/apps-dialog/apps-dialog'
 
 import type { CdkDragMove } from '@angular/cdk/drag-drop'
 
@@ -171,18 +172,10 @@ export class HomeComponent implements OnInit {
       if (err.message === DBError.noData) {
         const cards = [
           {
-            title: 'example::official-website',
-            url: 'https://zzk13180.github.io/passbox/',
-            description: 'Right-click to open the official website.',
-            secret: 'example',
-            width: 800,
-            height: 600,
-          },
-          {
-            title: 'example::user-data',
+            title: 'user data',
             url: await this.electronService.getUserDataPath(),
             description: 'All user data is stored in this file.',
-            secret: 'example',
+            secret: '',
             width: 800,
             height: 600,
           },
@@ -288,6 +281,11 @@ export class HomeComponent implements OnInit {
       return
     }
     this.electronService.openBrowser(card)
+  }
+
+  openAppsDialog() {
+    const dialogRef = this._dialog.open<AppsDialog>(AppsDialog, {})
+    dialogRef.afterClosed.subscribe()
   }
 
   openDialog(flag: string, card?: Card) {

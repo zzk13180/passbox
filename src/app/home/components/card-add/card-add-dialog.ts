@@ -13,7 +13,10 @@ export class CardAddDialog {
   _if: boolean
   see = true
 
-  constructor(public dialogRef: LyDialogRef, @Inject(LY_DIALOG_DATA) public data: Card) {
+  constructor(
+    public dialogRef: LyDialogRef,
+    @Inject(LY_DIALOG_DATA) public data: Card,
+  ) {
     this._if = false
   }
 }

@@ -3,12 +3,17 @@
 }
 
 .home-search {
-  width: calc(100% - 111px);
+  width: calc(100% - 143px);
 }
 
-.menu-btn {
+.menu-btn-left {
+  cursor: pointer;
+  padding: 9px;
+}
+
+.menu-btn-right {
   position: relative;
-  right: 8px;
+  right: -63px;
   top: 0;
 }
 

@@ -7,6 +7,10 @@ const routes: Routes = [
     path: 'home',
     component: HomeComponent,
   },
+  {
+    path: 'apps/note',
+    loadChildren: () => import('./apps/note/note.module').then(m => m.NoteModule),
+  },
 ]
 
 @NgModule({
