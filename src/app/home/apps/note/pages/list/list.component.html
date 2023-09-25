@@ -1,7 +1,11 @@
 <div class="notes-page">
-  <div class="mat-elevation-z2 notes-page-list" *ngFor="let note of notes" matRipple>
+  <div
+    class="mat-elevation-z2 notes-page-list"
+    *ngFor="let note of notes; let i = index"
+    matRipple
+  >
     <p class="title" (click)="onNoteClick(note)">
-      {{ note.title || 'New Note' }}
+      {{ note.title || 'Untitled' + (i + 1) }}
     </p>
   </div>
 </div>

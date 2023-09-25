@@ -1,58 +1,66 @@
-import { Injectable } from '@angular/core'
+import { Inject, Injectable } from '@angular/core'
+import { LocalStorage, ElectronService } from 'src/app/services'
 import { Note } from '../models'
 
 @Injectable({
   providedIn: 'root',
 })
 export class NoteRepository {
-  readonly localStorageKey = 'passbox::apps::note'
-  private _notes: Note[] = []
+  readonly noteTabsKey = 'noteTabs'
+  private dirPath: string
 
-  constructor() {
-    this._notes = JSON.parse(localStorage.getItem(this.localStorageKey))
+  constructor(
+    @Inject(LocalStorage) private storage: Storage,
+    private electronService: ElectronService,
+  ) {
+    this.setDirPath()
   }
 
-  get notes(): Note[] {
-    this._notes = JSON.parse(localStorage.getItem(this.localStorageKey))
-    return this._notes
+  // localStorage
+  getNoteTabs(): Note[] {
+    const notes = JSON.parse(this.storage.getItem(this.noteTabsKey))
+    return notes || []
   }
 
-  set notes(notes: Note[]) {
-    this._notes = JSON.parse(JSON.stringify(notes))
-    localStorage.setItem(this.localStorageKey, JSON.stringify(notes))
-  }
-
-  eraseAll(): void {
-    localStorage.clear()
-  }
-
-  getNoteById(id: string): Note | undefined {
-    return this._notes.find(note => note.id === id)
-  }
-
-  getNoteByIndex(index: number): Note | undefined {
-    return this._notes[index]
-  }
-
-  deleteNoteById(id: string): undefined {
-    this._notes.forEach((note, index) => {
-      if (note.id === id) {
-        this._notes.splice(index, 1)
+  // localStorage
+  setNoteTabs(notes: Note[]): void {
+    const noteTabs: Note[] = notes.map(note => {
+      return {
+        id: note.id,
+        title: note.title,
+        content: '',
+        createdAt: note.createdAt,
       }
     })
-    this.notes = this._notes
+    this.storage.setItem(this.noteTabsKey, JSON.stringify(noteTabs))
   }
 
-  deleteNoteByIndex(index: number) {
-    if (!index) {
-      return
-    }
-    this._notes.splice(index, 1)
-    this.notes = this._notes
+  // file system only store note content
+  addNewNote(note: Note): void {
+    this.electronService.writeFile(`${this.dirPath}${note.id}`, note.content)
   }
 
-  addNote(note: Note): void {
-    this._notes.push(note)
-    this.notes = this._notes
+  // file system
+  async getNoteContentById(id: string): Promise<string> {
+    const content = await this.electronService.readFile(`${this.dirPath}${id}`)
+    return content
+  }
+
+  // file system
+  deleteNoteById(id: string): void {
+    this.electronService.deleteFile(`${this.dirPath}${id}`)
+  }
+
+  // file system
+  updateNoteContent(note: Note): void {
+    this.electronService.writeFile(`${this.dirPath}${note.id}`, note.content)
+  }
+
+  private async setDirPath(): Promise<void> {
+    const dataPath = await this.electronService.getUserDataPath()
+    const appInfoStr = await this.electronService.getAppInfo()
+    const appInfo = JSON.parse(appInfoStr)
+    const reg = new RegExp(`${appInfo.name}.json$`)
+    this.dirPath = dataPath.replace(reg, '')
   }
 }

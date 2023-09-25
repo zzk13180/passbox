@@ -25,9 +25,22 @@ export class ElectronService {
     }
   }
 
+  async getAppInfo(): Promise<string> {
+    const result = await this.ipcRenderer.invoke('get-app-info')
+    return result
+  }
+
   async getUserDataPath(): Promise<string> {
     const result = await this.ipcRenderer.invoke('get-user-data-path')
     return result
+  }
+
+  writeFile(path: string, data: string) {
+    this.ipcRenderer.send('write-file', path, data)
+  }
+
+  deleteFile(path: string) {
+    this.ipcRenderer.send('delete-file', path)
   }
 
   async readFile(path: string): Promise<string> {

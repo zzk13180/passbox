@@ -1,5 +1,15 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core'
+
+import Quill from 'quill'
+import ImageResize from 'quill-image-resize-module'
+import 'quill-emoji/dist/quill-emoji.js'
 import { Note } from '../../models'
+
+const parchment = Quill.import('parchment')
+const block = parchment.query('block')
+block.tagName = 'DIV'
+Quill.register(block, true)
+Quill.register('modules/imageResize', ImageResize)
 
 @Component({
   selector: 'note-editor',
@@ -7,27 +17,32 @@ import { Note } from '../../models'
   styleUrls: ['./note-editor.component.scss'],
 })
 export class NoteEditorComponent {
+  editorConfig = {
+    'emoji-toolbar': true,
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['emoji', 'image', 'formula'],
+      [{ header: [1, 2, false] }],
+    ],
+    imageResize: {
+      displaySize: true,
+    },
+  }
+
   @Input() note: Note
-  @Output() updated: EventEmitter<Note> = new EventEmitter<Note>()
+  @Output() updatedTitle: EventEmitter<Note> = new EventEmitter<Note>()
+  @Output() updatedContent: EventEmitter<Note> = new EventEmitter<Note>()
   @Output() delete: EventEmitter<Note> = new EventEmitter<Note>()
 
-  change(): void {
-    this.updated.emit(this.note)
+  onTitleChanged(): void {
+    this.updatedTitle.emit(this.note)
   }
 
   deleteNote(note: Note): void {
     this.delete.emit(note)
   }
 
-  created(event: any) {}
-
-  changedEditor(event: any) {}
-
-  focus($event) {}
-
-  nativeFocus($event) {}
-
-  blur($event) {}
-
-  nativeBlur($event) {}
+  onContentChanged() {
+    this.updatedContent.emit(this.note)
+  }
 }

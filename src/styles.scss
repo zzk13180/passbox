@@ -234,3 +234,8 @@ body {
   font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
 }
+
+@font-face {
+  font-family: Slkscr;
+  src: url('./assets/fonts/slkscr.ttf') format('truetype');
+}

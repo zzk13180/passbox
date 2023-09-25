@@ -13,7 +13,7 @@
           ? note.title.length > 10
             ? note.title.substring(0, 10) + '...'
             : note.title
-          : 'New Note'
+          : 'Untitled-' + (index + 1)
       "
     >
       <div class="tab-content">
@@ -21,7 +21,8 @@
           <note-editor
             [note]="note"
             (delete)="deleteNote($event)"
-            (updated)="updateNote($event)"
+            (updatedContent)="updatedContent($event)"
+            (updatedTitle)="updatedTitle($event)"
           >
           </note-editor>
         </div>

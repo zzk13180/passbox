@@ -1,4 +1,8 @@
 import { Injectable } from '@angular/core'
+
+import { Subject } from 'rxjs'
+import { debounceTime } from 'rxjs/operators'
+
 import { Note } from '../models'
 import { NoteRepository } from '../repositories'
 
@@ -6,23 +10,18 @@ import { NoteRepository } from '../repositories'
   providedIn: 'root',
 })
 export class NoteStoreService {
-  private _notes: Note[]
-  private _activeNote: Note
+  private noteTabs: Note[]
+  private updateNoteContent$ = new Subject<Note>()
 
-  constructor(private _noteRepository: NoteRepository) {
-    this._notes = _noteRepository.notes || []
+  constructor(private repository: NoteRepository) {
+    this.noteTabs = repository.getNoteTabs()
+    this.updateNoteContent$.pipe(debounceTime(300)).subscribe(note => {
+      this.repository.updateNoteContent(note)
+    })
   }
 
   get notes(): Note[] {
-    return this._notes
-  }
-
-  get activeNote(): Note {
-    return this._activeNote
-  }
-
-  set activeNote(note: Note) {
-    this._activeNote = note
+    return this.noteTabs
   }
 
   addNewNote(): string {
@@ -30,28 +29,33 @@ export class NoteStoreService {
     const note = {
       id,
       title: '',
-      color: '#fff',
       content: '',
       createdAt: new Date(),
     }
-    this._notes.push(note)
-    this._noteRepository.notes = this._notes
+    this.noteTabs.push(note)
+    this.repository.addNewNote(note)
+    this.repository.setNoteTabs(this.noteTabs)
     return id
   }
 
+  async getNoteContentById(id: string): Promise<string> {
+    const content = await this.repository.getNoteContentById(id)
+    return content
+  }
+
   deleteNoteById(id: string): void {
-    const index = this._notes.findIndex(note => note.id === id)
+    const index = this.noteTabs.findIndex(note => note.id === id)
     if (index !== -1) {
-      this._notes.splice(index, 1)
-      this._noteRepository.deleteNoteById(id)
+      this.noteTabs.splice(index, 1)
+      this.repository.deleteNoteById(id)
     }
   }
 
-  updateNote(noteToUpdate: Note): void {
-    const index = this._notes.findIndex(note => note.id === noteToUpdate.id)
-    if (index !== -1) {
-      this._notes[index] = noteToUpdate
-      this._noteRepository.notes = this._notes
-    }
+  updatedContent(note: Note): void {
+    this.updateNoteContent$.next(note)
+  }
+
+  updatedTitle(): void {
+    this.repository.setNoteTabs(this.noteTabs)
   }
 }

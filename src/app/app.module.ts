@@ -6,14 +6,12 @@ import { EffectsModule } from '@ngrx/effects'
 import { StoreModule } from '@ngrx/store'
 import { LocationStrategy, HashLocationStrategy } from '@angular/common'
 
-import { QuillConfigModule } from 'ngx-quill/config'
-
-import { MaterialModule } from './material/material.module'
+import { MaterialModule } from './material'
 import { AppComponent } from './app.component'
 import { AppRoutingModule } from './app-routing.module'
 import { HomeModule } from './home/home.module'
 import { CardEffects } from './effects'
-import { cardReducer } from './services'
+import { WindowToken, windowProvider, STORAGE_PROVIDERS, cardReducer } from './services'
 
 @NgModule({
   declarations: [AppComponent],
@@ -25,17 +23,12 @@ import { cardReducer } from './services'
     MaterialModule.forRoot(),
     StoreModule.forRoot({ theCards: cardReducer }),
     EffectsModule.forRoot([CardEffects]),
-    QuillConfigModule.forRoot({
-      modules: {
-        toolbar: [
-          [{ header: [1, 2, false] }],
-          ['bold', 'italic', 'underline'],
-          ['image', 'code-block'],
-        ],
-      },
-    }),
   ],
-  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }],
+  providers: [
+    { provide: WindowToken, useFactory: windowProvider },
+    STORAGE_PROVIDERS,
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

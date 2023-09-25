@@ -1,7 +1,12 @@
 <div class="note-editor-page">
   <div class="toolbar">
     <label class="title">
-      <input type="text" placeholder="Write note title" [(ngModel)]="note.title" />
+      <input
+        type="text"
+        placeholder="Write note title"
+        [(ngModel)]="note.title"
+        (change)="onTitleChanged()"
+      />
     </label>
 
     <div class="actions">
@@ -12,11 +17,9 @@
   </div>
 
   <quill-editor
-    (onFocus)="focus($event)"
-    (onNativeFocus)="nativeFocus($event)"
-    (onEditorChanged)="changedEditor($event)"
-    (onBlur)="blur($event)"
-    (onNativeBlur)="nativeBlur($event)"
-    (onEditorCreated)="created($event)"
+    [(ngModel)]="note.content"
+    [modules]="editorConfig"
+    (onContentChanged)="onContentChanged()"
+    spellcheck="false"
   ></quill-editor>
 </div>

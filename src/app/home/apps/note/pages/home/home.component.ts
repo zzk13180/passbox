@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTabChangeEvent } from '@angular/material/tabs'
 import { ActivatedRoute, ParamMap } from '@angular/router'
@@ -12,34 +12,35 @@ import { Note } from '../../models'
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   notes: Note[]
   activeNoteIndex = 0
+
   constructor(
     private _dialog: MatDialog,
-    private _noteStore: NoteStoreService,
+    private noteStoreService: NoteStoreService,
     private activatedroute: ActivatedRoute,
   ) {
-    this.notes = this._noteStore.notes
-  }
-
-  ngOnInit(): void {
+    this.notes = this.noteStoreService.notes
     this.activatedroute.queryParamMap.subscribe((paramMap: ParamMap) => {
       const activeNoteId = paramMap.get('id')
       if (activeNoteId) {
-        this.activateNoteById(activeNoteId)
-      } else if (this.notes.length > 0) {
-        this.setActiveNote(0)
+        const index = this.notes.findIndex(note => note.id === activeNoteId)
+        this.setActiveNoteIndex(index)
       }
     })
   }
 
   onTabChange(event: MatTabChangeEvent): void {
-    this.setActiveNote(event.index)
+    this.setActiveNoteIndex(event.index)
   }
 
-  updateNote(note: Note): void {
-    this._noteStore.updateNote(note)
+  updatedContent(note: Note): void {
+    this.noteStoreService.updatedContent(note)
+  }
+
+  updatedTitle(_note: Note): void {
+    this.noteStoreService.updatedTitle()
   }
 
   deleteNote(note: Note): void {
@@ -51,21 +52,18 @@ export class HomeComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this._noteStore.deleteNoteById(note.id)
+        this.noteStoreService.deleteNoteById(note.id)
       }
     })
   }
 
-  activateNoteById(id: string): void {
-    this.notes.forEach((note, index) => {
-      if (note.id === id) {
-        this.setActiveNote(index)
-      }
-    })
-  }
-
-  setActiveNote(noteIndex: number) {
+  private setActiveNoteIndex(noteIndex: number) {
     this.activeNoteIndex = noteIndex
-    this._noteStore.activeNote = this.notes[noteIndex]
+    const activeNote = this.notes[this.activeNoteIndex]
+    if (activeNote) {
+      this.noteStoreService.getNoteContentById(activeNote.id).then(content => {
+        activeNote.content = content
+      })
+    }
   }
 }

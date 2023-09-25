@@ -11,6 +11,11 @@ const routes: Routes = [
     path: 'apps/note',
     loadChildren: () => import('./apps/note/note.module').then(m => m.NoteModule),
   },
+  {
+    path: 'apps/test-viewer',
+    loadChildren: () =>
+      import('./apps/test-viewer/test-viewer.module').then(m => m.TestViewerModule),
+  },
 ]
 
 @NgModule({

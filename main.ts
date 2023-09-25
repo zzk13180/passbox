@@ -1,10 +1,12 @@
 import * as path from 'node:path'
 import * as fs from 'node:fs'
 import { parse, URL } from 'node:url'
+import * as fsExtra from 'fs-extra'
 import {
   app,
   Tray,
   Menu,
+  Event,
   dialog,
   ipcMain,
   BrowserWindow,
@@ -15,6 +17,8 @@ import { BrowserMenu } from './menu'
 const Store = require('electron-store')
 const remote = require('@electron/remote/main')
 const contextMenu = require('electron-context-menu')
+
+const APP_NAME = 'passbox'
 
 interface Card {
   id: string
@@ -32,7 +36,7 @@ class Main {
     remote.initialize()
     if (this.isServer) {
       const appDataPath = app.getAppPath()
-      app.setPath('userData', `${appDataPath}/passbox-user-data`)
+      app.setPath('userData', `${appDataPath}/${APP_NAME}-user-data`)
       app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
     }
     if (process.platform !== 'darwin') {
@@ -69,7 +73,7 @@ class WindowMain {
     private isServe = false,
     private store = new Store({
       defaults: {},
-      name: 'passbox',
+      name: APP_NAME,
     }),
   ) {}
 
@@ -144,6 +148,31 @@ class WindowMain {
         data = fs.readFileSync(path, 'utf8')
       } catch (_) {}
       return data
+    })
+
+    ipcMain.handle('get-app-info', (): string => {
+      return JSON.stringify({
+        name: APP_NAME,
+        version: app.getVersion(),
+      })
+    })
+
+    ipcMain.on('write-file', (event, pathname, content, options = 'utf-8') => {
+      fsExtra
+        .outputFile(pathname, content, options)
+        .then(() => {})
+        .catch(error => {
+          event.reply('write-file-error', error.message)
+        })
+    })
+
+    ipcMain.on('delete-file', (event, pathname) => {
+      fsExtra
+        .remove(pathname)
+        .then(() => {})
+        .catch(error => {
+          event.reply('delete-file-error', error.message)
+        })
     })
 
     ipcMain.on('open-browser', (_, card: Card) => {
@@ -230,7 +259,7 @@ class WindowMain {
         path.join(__dirname, `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.png`),
       )
     }
-    this.tray.setToolTip('passbox')
+    this.tray.setToolTip(APP_NAME)
     this.changeTrayMenu()
     if (process.platform !== 'darwin') {
       const toggleWindow = () => {

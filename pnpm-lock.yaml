@@ -70,6 +70,9 @@ devDependencies:
   '@ngrx/store':
     specifier: 16.2.0
     version: 16.2.0(@angular/core@16.2.6)(rxjs@7.8.1)
+  '@types/fs-extra':
+    specifier: 11.0.2
+    version: 11.0.2
   '@types/node':
     specifier: ^20.6.3
     version: 20.6.3
@@ -133,6 +136,9 @@ devDependencies:
   eslint-plugin-unicorn:
     specifier: ^48.0.1
     version: 48.0.1(eslint@8.49.0)
+  fs-extra:
+    specifier: 11.1.1
+    version: 11.1.1
   fuse.js:
     specifier: ^6.6.2
     version: 6.6.2
@@ -163,9 +169,6 @@ devDependencies:
   quill-image-resize-module:
     specifier: ^3.0.0
     version: 3.0.0
-  quill-mention:
-    specifier: ^3.2.0
-    version: 3.4.1
   reflect-metadata:
     specifier: ^0.1.13
     version: 0.1.13
@@ -3500,6 +3503,13 @@ packages:
       '@types/serve-static': 1.15.2
     dev: true
 
+  /@types/fs-extra@11.0.2:
+    resolution: {integrity: sha512-c0hrgAOVYr21EX8J0jBMXGLMgJqVf/v6yxi0dLaJboW9aQPh16Id+z6w2Tx1hm+piJOLv8xPfVKZCLfjPw/IMQ==}
+    dependencies:
+      '@types/jsonfile': 6.1.2
+      '@types/node': 20.6.3
+    dev: true
+
   /@types/fs-extra@9.0.13:
     resolution: {integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==}
     dependencies:
@@ -3525,6 +3535,12 @@ packages:
 
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: true
+
+  /@types/jsonfile@6.1.2:
+    resolution: {integrity: sha512-8t92P+oeW4d/CRQfJaSqEwXujrhH4OEeHRjGU3v1Q8mUS8GPF3yiX26sw4svv6faL2HfBtGTe2xWIoVgN3dy9w==}
+    dependencies:
+      '@types/node': 20.6.3
     dev: true
 
   /@types/keyv@3.1.4:
@@ -3926,6 +3942,7 @@ packages:
   /@xmldom/xmldom@0.8.10:
     resolution: {integrity: sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==}
     engines: {node: '>=10.0.0'}
+    requiresBuild: true
     dev: true
 
   /@xtuc/ieee754@1.2.0:
@@ -9361,12 +9378,6 @@ packages:
       lodash: 4.17.21
       quill: 1.3.7
       raw-loader: 0.5.1
-    dev: true
-
-  /quill-mention@3.4.1:
-    resolution: {integrity: sha512-7/KyWGDbh3T2pw/kPNhXrsUkc1j2Kp9mxtK7QqmU84A6oHIlcjCubsFntHQYPwX/xoJnjyzcWiBrig8vEgW0AA==}
-    dependencies:
-      quill: 1.3.7
     dev: true
 
   /quill@1.3.7:
