@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTabChangeEvent } from '@angular/material/tabs'
 import { ActivatedRoute, ParamMap } from '@angular/router'
@@ -12,7 +12,7 @@ import { Note } from '../../models'
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   notes: Note[]
   activeNoteIndex = 0
 
@@ -23,12 +23,17 @@ export class HomeComponent {
   ) {
     this.notes = this.noteStoreService.notes
     this.activatedroute.queryParamMap.subscribe((paramMap: ParamMap) => {
+      let index = this.activeNoteIndex
       const activeNoteId = paramMap.get('id')
       if (activeNoteId) {
-        const index = this.notes.findIndex(note => note.id === activeNoteId)
-        this.setActiveNoteIndex(index)
+        index = this.notes.findIndex(note => note.id === activeNoteId)
       }
+      this.setActiveNoteIndex(index)
     })
+  }
+
+  ngOnInit(): void {
+    // empty
   }
 
   onTabChange(event: MatTabChangeEvent): void {
@@ -57,13 +62,12 @@ export class HomeComponent {
     })
   }
 
-  private setActiveNoteIndex(noteIndex: number) {
+  private async setActiveNoteIndex(noteIndex: number) {
     this.activeNoteIndex = noteIndex
     const activeNote = this.notes[this.activeNoteIndex]
     if (activeNote) {
-      this.noteStoreService.getNoteContentById(activeNote.id).then(content => {
-        activeNote.content = content
-      })
+      const content = await this.noteStoreService.getNoteContentById(activeNote.id)
+      activeNote.content = content
     }
   }
 }

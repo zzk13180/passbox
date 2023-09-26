@@ -67,7 +67,6 @@ const STYLES = (theme: ThemeVariables) => {
 })
 export class AppsDialog {
   readonly classes = this.sRenderer.renderSheet(STYLES)
-  showHome = false
   constructor(
     public dialogRef: LyDialogRef,
     readonly sRenderer: StyleRenderer,

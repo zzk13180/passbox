@@ -7,6 +7,7 @@ import {
   HostListener,
   NgZone,
 } from '@angular/core'
+import { DomSanitizer } from '@angular/platform-browser'
 import { StyleRenderer, lyl, ThemeVariables, ThemeRef, LyTheme2 } from '@alyle/ui'
 import { LyDialog } from '@alyle/ui/dialog'
 import { STYLES as EXPANSION_STYLES } from '@alyle/ui/expansion'
@@ -41,6 +42,9 @@ import { ExportSelectDialog } from './components/export/export-select-dialog'
 import { ImportPasswordDialog } from './components/import/import-password-dialog'
 import { PasswordSetDialog } from './components/password/password-set-dialog'
 import { AppsDialog } from './components/apps-dialog/apps-dialog'
+import { HelpDialog } from './components/help/help-dialog'
+import { PasswordGeneratorDialog } from './components/password-generator/password-generator'
+import { SVG_ICONS, LyIconService } from './components/icon'
 
 import type { CdkDragMove } from '@angular/cdk/drag-drop'
 
@@ -147,7 +151,13 @@ export class HomeComponent implements OnInit {
     private userStateService: UserStateService,
     private dbService: DbService,
     private cryptoService: CryptoService,
-  ) {}
+    iconService: LyIconService,
+    sanitizer: DomSanitizer,
+  ) {
+    for (const [name, svg] of SVG_ICONS) {
+      iconService.addSvgIconLiteral(name, sanitizer.bypassSecurityTrustHtml(svg))
+    }
+  }
 
   async ngOnInit() {
     this.classes = this._theme.addStyleSheet(STYLES)
@@ -281,11 +291,6 @@ export class HomeComponent implements OnInit {
       return
     }
     this.electronService.openBrowser(card)
-  }
-
-  openAppsDialog() {
-    const dialogRef = this._dialog.open<AppsDialog>(AppsDialog, {})
-    dialogRef.afterClosed.subscribe()
   }
 
   openDialog(flag: string, card?: Card) {
@@ -591,5 +596,31 @@ export class HomeComponent implements OnInit {
 
   trackByFn(_index: number, item: Card): string {
     return item.id
+  }
+
+  openAppsDialog() {
+    const dialogRef = this._dialog.open<AppsDialog>(AppsDialog, {})
+    dialogRef.afterClosed.subscribe()
+  }
+
+  showHelpDialog() {
+    const dialogRef = this._dialog.open<HelpDialog>(HelpDialog, {})
+    dialogRef.afterClosed.subscribe()
+  }
+
+  @HostListener('window:keydown.meta.g')
+  @HostListener('window:keydown.control.g')
+  showPasswordGeneratorDialog() {
+    const dialogRef = this._dialog.open<PasswordGeneratorDialog>(
+      PasswordGeneratorDialog,
+      {},
+    )
+    dialogRef.afterClosed.subscribe(result => {
+      console.log(result)
+      if (result) {
+        this.electronService.copyText(result)
+        this.sb.open({ msg: 'copied success' })
+      }
+    })
   }
 }

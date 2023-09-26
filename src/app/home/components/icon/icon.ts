@@ -1,0 +1,223 @@
+import {
+  Directive,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+} from '@angular/core'
+import {
+  LyTheme2,
+  mixinBg,
+  mixinColor,
+  mixinElevation,
+  mixinOutlined,
+  mixinRaised,
+  mixinShadowColor,
+  mixinStyleUpdater,
+  ThemeVariables,
+  lyl,
+  keyframesUniqueId,
+  StyleRenderer,
+} from '@alyle/ui'
+import { take } from 'rxjs/operators'
+import { Platform } from '@angular/cdk/platform'
+import { FontClassOptions, LyIconService, SvgIcon } from './icon.service'
+
+const STYLE_PRIORITY = -2
+export const STYLES = (theme: ThemeVariables) => {
+  const loading = keyframesUniqueId.next()
+  const { primary, secondary, tertiary } = theme.background
+  const lum = primary.default.luminance()
+  let one = lum < 0.5 ? tertiary : secondary
+  let two = lum < 0.5 ? secondary : tertiary
+  one = one.darken(0.25 * (lum < 0.5 ? -1 : 1.1))
+  two = two.darken(0.25 * (lum < 0.5 ? -1 : 1.1))
+  return {
+    $priority: STYLE_PRIORITY,
+    $global: lyl`{
+      @keyframes ${loading} {
+        0% {
+          background-position: 200% 50%
+        }
+
+        100% {
+          background-position: -200% 50%
+        }
+      }
+    }`,
+    root: () => lyl`{
+      font-size: ${theme.icon.fontSize}
+      width: 1em
+      position: relative
+      height: 1em
+      display: inline-flex
+      -webkit-box-sizing: content-box
+      -moz-box-sizing: content-box
+      box-sizing: content-box
+    }`,
+    loading: lyl`{
+      background: ${`linear-gradient(270deg, ${one}, ${two}, ${two}, ${one})`}
+      background-size: 400% 400%
+      animation: ${loading} 8s ease-in-out infinite
+    }`,
+    defaultIcon: lyl`{
+      border-radius: 50px
+    }`,
+  }
+}
+
+export class LyIconBase {
+  constructor(public _theme: LyTheme2) {}
+}
+
+export const LyIconMixinBase = mixinStyleUpdater(
+  mixinBg(
+    mixinColor(mixinRaised(mixinOutlined(mixinElevation(mixinShadowColor(LyIconBase))))),
+  ),
+)
+
+@Directive({
+  selector: 'ly-icon',
+  inputs: ['bg', 'color', 'raised', 'outlined', 'elevation', 'shadowColor'],
+  exportAs: 'lyIcon',
+  providers: [StyleRenderer],
+})
+export class LyIcon extends LyIconMixinBase implements OnChanges, OnInit, OnDestroy {
+  readonly classes = this.sRenderer.renderSheet(STYLES, true)
+  private _icon: string
+  private _fontSet: string
+  private _previousFontSet: FontClassOptions
+  private _currentClass: string
+  private _fontIcon: string
+  private _iconElement?: SVGElement
+
+  @Input()
+  get icon() {
+    return this._icon
+  }
+
+  set icon(val: string) {
+    this._icon = val
+    this._addDefaultIcon()
+    if (this._platform.isBrowser) {
+      this._prepareSvgIcon(this.iconService.getSvg(val))
+    }
+  }
+
+  @Input()
+  get fontSet(): string {
+    return this._fontSet
+  }
+
+  set fontSet(key: string) {
+    this._fontSet = key
+  }
+
+  @Input()
+  get fontIcon(): string {
+    return this._fontIcon
+  }
+
+  set fontIcon(key: string) {
+    this._fontIcon = key
+  }
+
+  get hostElement() {
+    return this._el.nativeElement
+  }
+
+  // eslint-disable-next-line max-params
+  constructor(
+    private iconService: LyIconService,
+    private _el: ElementRef,
+    private _renderer: Renderer2,
+    theme: LyTheme2,
+    readonly sRenderer: StyleRenderer,
+    private _platform: Platform,
+  ) {
+    super(theme)
+    this.setAutoContrast()
+  }
+
+  ngOnInit() {
+    this._updateClass()
+  }
+
+  ngOnChanges() {
+    if (this.fontSet || this.fontIcon) {
+      this._updateFontClass()
+    }
+    this.updateStyle(this._el)
+  }
+
+  ngOnDestroy() {
+    this._cleanIcon()
+  }
+
+  private _isDefault() {
+    return !(this.icon || this.fontSet)
+  }
+
+  private _prepareSvgIcon(svgIcon: SvgIcon) {
+    if (svgIcon.svg) {
+      this._appendChild(svgIcon.svg.cloneNode(true) as SVGElement)
+    } else {
+      svgIcon.obs!.pipe(take(1)).subscribe(svgElement => {
+        this._appendChild(svgElement.cloneNode(true) as SVGElement)
+      })
+    }
+  }
+
+  private _appendChild(svg: SVGElement) {
+    this._cleanIcon()
+    this._iconElement = svg
+    this._renderer.addClass(svg, this.iconService.classes.svg)
+    this._renderer.appendChild(this._el.nativeElement, svg)
+  }
+
+  private _addDefaultIcon() {
+    this.sRenderer.addClass(this.classes.defaultIcon)
+    this.sRenderer.addClass(this.classes.loading)
+  }
+
+  private _updateClass() {
+    if (this._isDefault() && this.iconService.defaultClass) {
+      this._renderer.addClass(this._el.nativeElement, this.iconService.defaultClass)
+    }
+  }
+
+  private _cleanIcon() {
+    const icon = this._iconElement
+    this.sRenderer.removeClass(this.classes.defaultIcon)
+    this.sRenderer.removeClass(this.classes.loading)
+    if (icon) {
+      this._renderer.removeChild(this._el.nativeElement, icon)
+      this._iconElement = undefined
+    }
+  }
+
+  private _updateFontClass() {
+    const currentClass = this._currentClass
+    const fontSetKey = this.fontSet
+    const icon = this.fontIcon
+    const el = this._el.nativeElement
+    const iconClass = this.iconService.getFontClass(fontSetKey)
+    if (currentClass) {
+      this._renderer.removeClass(el, currentClass)
+    }
+    if (this._previousFontSet) {
+      if (this._previousFontSet.class) {
+        this._renderer.removeClass(el, this._previousFontSet.class)
+      }
+    }
+    if (iconClass) {
+      this._previousFontSet = iconClass
+    } else {
+      throw new Error(`Icon with key${fontSetKey} not found`)
+    }
+    this._currentClass = `${iconClass.prefix}${icon}`
+    this._renderer.addClass(el, this._currentClass)
+  }
+}

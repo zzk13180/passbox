@@ -1,59 +1,57 @@
 <div class="apps-dialog">
   <ly-toolbar position="static" bg="primary" [elevation]="3">
-    <ly-grid container [justify]="showHome ? 'between' : 'end'" ly-dialog-actions>
-      <ly-icon *ngIf="showHome" (click)="showHome = false" routerLink="/home">home</ly-icon>
+    <ly-grid container justify="between" ly-dialog-actions>
+      <p lyTyp="caption">Apps</p>
       <ly-icon cdkFocusRegionStart (click)="dialogRef.close()">close</ly-icon>
     </ly-grid>
   </ly-toolbar>
-  <div ly-dialog-content class="apps-dialog-content" (click)="showHome = true">
+  <div ly-dialog-content class="apps-dialog-content" (click)="dialogRef.close()">
     <ly-grid container spacing="16 8@XSmall">
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
           <button ly-button routerLink="/apps/note/home">
-            <img src="assets/images/note.svg" alt="note" />
-          </button>
-        </div>
-      </ly-grid>
-      <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
-        <div [className]="classes.box">
-          <button ly-button routerLink="/apps/test-viewer">
-            test-viewer
+            <img src="assets/svg/apps/note.svg" alt="note" />
           </button>
         </div>
       </ly-grid>
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
           <button ly-button>
-            <img src="assets/images/note.svg" alt="note" />
+            <img src="assets/svg/apps/note.svg" alt="note" />
           </button>
         </div>
       </ly-grid>
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
           <button ly-button>
-            <img src="assets/images/note.svg" alt="note" />
+            <img src="assets/svg/apps/note.svg" alt="note" />
           </button>
         </div>
       </ly-grid>
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
           <button ly-button>
-            <img src="assets/images/note.svg" alt="note" />
+            <img src="assets/svg/apps/note.svg" alt="note" />
           </button>
         </div>
       </ly-grid>
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
           <button ly-button>
-            <img src="assets/images/note.svg" alt="note" />
+            <img src="assets/svg/apps/note.svg" alt="note" />
           </button>
         </div>
       </ly-grid>
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
           <button ly-button>
-            <img src="assets/images/note.svg" alt="note" />
+            <img src="assets/svg/apps/note.svg" alt="note" />
           </button>
+        </div>
+      </ly-grid>
+      <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
+        <div [className]="classes.box">
+          <button ly-button routerLink="/apps/test-viewer">test-viewer</button>
         </div>
       </ly-grid>
     </ly-grid>

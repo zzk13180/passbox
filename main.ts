@@ -1,7 +1,6 @@
 import * as path from 'node:path'
-import * as fs from 'node:fs'
 import { parse, URL } from 'node:url'
-import * as fsExtra from 'fs-extra'
+import * as fs from 'fs-extra'
 import {
   app,
   Tray,
@@ -17,8 +16,6 @@ import { BrowserMenu } from './menu'
 const Store = require('electron-store')
 const remote = require('@electron/remote/main')
 const contextMenu = require('electron-context-menu')
-
-const APP_NAME = 'passbox'
 
 interface Card {
   id: string
@@ -36,7 +33,7 @@ class Main {
     remote.initialize()
     if (this.isServer) {
       const appDataPath = app.getAppPath()
-      app.setPath('userData', `${appDataPath}/${APP_NAME}-user-data`)
+      app.setPath('userData', `${appDataPath}/${app.name}-user-data`)
       app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
     }
     if (process.platform !== 'darwin') {
@@ -73,7 +70,7 @@ class WindowMain {
     private isServe = false,
     private store = new Store({
       defaults: {},
-      name: APP_NAME,
+      name: app.name,
     }),
   ) {}
 
@@ -152,14 +149,17 @@ class WindowMain {
 
     ipcMain.handle('get-app-info', (): string => {
       return JSON.stringify({
-        name: APP_NAME,
+        name: app.name,
         version: app.getVersion(),
       })
     })
 
+    ipcMain.on('open-dev-tools', () => {
+      this.win.webContents.openDevTools()
+    })
+
     ipcMain.on('write-file', (event, pathname, content, options = 'utf-8') => {
-      fsExtra
-        .outputFile(pathname, content, options)
+      fs.outputFile(pathname, content, options)
         .then(() => {})
         .catch(error => {
           event.reply('write-file-error', error.message)
@@ -167,8 +167,7 @@ class WindowMain {
     })
 
     ipcMain.on('delete-file', (event, pathname) => {
-      fsExtra
-        .remove(pathname)
+      fs.remove(pathname)
         .then(() => {})
         .catch(error => {
           event.reply('delete-file-error', error.message)
@@ -259,7 +258,7 @@ class WindowMain {
         path.join(__dirname, `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.png`),
       )
     }
-    this.tray.setToolTip(APP_NAME)
+    this.tray.setToolTip(app.name)
     this.changeTrayMenu()
     if (process.platform !== 'darwin') {
       const toggleWindow = () => {

@@ -35,6 +35,10 @@ export class ElectronService {
     return result
   }
 
+  openDevTools() {
+    this.ipcRenderer.send('open-dev-tools')
+  }
+
   writeFile(path: string, data: string) {
     this.ipcRenderer.send('write-file', path, data)
   }

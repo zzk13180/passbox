@@ -24,7 +24,7 @@
   ],
   "win": {
     "icon": "dist/assets/icons",
-    "target": ["nsis", "portable"]
+    "target": ["nsis"]
   },
   "mac": {
     "icon": "dist/assets/icons",
@@ -32,10 +32,6 @@
       "target": "dmg",
       "arch": ["x64", "arm64"]
     }
-  },
-  "linux": {
-    "icon": "dist/assets/icons",
-    "target": ["AppImage"]
   },
   "nsis": {
     "oneClick": false,

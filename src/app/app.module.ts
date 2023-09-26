@@ -6,7 +6,6 @@ import { EffectsModule } from '@ngrx/effects'
 import { StoreModule } from '@ngrx/store'
 import { LocationStrategy, HashLocationStrategy } from '@angular/common'
 
-import { MaterialModule } from './material'
 import { AppComponent } from './app.component'
 import { AppRoutingModule } from './app-routing.module'
 import { HomeModule } from './home/home.module'
@@ -20,7 +19,6 @@ import { WindowToken, windowProvider, STORAGE_PROVIDERS, cardReducer } from './s
     AppRoutingModule,
     BrowserAnimationsModule,
     HomeModule,
-    MaterialModule.forRoot(),
     StoreModule.forRoot({ theCards: cardReducer }),
     EffectsModule.forRoot([CardEffects]),
   ],
