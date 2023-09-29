@@ -49,8 +49,9 @@ export class PasswordSetDialog implements AfterViewInit {
   }
 
   reset() {
-    this.electronService.remote.dialog
-      .showMessageBox(this.electronService.remote.BrowserWindow.getFocusedWindow(), {
+    const { dialog } = window.electronAPI
+    dialog.showMessageBox(
+      {
         type: 'question',
         title: 'confirm',
         message: 'reset data',
@@ -59,13 +60,14 @@ export class PasswordSetDialog implements AfterViewInit {
         defaultId: 1,
         cancelId: 1,
         noLink: true,
-      })
-      .then(async result => {
+      },
+      async result => {
         if (result.response === 0) {
           await this.electronService.storageClear()
           this.dialogRef.close(true)
         }
-      })
+      },
+    )
   }
 
   async ok() {

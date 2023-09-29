@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core'
-import * as remote from '@electron/remote'
-import type { clipboard, ipcRenderer } from 'electron'
 import type { Card } from '../models'
 import type { StorageKey } from '../enums/storageKey'
 
@@ -8,24 +6,11 @@ import type { StorageKey } from '../enums/storageKey'
   providedIn: 'root',
 })
 export class ElectronService {
-  remote: typeof remote
-  private clipboard: typeof clipboard
-  private ipcRenderer: typeof ipcRenderer
+  private ipcRenderer = window.electronAPI.ipcRenderer
 
-  get isElectron(): boolean {
-    return !!(window && window.process && window.process.type)
-  }
+  constructor() {}
 
-  constructor() {
-    if (this.isElectron) {
-      this.remote = window.require('@electron/remote')
-      const electron = window.require('electron')
-      this.clipboard = electron.clipboard
-      this.ipcRenderer = electron.ipcRenderer
-    }
-  }
-
-  async getAppInfo(): Promise<string> {
+  async getAppInfo(): Promise<{ name: string; version: string }> {
     const result = await this.ipcRenderer.invoke('get-app-info')
     return result
   }
@@ -53,7 +38,7 @@ export class ElectronService {
   }
 
   copyText(text: string) {
-    this.clipboard.writeText(text)
+    this.ipcRenderer.send('clipboard-write-text', text)
   }
 
   openBrowser(card: Card) {

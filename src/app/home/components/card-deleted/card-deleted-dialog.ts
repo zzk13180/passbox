@@ -66,30 +66,28 @@ export class CardDeletedDialog {
   displayedColumns = this.columns.map(c => c.columnDef)
 
   viewMenu(card: Card) {
-    const menu = new this.electronService.remote.Menu()
-    menu.append(
-      new this.electronService.remote.MenuItem({
+    const menus = [
+      {
         label: 'restore',
-        click: () => {
+        cb: () => {
           this.restoreCard(card)
         },
-      }),
-    )
-    menu.append(
-      new this.electronService.remote.MenuItem({
+      },
+      {
         label: 'delete',
-        click: () => {
+        cb: () => {
           this.del(card)
         },
-      }),
-    )
-
-    menu.popup()
+      },
+    ]
+    const { menu } = window.electronAPI
+    menu.popupMenu(menus)
   }
 
   del(card: Card) {
-    this.electronService.remote.dialog
-      .showMessageBox(this.electronService.remote.BrowserWindow.getFocusedWindow(), {
+    const { dialog } = window.electronAPI
+    dialog.showMessageBox(
+      {
         type: 'question',
         title: 'confirm',
         message: 'delete card',
@@ -98,16 +96,16 @@ export class CardDeletedDialog {
         defaultId: 0,
         cancelId: 1,
         noLink: true,
-      })
-      .then(result => {
-        if (result.response === 0) {
+      },
+      result => {
+        result.response === 0 &&
           this.ngZone.run(() => {
             this.store.dispatch(remove({ card }))
             this.cards = this.cards.filter(c => c.id !== card.id)
             this._cd.detectChanges()
           })
-        }
-      })
+      },
+    )
   }
 
   restoreCard(card: Card) {

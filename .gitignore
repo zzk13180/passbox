@@ -17,7 +17,7 @@ src/**/*.js
 !src/karma.conf.js
 *.js.map
 *.js
-!angular.webpack.js
+!preload.js
 # dependencies
 /node_modules
 

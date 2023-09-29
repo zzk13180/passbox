@@ -14,6 +14,7 @@ export class FileDropDirective {
     if (!file) {
       return
     }
+    // @ts-ignore
     const { name, path } = file
     if (name && path) {
       this.fileDrop.emit({ name, path })

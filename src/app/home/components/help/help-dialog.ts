@@ -92,8 +92,7 @@ export class HelpDialog {
   }
 
   private async getAppInfo() {
-    const appInfoStr = await this.electronService.getAppInfo()
-    const appInfo = JSON.parse(appInfoStr)
+    const appInfo = await this.electronService.getAppInfo()
     return appInfo
   }
 }

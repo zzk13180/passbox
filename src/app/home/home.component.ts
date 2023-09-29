@@ -258,8 +258,9 @@ export class HomeComponent implements OnInit {
   }
 
   del(card: Card) {
-    this.electronService.remote.dialog
-      .showMessageBox(this.electronService.remote.BrowserWindow.getFocusedWindow(), {
+    const { dialog } = window.electronAPI
+    dialog.showMessageBox(
+      {
         type: 'question',
         title: 'confirm',
         message: 'delete card',
@@ -268,15 +269,15 @@ export class HomeComponent implements OnInit {
         defaultId: 0,
         cancelId: 1,
         noLink: true,
-      })
-      .then(result => {
-        if (result.response === 0) {
+      },
+      result => {
+        result.response === 0 &&
           this.ngZone.run(() => {
             this.store.dispatch(remove({ card }))
             this._cd.detectChanges()
           })
-        }
-      })
+      },
+    )
   }
 
   openBrowser(card: Card, event?: Event): void {
@@ -413,8 +414,9 @@ export class HomeComponent implements OnInit {
 
   importData(event: Event): void {
     event.stopPropagation()
-    this.electronService.remote.dialog
-      .showOpenDialog(this.electronService.remote.BrowserWindow.getFocusedWindow(), {
+    const { dialog } = window.electronAPI
+    dialog.showOpenDialog(
+      {
         title: 'import data',
         filters: [
           {
@@ -423,8 +425,8 @@ export class HomeComponent implements OnInit {
           },
         ],
         properties: ['openFile'],
-      })
-      .then(async result => {
+      },
+      async result => {
         if (result.filePaths && result.filePaths.length) {
           const filePath = result.filePaths[0]
           const data = await this.electronService.readFile(filePath)
@@ -456,7 +458,8 @@ export class HomeComponent implements OnInit {
             this.sb.open({ msg: error.message })
           }
         }
-      })
+      },
+    )
   }
 
   private encryptedData2cards(data: {
@@ -545,32 +548,22 @@ export class HomeComponent implements OnInit {
   }
 
   viewMenu(card: Card) {
-    const menu = new this.electronService.remote.Menu()
-    menu.append(
-      new this.electronService.remote.MenuItem({
+    const menus = [
+      {
         label: 'open',
-        click: () => {
-          this.openBrowser(card)
-        },
-      }),
-    )
-    menu.append(
-      new this.electronService.remote.MenuItem({
+        cb: () => this.openBrowser(card),
+      },
+      {
         label: 'modify',
-        click: () => {
-          this.modify(card)
-        },
-      }),
-    )
-    menu.append(
-      new this.electronService.remote.MenuItem({
+        cb: () => this.modify(card),
+      },
+      {
         label: 'delete',
-        click: () => {
-          this.del(card)
-        },
-      }),
-    )
-    menu.popup()
+        cb: () => this.del(card),
+      },
+    ]
+    const { menu } = window.electronAPI
+    menu.popupMenu(menus)
   }
 
   onSortStarted(index: number) {
@@ -616,7 +609,6 @@ export class HomeComponent implements OnInit {
       {},
     )
     dialogRef.afterClosed.subscribe(result => {
-      console.log(result)
       if (result) {
         this.electronService.copyText(result)
         this.sb.open({ msg: 'copied success' })

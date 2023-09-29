@@ -1,4 +1,3 @@
-import * as Crypto from 'node:crypto'
 import * as pako from 'pako'
 import { Injectable } from '@angular/core'
 import { CryptoFunctionService as CryptoFunctionServiceAbstraction } from '../models/abstractions/cryptoFunction.service'
@@ -9,13 +8,11 @@ import { DecryptParameters } from '../models/domain/decryptParameters'
   providedIn: 'root',
 })
 export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
-  crypto: typeof Crypto
+  private crypto = window.electronAPI.crypto
 
-  constructor() {
-    this.crypto = window.require('node:crypto')
-  }
+  constructor() {}
 
-  pbkdf2(
+  async pbkdf2(
     password: string | ArrayBuffer,
     salt: string | ArrayBuffer,
     algorithm: 'sha256' | 'sha512',
@@ -24,30 +21,30 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
     const len = algorithm === 'sha256' ? 32 : 64
     const nodePassword = this.toNodeValue(password)
     const nodeSalt = this.toNodeValue(salt)
-    return new Promise<ArrayBuffer>((resolve, reject) => {
-      this.crypto.pbkdf2(
-        nodePassword,
-        nodeSalt,
-        iterations,
-        len,
-        algorithm,
-        (error, key) => {
-          if (error != null) {
-            reject(error)
-          } else {
-            resolve(this.toArrayBuffer(key))
-          }
-        },
-      )
-    })
+    const key = await this.crypto.pbkdf2Sync(
+      nodePassword,
+      nodeSalt,
+      iterations,
+      len,
+      algorithm,
+    )
+    return this.toArrayBuffer(key)
   }
 
-  aesEncrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
+  async aesEncrypt(
+    data: ArrayBuffer,
+    iv: ArrayBuffer,
+    key: ArrayBuffer,
+  ): Promise<ArrayBuffer> {
     const nodeData = this.toNodeBuffer(data)
     const nodeIv = this.toNodeBuffer(iv)
     const nodeKey = this.toNodeBuffer(key)
-    const cipher = this.crypto.createCipheriv('aes-256-cbc', nodeKey, nodeIv)
-    const encBuf = Buffer.concat([cipher.update(nodeData), cipher.final()])
+    const encBuf = await this.crypto.createCipheriv(
+      'aes-256-cbc',
+      nodeKey,
+      nodeIv,
+      nodeData,
+    )
     return Promise.resolve(this.toArrayBuffer(encBuf))
   }
 
@@ -77,7 +74,7 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
     return pako.inflate(decBuf, { to: 'string' })
   }
 
-  private aesDecrypt(
+  private async aesDecrypt(
     data: ArrayBuffer,
     iv: ArrayBuffer,
     key: ArrayBuffer,
@@ -85,25 +82,22 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
     const nodeData = this.toNodeBuffer(data)
     const nodeIv = this.toNodeBuffer(iv)
     const nodeKey = this.toNodeBuffer(key)
-    const decipher = this.crypto.createDecipheriv('aes-256-cbc', nodeKey, nodeIv)
-    const decBuf = Buffer.concat([decipher.update(nodeData), decipher.final()])
-    return Promise.resolve(this.toArrayBuffer(decBuf))
+    const decBuf = await this.crypto.createDecipheriv(
+      'aes-256-cbc',
+      nodeKey,
+      nodeIv,
+      nodeData,
+    )
+    return this.toArrayBuffer(decBuf)
   }
 
-  randomBytes(length: number): Promise<ArrayBuffer> {
-    return new Promise<ArrayBuffer>((resolve, reject) => {
-      this.crypto.randomBytes(length, (error, bytes) => {
-        if (error != null) {
-          reject(error)
-        } else {
-          resolve(this.toArrayBuffer(bytes))
-        }
-      })
-    })
+  async randomBytes(length: number): Promise<ArrayBuffer> {
+    const bytes = await this.crypto.randomBytes(length)
+    return this.toArrayBuffer(bytes)
   }
 
-  private toNodeValue(value: string | ArrayBuffer): string | Buffer {
-    let nodeValue: string | Buffer
+  private toNodeValue(value: string | ArrayBuffer): string | Uint8Array {
+    let nodeValue: string | Uint8Array
     if (typeof value === 'string') {
       nodeValue = value
     } else {
@@ -112,11 +106,11 @@ export class CryptoFunctionService implements CryptoFunctionServiceAbstraction {
     return nodeValue
   }
 
-  private toNodeBuffer(value: ArrayBuffer): Buffer {
-    return Buffer.from(new Uint8Array(value) as any)
+  private toNodeBuffer(value: ArrayBuffer): Uint8Array {
+    return new Uint8Array(value)
   }
 
-  private toArrayBuffer(value: Buffer | string | ArrayBuffer): ArrayBuffer {
+  private toArrayBuffer(value: string | ArrayBuffer | Uint8Array): ArrayBuffer {
     let buf: ArrayBuffer
     if (typeof value === 'string') {
       buf = fromUtf8ToArray(value).buffer

@@ -60,8 +60,7 @@ export class NoteRepository {
 
   private async getDirPath(): Promise<string> {
     const dataPath = await this.electronService.getUserDataPath()
-    const appInfoStr = await this.electronService.getAppInfo()
-    const appInfo = JSON.parse(appInfoStr)
+    const appInfo = await this.electronService.getAppInfo()
     const reg = new RegExp(`${appInfo.name}.json$`)
     return dataPath.replace(reg, '')
   }

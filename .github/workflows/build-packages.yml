@@ -44,7 +44,7 @@ jobs:
       - name: upload package
         uses: actions/upload-artifact@v3
         with:
-          name: mac-package
+          name: mac-release
           path: release
 
   buildWindows:
@@ -87,5 +87,5 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: Gitify-dist-win
+          name: win-release
           path: release

@@ -1,17 +1,19 @@
 import * as path from 'node:path'
+import * as cypto from 'node:crypto'
 import { parse, URL } from 'node:url'
 import * as fs from 'fs-extra'
 import {
   app,
   Tray,
   Menu,
+  MenuItem,
   Event,
   dialog,
   ipcMain,
+  clipboard,
   BrowserWindow,
   MenuItemConstructorOptions,
 } from 'electron'
-import { BrowserMenu } from './menu'
 
 const Store = require('electron-store')
 const remote = require('@electron/remote/main')
@@ -89,8 +91,14 @@ class WindowMain {
         `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
       ),
       webPreferences: {
-        contextIsolation: false,
-        nodeIntegration: true,
+        contextIsolation: true,
+        nodeIntegration: false,
+        enableWebSQL: false,
+        spellcheck: false,
+        preload: path.join(
+          __dirname,
+          `${this.isServe ? 'src' : 'dist'}/preload/preload.js`,
+        ),
       },
     })
 
@@ -147,11 +155,11 @@ class WindowMain {
       return data
     })
 
-    ipcMain.handle('get-app-info', (): string => {
-      return JSON.stringify({
+    ipcMain.handle('get-app-info', () => {
+      return {
         name: app.name,
         version: app.getVersion(),
-      })
+      }
     })
 
     ipcMain.on('open-dev-tools', () => {
@@ -188,6 +196,90 @@ class WindowMain {
 
     ipcMain.handle('storage-clear', (_): void => {
       return this.store.clear()
+    })
+
+    ipcMain.handle('clipboard-read-text', (): string => {
+      return clipboard.readText()
+    })
+
+    ipcMain.on('clipboard-write-text', (_, text: string): void => {
+      clipboard.writeText(text)
+    })
+
+    ipcMain.handle('cypto-random-bytes', (_, length: number): Buffer => {
+      return cypto.randomBytes(length)
+    })
+
+    ipcMain.handle(
+      'crypto-pbkdf2-sync',
+      // eslint-disable-next-line max-params
+      (_, password, salt, iterations, keylen, digest): Buffer => {
+        const nodePassword = Buffer.from(password)
+        const nodeSalt = Buffer.from(salt)
+        return cypto.pbkdf2Sync(nodePassword, nodeSalt, iterations, keylen, digest)
+      },
+    )
+
+    ipcMain.handle(
+      'crypto-create-decipheriv',
+      // eslint-disable-next-line max-params
+      (_, algorithm, key, iv, data): Buffer => {
+        const nodeKey = Buffer.from(key)
+        const nodeIv = Buffer.from(iv)
+        const nodeData = Buffer.from(data)
+        const decipher = cypto.createDecipheriv(algorithm, nodeKey, nodeIv)
+        const decBuf = Buffer.concat([decipher.update(nodeData), decipher.final()])
+        return decBuf
+      },
+    )
+
+    // eslint-disable-next-line max-params
+    ipcMain.handle('crypto-create-cipheriv', (_, algorithm, key, iv, data): Buffer => {
+      const nodeKey = Buffer.from(key)
+      const nodeIv = Buffer.from(iv)
+      const nodeData = Buffer.from(data)
+      const cipher = cypto.createCipheriv(algorithm, nodeKey, nodeIv)
+      const encBuf = Buffer.concat([cipher.update(nodeData), cipher.final()])
+      return encBuf
+    })
+
+    ipcMain.handle('crypto-random-bytes', (_, length: number): Buffer => {
+      return cypto.randomBytes(length)
+    })
+
+    ipcMain.on('popup-menu', (event, menus: { label: string; eventId: string }[]) => {
+      const menu = new Menu()
+      for (let i = 0; i < menus.length; i++) {
+        const { label, eventId } = menus[i]
+        const menuItem = {
+          label,
+          click: () => {
+            event.reply('popup-menu-click', eventId)
+          },
+        }
+        menu.append(new MenuItem(menuItem))
+      }
+      menu.once('menu-will-close', () => {
+        setTimeout(() => {
+          event.reply(
+            'popup-menu-close',
+            menus.map(menu => menu.eventId),
+          )
+        }, 500)
+      })
+      menu.popup()
+    })
+
+    ipcMain.on('show-message-box', (event, options: any, eventId: string) => {
+      dialog.showMessageBox(options).then(result => {
+        event.reply('show-message-box-reply', eventId, result)
+      })
+    })
+
+    ipcMain.on('show-open-dialog', (event, options: any, eventId: string) => {
+      dialog.showOpenDialog(options).then(result => {
+        event.reply('show-open-dialog-reply', eventId, result)
+      })
     })
   }
 
@@ -313,6 +405,170 @@ class WindowMain {
     ]
     this.contextMenu = Menu.buildFromTemplate(menuItemOptions)
     this.tray.setContextMenu(this.contextMenu)
+  }
+}
+
+class BrowserMenu {
+  constructor(private win: BrowserWindow) {}
+  private isOSX(): boolean {
+    return process.platform === 'darwin'
+  }
+
+  private zoomOut(): void {
+    this.win.webContents.zoomFactor -= 0.1
+  }
+
+  private zoomIn(): void {
+    this.win.webContents.zoomFactor += 0.1
+  }
+
+  private zoomReset(): void {
+    this.win.webContents.zoomFactor = 1.0
+  }
+
+  private goBack(): void {
+    this.win.webContents.goBack()
+  }
+
+  private goForward(): void {
+    this.win.webContents.goForward()
+  }
+
+  init(): MenuItemConstructorOptions[] {
+    const viewMenu: MenuItemConstructorOptions = {
+      label: '&View',
+      submenu: [
+        {
+          label: 'Back',
+          accelerator: this.isOSX() ? 'Cmd+Left' : 'Alt+Left',
+          click: (): void => this.goBack(),
+        },
+        {
+          label: 'Forward',
+          accelerator: this.isOSX() ? 'Cmd+Right' : 'Alt+Right',
+          click: (): void => this.goForward(),
+        },
+        {
+          label: 'Reload',
+          role: 'reload',
+        },
+        {
+          type: 'separator',
+        },
+        {
+          label: 'Toggle Full Screen',
+          accelerator: this.isOSX() ? 'Ctrl+Cmd+F' : 'F11',
+          enabled: this.win.isFullScreenable() || this.isOSX(),
+          visible: this.win.isFullScreenable() || this.isOSX(),
+          click: (): void => {
+            if (this.win.isFullScreenable()) {
+              this.win.setFullScreen(!this.win.isFullScreen())
+            } else if (this.isOSX()) {
+              this.win.setSimpleFullScreen(!this.win.isSimpleFullScreen())
+            }
+          },
+        },
+        {
+          label: 'Zoom In',
+          accelerator: 'CmdOrCtrl+=',
+          click: (): void => this.zoomIn(),
+        },
+        {
+          label: 'ZoomInAdditionalShortcut',
+          visible: false,
+          acceleratorWorksWhenHidden: true,
+          accelerator: 'CmdOrCtrl+numadd',
+          click: (): void => this.zoomIn(),
+        },
+        {
+          label: 'Zoom Out',
+          accelerator: 'CmdOrCtrl+-',
+          click: (): void => this.zoomOut(),
+        },
+        {
+          label: 'ZoomOutAdditionalShortcut',
+          visible: false,
+          acceleratorWorksWhenHidden: true,
+          accelerator: 'CmdOrCtrl+numsub',
+          click: (): void => this.zoomOut(),
+        },
+        {
+          label: 'Reset Zoom',
+          accelerator: 'CmdOrCtrl+0',
+          click: (): void => this.zoomReset(),
+        },
+        {
+          label: 'ZoomResetAdditionalShortcut',
+          visible: false,
+          acceleratorWorksWhenHidden: true,
+          accelerator: 'CmdOrCtrl+num0',
+          click: (): void => this.zoomReset(),
+        },
+        {
+          label: 'Toggle Developer Tools',
+          accelerator: this.isOSX() ? 'Alt+Cmd+I' : 'Ctrl+Shift+I',
+          click: () => this.win.webContents.toggleDevTools(),
+        },
+        {
+          label: 'Undo',
+          visible: false,
+          accelerator: 'CmdOrCtrl+Z',
+          role: 'undo',
+        },
+        {
+          label: 'Redo',
+          visible: false,
+          accelerator: 'Shift+CmdOrCtrl+Z',
+          role: 'redo',
+        },
+        {
+          label: 'Cut',
+          visible: false,
+          accelerator: 'CmdOrCtrl+X',
+          role: 'cut',
+        },
+        {
+          label: 'Copy',
+          visible: false,
+          accelerator: 'CmdOrCtrl+C',
+          role: 'copy',
+        },
+        {
+          label: 'Paste',
+          visible: false,
+          accelerator: 'CmdOrCtrl+V',
+          role: 'paste',
+        },
+        {
+          label: 'Select All',
+          visible: false,
+          accelerator: 'CmdOrCtrl+A',
+          role: 'selectAll',
+        },
+      ],
+    }
+    const closeWindow: MenuItemConstructorOptions = {
+      label: 'Close Window',
+      accelerator: 'CmdOrCtrl+W',
+      role: 'close',
+    }
+    const minWindow: MenuItemConstructorOptions = {
+      label: 'Minimize Window',
+      accelerator: 'CmdOrCtrl+M',
+      role: 'minimize',
+    }
+    const reloadWindow: MenuItemConstructorOptions = {
+      label: 'Reload Window',
+      accelerator: 'CmdOrCtrl+R',
+      role: 'reload',
+    }
+    const copyUrl: MenuItemConstructorOptions = {
+      label: 'Copy Current URL',
+      accelerator: 'CmdOrCtrl+L',
+      click: (): void => clipboard.writeText(this.win.webContents.getURL()),
+    }
+    const templates = [closeWindow, minWindow, reloadWindow, copyUrl, viewMenu]
+    return templates
   }
 }
 
