@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
-import { TestViewerComponent } from './test-viewer.component'
+import { TodoComponent } from './todo.component'
 
 const routes: Routes = [
   {
     path: '',
-    component: TestViewerComponent,
+    component: TodoComponent,
   },
 ]
 
@@ -13,4 +13,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class TestViewerRoutingModule {}
+export class TodoRoutingModule {}

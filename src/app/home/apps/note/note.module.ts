@@ -2,7 +2,10 @@ import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { QuillModule } from 'ngx-quill'
-import { MaterialModule } from './material'
+import { LyButtonModule } from '@alyle/ui/button'
+import { MatTabsModule } from '@angular/material/tabs'
+import { MatDialogModule } from '@angular/material/dialog'
+import { LyIconModule } from 'src/app/icon'
 import { NoteRoutingModule } from './note-routing.module'
 import { NoteEditorComponent } from './components/note-editor/note-editor.component'
 import { ToolbarComponent } from './components/toolbar/toolbar.component'
@@ -24,7 +27,10 @@ import { ListComponent } from './pages/list/list.component'
     NoteRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    MaterialModule.forRoot(),
+    MatTabsModule,
+    LyButtonModule,
+    LyIconModule.forRoot(),
+    MatDialogModule,
     QuillModule.forRoot(),
   ],
 })

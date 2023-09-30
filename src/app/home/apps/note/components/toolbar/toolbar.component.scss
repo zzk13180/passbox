@@ -1,5 +1,5 @@
 #note-toolbar {
-  padding: 0 5px;
+  padding: 2px 4px 0 4px;
   display: flex;
   justify-content: space-between;
   background-color: #fff;
@@ -7,9 +7,5 @@
   .draggable {
     flex: 1;
     -webkit-app-region: drag;
-  }
-
-  .mat-icon {
-    color: #838383;
   }
 }

@@ -9,49 +9,30 @@
     <ly-grid container spacing="16 8@XSmall">
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
-          <button ly-button routerLink="/apps/note/home">
+          <button ly-button title="passbox" routerLink="/home">
+            <img src="assets/svg/apps/passbox.svg" alt="passbox" />
+          </button>
+        </div>
+      </ly-grid>
+      <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
+        <div [className]="classes.box">
+          <button ly-button title="notes" routerLink="/apps/note/home">
             <img src="assets/svg/apps/note.svg" alt="note" />
           </button>
         </div>
       </ly-grid>
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
-          <button ly-button>
-            <img src="assets/svg/apps/note.svg" alt="note" />
+          <button ly-button title="todo" routerLink="/apps/todo">
+            <img src="assets/svg/apps/todo.svg" alt="todo" />
           </button>
         </div>
       </ly-grid>
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
-          <button ly-button>
-            <img src="assets/svg/apps/note.svg" alt="note" />
+          <button ly-button title="emoji" routerLink="/apps/emoji">
+            <img src="assets/svg/apps/emoji.svg" alt="emoji" />
           </button>
-        </div>
-      </ly-grid>
-      <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
-        <div [className]="classes.box">
-          <button ly-button>
-            <img src="assets/svg/apps/note.svg" alt="note" />
-          </button>
-        </div>
-      </ly-grid>
-      <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
-        <div [className]="classes.box">
-          <button ly-button>
-            <img src="assets/svg/apps/note.svg" alt="note" />
-          </button>
-        </div>
-      </ly-grid>
-      <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
-        <div [className]="classes.box">
-          <button ly-button>
-            <img src="assets/svg/apps/note.svg" alt="note" />
-          </button>
-        </div>
-      </ly-grid>
-      <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
-        <div [className]="classes.box">
-          <button ly-button routerLink="/apps/test-viewer">test-viewer</button>
         </div>
       </ly-grid>
     </ly-grid>

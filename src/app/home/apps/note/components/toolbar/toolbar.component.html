@@ -1,21 +1,18 @@
 <div id="note-toolbar">
   <div class="left">
-    <button mat-icon-button routerLink="/home">
-      <mat-icon>home</mat-icon>
-    </button>
-    <button mat-icon-button (click)="openAppsDialog()">
-      <mat-icon>apps</mat-icon>
+    <button ly-button size="small" (click)="openAppsDialog()">
+      <ly-icon color="#838383">apps</ly-icon>
     </button>
   </div>
 
   <div class="draggable"></div>
 
   <div class="right">
-    <button mat-icon-button (click)="addNewNote()">
-      <mat-icon>add</mat-icon>
+    <button ly-button size="small" (click)="addNewNote()">
+      <ly-icon color="#838383">add</ly-icon>
     </button>
-    <button mat-icon-button routerLink="/apps/note/list">
-      <mat-icon>list</mat-icon>
+    <button ly-button size="small" routerLink="/apps/note/list">
+      <ly-icon color="#838383" bg="SublimeLight">list</ly-icon>
     </button>
   </div>
 </div>

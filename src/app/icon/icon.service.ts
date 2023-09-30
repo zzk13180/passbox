@@ -59,9 +59,6 @@ export class LyIconService {
       '<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"></circle></svg>'
   }
 
-  setSvg() {
-    // empty
-  }
 
   addSvgIconLiteral(key: string, literal: SafeHtml) {
     const sanitizedLiteral = this._sanitizer.sanitize(SecurityContext.HTML, literal)

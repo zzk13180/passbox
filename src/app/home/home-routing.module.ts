@@ -12,9 +12,12 @@ const routes: Routes = [
     loadChildren: () => import('./apps/note/note.module').then(m => m.NoteModule),
   },
   {
-    path: 'apps/test-viewer',
-    loadChildren: () =>
-      import('./apps/test-viewer/test-viewer.module').then(m => m.TestViewerModule),
+    path: 'apps/emoji',
+    loadChildren: () => import('./apps/emoji/emoji.module').then(m => m.EmojiModule),
+  },
+  {
+    path: 'apps/todo',
+    loadChildren: () => import('./apps/todo/todo.module').then(m => m.TodoModule),
   },
 ]
 

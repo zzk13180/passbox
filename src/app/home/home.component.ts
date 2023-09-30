@@ -15,6 +15,7 @@ import { LySnackBar } from '@alyle/ui/snack-bar'
 import { Observable, take } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import { Store, select } from '@ngrx/store'
+import { SVG_ICONS, LyIconService } from 'src/app/icon'
 import { StorageKey, DBError } from '../enums/storageKey'
 import { Card, CardState } from '../models'
 import {
@@ -44,7 +45,6 @@ import { PasswordSetDialog } from './components/password/password-set-dialog'
 import { AppsDialog } from './components/apps-dialog/apps-dialog'
 import { HelpDialog } from './components/help/help-dialog'
 import { PasswordGeneratorDialog } from './components/password-generator/password-generator'
-import { SVG_ICONS, LyIconService } from './components/icon'
 
 import type { CdkDragMove } from '@angular/cdk/drag-drop'
 
@@ -427,36 +427,36 @@ export class HomeComponent implements OnInit {
         properties: ['openFile'],
       },
       async result => {
-        if (result.filePaths && result.filePaths.length) {
-          const filePath = result.filePaths[0]
-          const data = await this.electronService.readFile(filePath)
-          const { toString } = Object.prototype
-          const ext = filePath.split('.').pop()
-          try {
-            if (ext !== 'json') {
-              const cards = html2cards(data)
-              if (!cards.length || toString.call(cards[0]) !== '[object Object]') {
-                throw new Error('invalid data')
-              }
-              this.addImportedCards(cards)
-            } else {
-              let jsonData = null
-              try {
-                jsonData = JSON.parse(data)
-              } catch (_) {
-                throw new Error('invalid data')
-              }
-              if (jsonData && jsonData.items && jsonData.items.length) {
-                this.addImportedCards(jsonData.items)
-              } else if (jsonData && jsonData.cards && jsonData.userState) {
-                this.encryptedData2cards(jsonData)
-              } else {
-                throw new Error('invalid data')
-              }
+        const filePath = result.filePaths?.[0]
+        if (!filePath) {
+          return
+        }
+        const data = await this.electronService.readFile(filePath)
+        const ext = filePath.split('.').pop()
+        try {
+          if (ext !== 'json') {
+            const cards = html2cards(data)
+            if (!cards.length || cards[0]?.toString() !== '[object Object]') {
+              throw new Error('invalid data')
             }
-          } catch (error) {
-            this.sb.open({ msg: error.message })
+            this.addImportedCards(cards)
+          } else {
+            let jsonData = null
+            try {
+              jsonData = JSON.parse(data)
+            } catch (_) {
+              throw new Error('invalid data')
+            }
+            if (jsonData?.items?.length) {
+              this.addImportedCards(jsonData.items)
+            } else if (jsonData?.cards && jsonData?.userState) {
+              this.encryptedData2cards(jsonData)
+            } else {
+              throw new Error('invalid data')
+            }
           }
+        } catch (error) {
+          this.sb.open({ msg: error.message })
         }
       },
     )
@@ -521,24 +521,24 @@ export class HomeComponent implements OnInit {
   }
 
   private addImportedCards(importedCards: Card[]): void {
-    const checkCardIsExist = (card: Card, cards: Card[]) => {
-      if (card.id) {
-        return cards.some(item => item.id === card.id)
-      }
-      return cards.some(
-        item =>
-          item.url === card.url &&
-          item.title === card.title &&
-          item.secret === card.secret &&
-          item.description === card.description,
-      )
-    }
     this.cards$.pipe(take(1)).subscribe(cards => {
       const cardsToImport = importedCards.filter(
-        card => this.checkCardIsAvailable(card) && !checkCardIsExist(card, cards),
+        card =>
+          this.checkCardIsAvailable(card) &&
+          !cards.some(
+            item =>
+              item.id === card.id ||
+              (item.url === card.url &&
+                item.title === card.title &&
+                item.secret === card.secret &&
+                item.description === card.description),
+          ),
       )
       this.store.dispatch(add({ cards: cardsToImport }))
       this.sb.open({ msg: 'import success' })
+      this.ngZone.run(() => {
+        this._cd.detectChanges()
+      })
     })
   }
 
@@ -592,13 +592,11 @@ export class HomeComponent implements OnInit {
   }
 
   openAppsDialog() {
-    const dialogRef = this._dialog.open<AppsDialog>(AppsDialog, {})
-    dialogRef.afterClosed.subscribe()
+    this._dialog.open<AppsDialog>(AppsDialog, {})
   }
 
   showHelpDialog() {
-    const dialogRef = this._dialog.open<HelpDialog>(HelpDialog, {})
-    dialogRef.afterClosed.subscribe()
+    this._dialog.open<HelpDialog>(HelpDialog, {})
   }
 
   @HostListener('window:keydown.meta.g')

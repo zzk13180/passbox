@@ -29,7 +29,6 @@ export class ToolbarComponent implements OnInit {
   }
 
   openAppsDialog() {
-    const dialogRef = this._dialog.open<AppsDialog>(AppsDialog, {})
-    dialogRef.afterClosed.subscribe()
+    this._dialog.open<AppsDialog>(AppsDialog, {})
   }
 }

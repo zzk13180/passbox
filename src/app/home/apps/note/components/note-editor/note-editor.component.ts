@@ -2,7 +2,6 @@ import { Component, Input, Output, EventEmitter } from '@angular/core'
 
 import Quill from 'quill'
 import ImageResize from 'quill-image-resize-module'
-import 'quill-emoji/dist/quill-emoji.js'
 import { Note } from '../../models'
 
 const parchment = Quill.import('parchment')
@@ -18,10 +17,9 @@ Quill.register('modules/imageResize', ImageResize)
 })
 export class NoteEditorComponent {
   editorConfig = {
-    'emoji-toolbar': true,
     toolbar: [
       ['bold', 'italic', 'underline', 'strike'],
-      ['emoji', 'image', 'formula'],
+      ['image', 'code-block', 'formula'],
       [{ header: [1, 2, false] }],
     ],
     imageResize: {

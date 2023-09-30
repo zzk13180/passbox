@@ -32,13 +32,17 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/preload",
+                "output": "preload"
               }
             ],
             "styles": [
               "./node_modules/katex/dist/katex.min.css",
               "./node_modules/quill/dist/quill.core.css",
               "./node_modules/quill/dist/quill.snow.css",
-              "./node_modules/quill-emoji/dist/quill-emoji.css",
               "@angular/material/prebuilt-themes/pink-bluegrey.css",
               "src/styles.scss"
             ],
@@ -56,18 +60,7 @@
           },
           "configurations": {
             "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "10kb"
-                }
-              ],
+              "budgets": [],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
