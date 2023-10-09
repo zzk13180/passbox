@@ -18,6 +18,7 @@ Oh hi there! 😄
       <ly-icon>more_vert</ly-icon>
     </button>
   </ly-toolbar>
+
   <ng-template #clipboard let-M>
     <ly-menu [ref]="M" [lyWidth]="180">
       <button ly-button ly-menu-item (click)="openDialog('add')">
@@ -75,9 +76,22 @@ Oh hi there! 😄
       >
         <ly-expansion-panel-header class="home-panel-header">
           <ly-panel-title [class]="classes.title">
-            <div cdkDragHandle (click)="eventStop($event)" class="home-drag-handle"></div>
+            <div
+              cdkDragHandle
+              (click)="eventStop($event)"
+              class="home-drag-handle"
+              dStepsGuide
+              [stepIndex]="0"
+              [dStepsGuidePosition]="'bottom-left'"
+            ></div>
             <ng-container>
-              <span lyTyp="button">{{ card.title }}</span>
+              <span
+                lyTyp="button"
+                [matTooltip]="card.url || ''"
+                [matTooltipPositionAtOrigin]="true"
+              >
+                {{ card.title }}
+              </span>
             </ng-container>
           </ly-panel-title>
         </ly-expansion-panel-header>
@@ -89,7 +103,7 @@ Oh hi there! 😄
               </ly-icon>
               <span ly-line>{{ card.description }}</span>
             </ly-list-item>
-            <home-secret-show [card]="card" />
+            <home-secret-show [card]="card" (copyPasswordFn)="copy($event, 'secret')" />
             <ly-list-item>
               <ly-icon (click)="copy(card, 'url')" ly-list-icon>link</ly-icon>
               <span ly-line>{{ card.url }}</span>

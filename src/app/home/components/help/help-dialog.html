@@ -30,22 +30,43 @@ show help dialog 😄
     <ly-drawer-content [withClass]="classes.drawerContent">
       <ly-card [lyMaxWidth]="320" [withClass]="classes.card">
         <ly-card-content>
-          <h2 lyTyp="headline">Keyboard shortcuts</h2>
-          <br/>
           <p lyTyp="body1">
-            Submit : <strong>Shift + Enter</strong>
-            <br>
-            <br>
-            Generate random password string :
-           <strong>Ctrl or Command + G</strong>
+            <em>Submit :</em>
+            <br />
+            <strong>`Shift` + `Enter`</strong>
+            <br />
+            <br />
+            <em>Password Generator :</em>
+            <br />
+            <strong>`Ctrl` or `Command` + `G`</strong>
+            <br />
           </p>
         </ly-card-content>
         <ly-card-actions>
-          <button [withClass]="classes.linkbtn" ly-button raised (click)="openBrowser('website')">
+          <button
+            [withClass]="classes.linkbtn"
+            ly-button
+            raised
+            (click)="openBrowser('doc')"
+          >
+            <span [lyPf]="1">Documentation</span>
+            <ly-icon icon="open_link" color="primary"></ly-icon>
+          </button>
+          <button
+            [withClass]="classes.linkbtn"
+            ly-button
+            raised
+            (click)="openBrowser('website')"
+          >
             <span [lyPf]="1">My Personal Website</span>
             <ly-icon icon="open_link" color="primary"></ly-icon>
           </button>
-          <button [withClass]="classes.linkbtn" ly-button raised (click)="openBrowser('github')">
+          <button
+            [withClass]="classes.linkbtn"
+            ly-button
+            raised
+            (click)="openBrowser('issues')"
+          >
             <span [lyPf]="1">Found an issue? Submit at Github</span>
             <ly-icon icon="open_link" color="primary"></ly-icon>
           </button>

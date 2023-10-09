@@ -6,13 +6,13 @@ import {
   ViewChild,
   HostListener,
   NgZone,
+  OnDestroy,
 } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
-import { StyleRenderer, lyl, ThemeVariables, ThemeRef, LyTheme2 } from '@alyle/ui'
+import { StyleRenderer, LyTheme2 } from '@alyle/ui'
 import { LyDialog } from '@alyle/ui/dialog'
-import { STYLES as EXPANSION_STYLES } from '@alyle/ui/expansion'
 import { LySnackBar } from '@alyle/ui/snack-bar'
-import { Observable, take } from 'rxjs'
+import { Observable, take, Subscription } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import { Store, select } from '@ngrx/store'
 import { SVG_ICONS, LyIconService } from 'src/app/icon'
@@ -32,6 +32,7 @@ import {
   UserStateService,
   DbService,
   CryptoService,
+  NotificationService,
 } from '../services'
 import { CipherString } from '../models/domain/cipherString'
 import { downloadByData } from '../utils/download.util'
@@ -45,83 +46,11 @@ import { PasswordSetDialog } from './components/password/password-set-dialog'
 import { AppsDialog } from './components/apps-dialog/apps-dialog'
 import { HelpDialog } from './components/help/help-dialog'
 import { PasswordGeneratorDialog } from './components/password-generator/password-generator'
+import { StepsGuideService } from './components/steps-guide'
+import { STYLES } from './STYLES.data'
+import { guideSteps } from './guideSteps.data'
 
 import type { CdkDragMove } from '@angular/cdk/drag-drop'
-
-const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
-  const expansion = ref.selectorsOf(EXPANSION_STYLES)
-  return {
-    $name: 'home-panel',
-    title: () => lyl`{
-      margin: 0
-      width: 100%
-      height: 54px
-      line-height: 54px
-      position: relative
-      top: 0
-      left: 0
-      &>span {
-        width: calc(100% - 20px)
-        text-indent: 20px
-        cursor: pointer
-        overflow: hidden
-        white-space: nowrap
-        text-overflow: ellipsis
-      }
-    }`,
-    panel: () => lyl`{
-      ${expansion.panelHeader} {
-        height: 54px
-        width: 100vw
-        margin-right: calc(100% - 100vw)
-        padding: 0
-      }
-      ${expansion.panelTitle} {
-        font-weight: 500
-      }
-      &::after {
-        transition: border ${theme.animations.durations.entering}ms ${theme.animations.curves.standard}
-        content: ''
-        position: absolute
-        top: 0
-        bottom: 0
-        ${theme.before}: 0
-        border-${theme.before}: 2px solid transparent
-      }
-      ly-icon {
-       cursor: pointer
-       user-select: none
-      }
-    }`,
-    accordion: () => {
-      return lyl`{
-        ${expansion.expanded} {
-          ${expansion.panelHeader} {
-            height: 54px
-          }
-          &${expansion.panel} {
-            &::after {
-              border-${theme.before}: 2px solid ${theme.primary.default}
-            }
-          }
-          ${expansion.panelHeader} ${expansion.panelTitle} {
-            color: ${theme.primary.default}
-          }
-        }
-        ${expansion.panelBody} {
-          padding: 0
-          width: 100vw
-          margin-right: calc(100% - 100vw)
-        }
-      }`
-    },
-    dialog: lyl`{
-      width: 100vw
-      height: 100vh
-      border-radius: 0
-    }`,
-  }
-}
 
 @Component({
   selector: 'app-home',
@@ -130,7 +59,7 @@ const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [StyleRenderer],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild('sb') sb: LySnackBar
   classes: any
   cards$: Observable<Array<Card>>
@@ -138,7 +67,7 @@ export class HomeComponent implements OnInit {
   readonly itemSize = 54
   private previousIndex = 0
   private distanceY = 0
-
+  private subscription: Subscription
   // eslint-disable-next-line max-params
   constructor(
     readonly sRenderer: StyleRenderer,
@@ -151,12 +80,19 @@ export class HomeComponent implements OnInit {
     private userStateService: UserStateService,
     private dbService: DbService,
     private cryptoService: CryptoService,
+    private notificationService: NotificationService,
+    private stepService: StepsGuideService,
     iconService: LyIconService,
     sanitizer: DomSanitizer,
   ) {
     for (const [name, svg] of SVG_ICONS) {
       iconService.addSvgIconLiteral(name, sanitizer.bypassSecurityTrustHtml(svg))
     }
+    this.subscription = this.notificationService.getNotification().subscribe(message => {
+      try {
+        this[message]()
+      } catch (_) {}
+    })
   }
 
   async ngOnInit() {
@@ -191,6 +127,9 @@ export class HomeComponent implements OnInit {
           },
         ]
         this.store.dispatch(add({ cards }))
+        this.stepService.setSteps(guideSteps)
+        this.stepService.setCurrentIndex(0)
+        this.stepService.showGuide(true)
       }
     }
   }
@@ -612,5 +551,9 @@ export class HomeComponent implements OnInit {
         this.sb.open({ msg: 'copied success' })
       }
     })
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe()
   }
 }

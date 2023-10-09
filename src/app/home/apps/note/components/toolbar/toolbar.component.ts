@@ -16,7 +16,9 @@ export class ToolbarComponent implements OnInit {
     private router: Router,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // empty
+  }
 
   addNewNote(): void {
     const id = this._noteStore.addNewNote()

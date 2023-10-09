@@ -7,6 +7,10 @@ body {
   background: rgb(239 239 239);
 }
 
+.cdk-overlay-container {
+  z-index: 1500;
+}
+
 /* fallback */
 @font-face {
   font-family: 'Material Icons';

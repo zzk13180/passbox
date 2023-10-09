@@ -4,6 +4,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { ScrollingModule } from '@angular/cdk/scrolling'
+import { MatTooltipModule } from '@angular/material/tooltip'
 import {
   LyTheme2,
   StyleRenderer,
@@ -43,6 +44,7 @@ import { HelpDialog } from './components/help/help-dialog'
 import { PasswordGeneratorDialog } from './components/password-generator/password-generator'
 import { SearchComponent } from './components/search/search'
 import { homeSecretShowComponent } from './components/secret-show/secret-show'
+import { StepsGuideModule } from './components/steps-guide'
 
 @NgModule({
   declarations: [
@@ -64,6 +66,7 @@ import { homeSecretShowComponent } from './components/secret-show/secret-show'
     HomeRoutingModule,
     BrowserAnimationsModule,
     DragDropModule,
+    MatTooltipModule,
     LyTabsModule,
     LyIconModule,
     LyExpansionModule,
@@ -86,6 +89,7 @@ import { homeSecretShowComponent } from './components/secret-show/secret-show'
     LyDrawerModule,
     LyCardModule,
     ReactiveFormsModule,
+    StepsGuideModule,
   ],
   providers: [
     LyTheme2,

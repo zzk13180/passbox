@@ -18,7 +18,7 @@ import {
   HostListener,
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { fromEvent, Subject, Subscription } from 'rxjs'
+import { fromEvent, Subject } from 'rxjs'
 import { debounceTime, filter, map, takeUntil } from 'rxjs/operators'
 
 @Component({
@@ -51,7 +51,6 @@ export class SearchComponent
   @ViewChild('filterInput', { static: true }) filterInputElement: ElementRef
   @ViewChild('line') lineElement: ElementRef
   @ViewChild('clearIcon') clearIconElement: ElementRef
-  i18nSubscription: Subscription
   clearIconExit = false
   width: number
   destroy$ = new Subject()

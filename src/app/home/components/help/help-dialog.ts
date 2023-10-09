@@ -82,8 +82,11 @@ export class HelpDialog {
       height: 600,
     }
     switch (flag) {
-      case 'github':
+      case 'issues':
         card.url = 'https://github.com/zzk13180/passbox/issues'
+        break
+      case 'doc':
+        card.url = 'https://apps.zhangzhankui.com/passbox'
         break
       default:
         break

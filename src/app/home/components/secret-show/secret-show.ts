@@ -1,7 +1,7 @@
 /*🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
 Toggle whether the secret field is visible 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅*/
-import { Component, Input } from '@angular/core'
+import { Component, Input, Output, EventEmitter } from '@angular/core'
 import type { Card } from '../../../models'
 
 @Component({
@@ -11,7 +11,13 @@ import type { Card } from '../../../models'
 export class homeSecretShowComponent {
   off = true
   @Input() card: Card
+  @Output() copyPasswordFn = new EventEmitter<Card>()
   constructor() {}
+
+  copyPassword(event: Event): void {
+    event.stopPropagation()
+    this.copyPasswordFn.emit(this.card)
+  }
 
   seePassword(event: Event): void {
     event.stopPropagation()

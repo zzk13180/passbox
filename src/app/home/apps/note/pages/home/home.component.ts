@@ -27,6 +27,9 @@ export class HomeComponent implements OnInit {
       const activeNoteId = paramMap.get('id')
       if (activeNoteId) {
         index = this.notes.findIndex(note => note.id === activeNoteId)
+      } else if (this.notes.length === 0) {
+        const id = this.noteStoreService.addNewNote()
+        index = this.notes.findIndex(note => note.id === id)
       }
       this.setActiveNoteIndex(index)
     })

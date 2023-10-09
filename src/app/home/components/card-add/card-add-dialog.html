@@ -69,10 +69,20 @@ card add form dialog 😄
     </ly-field>
   </ng-template>
 
-  <ly-grid container justify="end" ly-dialog-actions>
+  <ly-grid container justify="end" ly-dialog-actions class="action-box">
+    <ly-icon
+      matTooltip="Ctrl or Command + G"
+      matTooltipPosition="above"
+      #tooltip="matTooltip"
+      (click)="tooltip.show();showPasswordGeneratorDialog()"
+      class="help"
+    >
+      help_center
+    </ly-icon>
     <button ly-button color="primary" type="button" (click)="dialogRef.close()">
       cancel
     </button>
+    <span>&nbsp;</span>
     <button ly-button color="primary" type="submit" (click)="dialogRef.close(data)">
       submit
     </button>
