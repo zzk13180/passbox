@@ -46,6 +46,7 @@ import { PasswordSetDialog } from './components/password/password-set-dialog'
 import { AppsDialog } from './components/apps-dialog/apps-dialog'
 import { HelpDialog } from './components/help/help-dialog'
 import { PasswordGeneratorDialog } from './components/password-generator/password-generator'
+import { TutorialDialog } from './components/tutorial/tutorial'
 import { StepsGuideService } from './components/steps-guide'
 import { STYLES } from './STYLES.data'
 import { guideSteps } from './guideSteps.data'
@@ -127,9 +128,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           },
         ]
         this.store.dispatch(add({ cards }))
-        this.stepService.setSteps(guideSteps)
-        this.stepService.setCurrentIndex(0)
-        this.stepService.showGuide(true)
+        this.showTutorialDialog()
       }
     }
   }
@@ -550,6 +549,19 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.electronService.copyText(result)
         this.sb.open({ msg: 'copied success' })
       }
+    })
+  }
+
+  @HostListener('window:keydown.meta.a')
+  @HostListener('window:keydown.control.a')
+  showTutorialDialog() {
+    const dialogRef = this._dialog.open<TutorialDialog>(TutorialDialog, {
+      disableClose: true,
+    })
+    dialogRef.afterClosed.subscribe(() => {
+      this.stepService.setSteps(guideSteps)
+      this.stepService.setCurrentIndex(0)
+      this.stepService.showGuide(true)
     })
   }
 

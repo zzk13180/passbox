@@ -45,6 +45,7 @@ import { PasswordGeneratorDialog } from './components/password-generator/passwor
 import { SearchComponent } from './components/search/search'
 import { homeSecretShowComponent } from './components/secret-show/secret-show'
 import { StepsGuideModule } from './components/steps-guide'
+import { TutorialDialog } from './components/tutorial/tutorial'
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { StepsGuideModule } from './components/steps-guide'
     ExportSelectDialog,
     ImportPasswordDialog,
     FileDropDirective,
+    TutorialDialog,
   ],
   imports: [
     CommonModule,

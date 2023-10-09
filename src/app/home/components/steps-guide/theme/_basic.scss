@@ -1,14 +1,9 @@
-// Color
-// 取色规则1： 所有使用颜色均需要在色板中选择
-// 取色规则2： 除标签等用于功能分类及black,white的取色可以增加透明度(eg: rgba($devui-white-5,0.3)，其余场景均不允许
-// need to run `node scripts/themeable/transfer-sass-var-to-theme-data.js ` when modified
-
 $devui-blue-5: #f2f5fc;
 $devui-blue-10: #e9edfa;
 $devui-blue-20: #beccfa;
 $devui-blue-30: #96adfa;
 $devui-blue-40: #7693f5;
-$devui-blue-50: #5e7ce0;
+$devui-blue-50: #6200ee;
 $devui-blue-60: #526ecc;
 $devui-blue-70: #465eb8;
 $devui-blue-80: #3c51a6;

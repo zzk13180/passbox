@@ -18,10 +18,10 @@
         class="devui-prev-step"
         (click)="prev()"
       >
-        previous
+      Previous
       </div>
-      <div *ngIf="stepIndex + 1 < stepsCount" (click)="next()">next</div>
-      <div *ngIf="stepIndex === stepsCount - 1" (click)="closeAll()">finish</div>
+      <button ly-button raised type="button" *ngIf="stepIndex + 1 < stepsCount" (click)="next()">Continue</button>
+      <div *ngIf="stepIndex === stepsCount - 1" (click)="closeAll()">OK</div>
     </div>
   </div>
 </div>

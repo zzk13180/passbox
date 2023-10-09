@@ -16,7 +16,6 @@ import {
 } from 'electron'
 
 const Store = require('electron-store')
-const remote = require('@electron/remote/main')
 const contextMenu = require('electron-context-menu')
 
 interface Card {
@@ -32,7 +31,6 @@ class Main {
   windowMain: WindowMain
 
   constructor() {
-    remote.initialize()
     if (this.isServer) {
       const appDataPath = app.getAppPath()
       app.setPath('userData', `${appDataPath}/${app.name}-user-data`)
@@ -51,7 +49,6 @@ class Main {
 
   bootstrap() {
     this.windowMain.init()
-    remote.enable(this.windowMain.win.webContents)
     if (this.isServer) {
       this.windowMain.win.webContents.openDevTools()
       this.windowMain.win.loadURL('http://localhost:4200')
