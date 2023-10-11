@@ -6,15 +6,17 @@ import { DOCUMENT } from '@angular/common'
 import {
   AfterViewInit,
   Component,
-  ElementRef,
   HostBinding,
   Inject,
   OnDestroy,
   OnInit,
   Renderer2,
+  ViewChild,
+  ElementRef,
 } from '@angular/core'
 import { fromEvent, Subscription } from 'rxjs'
 import { debounceTime, throttleTime } from 'rxjs/operators'
+import party from 'party-js'
 import { LocalStorage } from 'src/app/services'
 import { PositionService } from './positioning/positioning.service'
 import { StepsGuideService } from './steps-guide.service'
@@ -35,6 +37,8 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
   get display() {
     return 'block'
   }
+
+  @ViewChild('partyEL') partyEL: ElementRef
 
   triggerElement: HTMLElement
   scrollElement: HTMLElement
@@ -77,6 +81,11 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+    party.sparkles(this.partyEL.nativeElement, {
+      size: 1,
+      count: 15,
+      speed: 30,
+    })
     this.updatePosition()
     if (!this.scrollElement) {
       const currentScrollElement = this.positionService.getScrollParent(

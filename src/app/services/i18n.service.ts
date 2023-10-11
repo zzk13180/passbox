@@ -3,20 +3,37 @@ import { Observable, ReplaySubject } from 'rxjs'
 import { LocalStorage } from '../services'
 
 export enum I18nLanguageEnum {
-  English = 'en',
-  Chinese = 'zh',
-  Japanese = 'ja',
-  Spanish = 'es',
-  German = 'de',
-  Russian = 'ru',
-  French = 'fr',
-  Italian = 'it',
-  Portuguese = 'pt',
-  Polish = 'pl',
-  Arabic = 'ar',
-  Farsi = 'fa',
-  Indonesian = 'id',
-  Dutch = 'nl',
+  English = 'en', // 英语
+  Chinese = 'zh', // 中文
+  Japanese = 'ja', // 日语
+  Spanish = 'es', // 西班牙语
+  German = 'de', // 德语
+  Russian = 'ru', // 俄语
+  French = 'fr', // 法语
+  Italian = 'it', // 意大利语
+  Portuguese = 'pt', // 葡萄牙语
+  Polish = 'pl', // 波兰语
+  Arabic = 'ar', // 阿拉伯语
+  Farsi = 'fa', // 波斯语
+  Indonesian = 'id', // 印度尼西亚语
+  Dutch = 'nl', // 荷兰语
+}
+
+export const i18nLanguageIndexMap = {
+  [I18nLanguageEnum.English]: 0,
+  [I18nLanguageEnum.Chinese]: 1,
+  [I18nLanguageEnum.Japanese]: 2,
+  [I18nLanguageEnum.Spanish]: 3,
+  [I18nLanguageEnum.German]: 4,
+  [I18nLanguageEnum.Russian]: 5,
+  [I18nLanguageEnum.French]: 6,
+  [I18nLanguageEnum.Italian]: 7,
+  [I18nLanguageEnum.Portuguese]: 8,
+  [I18nLanguageEnum.Polish]: 9,
+  [I18nLanguageEnum.Arabic]: 10,
+  [I18nLanguageEnum.Farsi]: 11,
+  [I18nLanguageEnum.Indonesian]: 12,
+  [I18nLanguageEnum.Dutch]: 13,
 }
 
 @Injectable({ providedIn: 'root' })

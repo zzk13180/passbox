@@ -23,7 +23,7 @@ export const STYLES = (_theme: ThemeVariables, ref: ThemeRef) => {
         font-weight: 300
       }
       & > h2 {
-        height: 77px
+        height: 80px
         user-select: none
         letter-spacing: -.05em
         text-shadow: rgba(255, 255, 255, 0.4) 0px 0px 11px
@@ -51,7 +51,8 @@ export const STYLES = (_theme: ThemeVariables, ref: ThemeRef) => {
       top: 0
       user-select: none
       pointer-events: none
-      transform: rotateX(180deg)
     }`,
   }
 }
+
+// transform: rotateX(180deg)

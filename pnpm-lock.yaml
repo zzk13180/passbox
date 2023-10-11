@@ -154,6 +154,9 @@ devDependencies:
   pako:
     specifier: ^2.1.0
     version: 2.1.0
+  party-js:
+    specifier: ^2.2.0
+    version: 2.2.0
   postcss-less:
     specifier: ^6.0.0
     version: 6.0.0(postcss@8.4.30)
@@ -9030,6 +9033,10 @@ packages:
   /parseurl@1.3.3:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
     engines: {node: '>= 0.8'}
+    dev: true
+
+  /party-js@2.2.0:
+    resolution: {integrity: sha512-50hGuALCpvDTrQLPQ1fgUgxKIWAH28ShVkmeK/3zhO0YJyCqkhrZhQEkWPxDYLvbFJ7YAXyROmFEu35gKpZLtQ==}
     dev: true
 
   /path-exists@3.0.0:

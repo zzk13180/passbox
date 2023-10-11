@@ -5,6 +5,9 @@ import {
   OnDestroy,
   NgZone,
   HostListener,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
 } from '@angular/core'
 import { LyTheme2, StyleRenderer } from '@alyle/ui'
 import { Platform } from '@angular/cdk/platform'
@@ -24,10 +27,11 @@ import { STYLES } from './STYLES.data'
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [StyleRenderer],
 })
-export class TutorialDialog implements OnInit, OnDestroy {
+export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
   readonly classes = this.sRenderer.renderSheet(STYLES, 'root')
   private intra: Intra
-  i18nText: I18nText
+  i18nText: I18nText = new I18nText()
+  @ViewChild('swiperContainer') swiperContainer: ElementRef
   // eslint-disable-next-line max-params
   constructor(
     public dialogRef: LyDialogRef,
@@ -40,10 +44,12 @@ export class TutorialDialog implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.i18nService.languageChanges().subscribe(data => {
-      this.i18nText = new I18nText(data)
+      this.i18nText.currentLanguage = data
     })
-    const el = document.querySelector('.swiper-container')
-    const swiper = new Swiper(el as HTMLElement, {
+  }
+
+  ngAfterViewInit() {
+    const swiper = new Swiper(this.swiperContainer.nativeElement, {
       modules: [EffectCube, EffectCoverflow],
       effect: 'cube',
       createElements: true,

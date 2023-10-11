@@ -113,7 +113,8 @@
     "wait-on": "7.0.1",
     "zone.js": "~0.13.0",
     "swiper": "^10.3.1",
-    "simplex-noise": "^4.0.1"
+    "simplex-noise": "^4.0.1",
+    "party-js": "^2.2.0"
   },
   "config": {
     "commitizen": {
