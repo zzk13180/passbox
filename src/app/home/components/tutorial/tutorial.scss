@@ -371,15 +371,21 @@
 
 .tutorial {
   z-index: 1999;
-  width: 307px;
-  height: 307px;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  .swiper-slide {
-    width: 100%;
-    height: 200px;
-  }
-  .swiper-slide:nth-child(1) {
-    background: url('/assets/1.png') no-repeat center center;
-  }
 }
 
+.swiper-container {
+  width: 100%;
+  height: 100%;
+}
+
+.tutorial-skip {
+  position: fixed;
+  right: -5px;
+  top: -2px;
+  border: 0;
+  color: #fff;
+  z-index: 1000;
+}

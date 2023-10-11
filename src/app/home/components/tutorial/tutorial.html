@@ -1,23 +1,158 @@
 <div class="tutorial">
-  <ly-toolbar position="absolute">
-    <ly-grid container justify="end" ly-dialog-actions>
-      <ly-icon cdkFocusRegionStart (click)="dialogRef.close()">SKIP</ly-icon>
-    </ly-grid>
-  </ly-toolbar>
+  <button ly-button outlined class="tutorial-skip">
+    <span [lyPf]="1">Skip</span>
+    <ly-icon>close</ly-icon>
+  </button>
+  <canvas id="bg" [className]="classes.canvas"></canvas>
   <div class="swiper swiper-container">
     <div class="swiper-wrapper">
       <div class="swiper-slide">
-        111
+        <div [className]="classes.intraContainer">
+          <div [className]="classes.intraContent">
+            <h2 [lyTyp]="'display2'">{{i18nText.test}}</h2>
+            <p [lyTyp]="'title'">Please choose your preferred language.</p>
+            <!-- <h1 [lyTyp]="'display2'">欢迎！Welcome!</h1>
+            <p [lyTyp]="'title'">请您选择您喜欢的语言。</p>
+            <h1 [lyTyp]="'display2'">ようこそ！</h1>
+            <p [lyTyp]="'title'">お好きな言語を選択してください。</p> -->
+            <div [className]="classes.buttons">
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('en')"
+              >
+                English
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('zh')"
+              >
+                中文
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('ja')"
+              >
+                日本語
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('es')"
+              >
+                español
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('de')"
+              >
+                Deutsch
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('ru')"
+              >
+                по-русски
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('fr')"
+              >
+                français
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('it')"
+              >
+                italiano
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('pt')"
+              >
+                português
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('pl')"
+              >
+                po polsku
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('ar')"
+              >
+                اللغة العربية
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('fa')"
+              >
+                زبان فارسی
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('id')"
+              >
+                Indonesia
+              </button>
+              <button
+                ly-button
+                raised
+                bg="primary:contrast"
+                color="primary"
+                (click)="setLanguage('nl')"
+              >
+                Nederlands
+              </button>
+            </div>
+            <button cdkFocusInitial ly-button outlined class="tutorial-language-next">
+              <span [lyPf]="1">Next</span>
+              <ly-icon>next</ly-icon>
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="swiper-slide">
-        222
-      </div>
-      <div class="swiper-slide">
-       333
-      </div>
-      <div class="swiper-slide">
-        444
-      </div>
+      <div class="swiper-slide">is</div>
+      <div class="swiper-slide">your</div>
+      <div class="swiper-slide">name</div>
     </div>
   </div>
 </div>

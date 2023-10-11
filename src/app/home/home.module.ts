@@ -12,6 +12,8 @@ import {
   LY_THEME_NAME,
   LyOverlayModule,
   LyExpansionIconModule,
+  LY_THEME_GLOBAL_VARIABLES,
+  PartialThemeVariables,
 } from '@alyle/ui'
 import { MinimaLight } from '@alyle/ui/themes/minima'
 import { LyTabsModule } from '@alyle/ui/tabs'
@@ -46,6 +48,12 @@ import { SearchComponent } from './components/search/search'
 import { homeSecretShowComponent } from './components/secret-show/secret-show'
 import { StepsGuideModule } from './components/steps-guide'
 import { TutorialDialog } from './components/tutorial/tutorial'
+
+class GlobalVariables implements PartialThemeVariables {
+  typography = {
+    fontFamily: "'Noto Sans Arabic', Roboto, 'Noto Sans JP', 'Noto Sans SC', sans-serif",
+  }
+}
 
 @NgModule({
   declarations: [
@@ -98,6 +106,7 @@ import { TutorialDialog } from './components/tutorial/tutorial'
     StyleRenderer,
     { provide: LY_THEME_NAME, useValue: 'minima-light' },
     { provide: LY_THEME, useClass: MinimaLight, multi: true },
+    { provide: LY_THEME_GLOBAL_VARIABLES, useClass: GlobalVariables },
   ],
   exports: [HomeComponent],
 })

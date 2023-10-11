@@ -15,6 +15,7 @@ import {
   Output,
 } from '@angular/core'
 import { Observable, Subscription } from 'rxjs'
+import { LocalStorage } from 'src/app/services'
 import { OverlayContainerRef } from './overlay-container'
 import { throttle } from './throttle/throttle'
 import { StepsGuideComponent } from './steps-guide.component'
@@ -107,6 +108,7 @@ export class StepsGuideDirective implements OnInit, OnDestroy {
     private componentFactoryResolver: ComponentFactoryResolver,
     private overlayContainerRef: OverlayContainerRef,
     @Inject(DOCUMENT) private doc: any,
+    @Inject(LocalStorage) private storage: Storage,
   ) {
     this.document = this.doc
   }
@@ -123,7 +125,7 @@ export class StepsGuideDirective implements OnInit, OnDestroy {
         // 防止服务中的步骤被置空或默认为空
         const serviceSteps = this.stepService.getSteps() || []
         this.steps = serviceSteps.length > 0 ? serviceSteps : this.steps
-        const state = localStorage.getItem(`devui_guide_${this.pageName}`) || '1'
+        const state = this.storage.getItem(`devui_guide_${this.pageName}`) || '1'
         this.toggle = Number(state)
         this.currentIndex = index
         const currentStep = this.steps.length > 0 && this.steps[this.currentIndex]
@@ -166,10 +168,10 @@ export class StepsGuideDirective implements OnInit, OnDestroy {
       this.stepService.showGuideObs.subscribe(visible => {
         if (visible) {
           const currentIndex = this.stepService.getCurrentStep() || 0
-          localStorage.removeItem(`devui_guide_${this.pageName}`)
+          this.storage.removeItem(`devui_guide_${this.pageName}`)
           this.stepService.setCurrentIndex(currentIndex)
         } else {
-          localStorage.setItem(`devui_guide_${this.pageName}`, '0')
+          this.storage.setItem(`devui_guide_${this.pageName}`, '0')
           this.destroyView()
         }
       }),

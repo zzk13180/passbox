@@ -15,6 +15,7 @@ import {
 } from '@angular/core'
 import { fromEvent, Subscription } from 'rxjs'
 import { debounceTime, throttleTime } from 'rxjs/operators'
+import { LocalStorage } from 'src/app/services'
 import { PositionService } from './positioning/positioning.service'
 import { StepsGuideService } from './steps-guide.service'
 import { ExtraConfig } from './steps-guide.types'
@@ -60,6 +61,7 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
     private positionService: PositionService,
     private elm: ElementRef,
     @Inject(DOCUMENT) private doc: any,
+    @Inject(LocalStorage) private storage: Storage,
   ) {
     this.document = this.doc
   }
@@ -183,7 +185,7 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   closeAll() {
-    localStorage.setItem(`devui_guide_${this.pageName}`, '0')
+    this.storage.setItem(`devui_guide_${this.pageName}`, '0')
     this.close(this.stepService.getCurrentStep(), 'close')
   }
 

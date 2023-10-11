@@ -6,7 +6,6 @@ const STYLES = (theme: ThemeVariables) => ({
     body {
       background-color: ${theme.background.default}
       color: ${theme.text.default}
-      font-family: ${theme.typography.fontFamily}
       margin: 0
       direction: ${theme.direction}
     }

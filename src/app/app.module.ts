@@ -5,12 +5,17 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { EffectsModule } from '@ngrx/effects'
 import { StoreModule } from '@ngrx/store'
 import { LocationStrategy, HashLocationStrategy } from '@angular/common'
-
 import { AppComponent } from './app.component'
 import { AppRoutingModule } from './app-routing.module'
 import { HomeModule } from './home/home.module'
 import { CardEffects } from './effects'
-import { WindowToken, windowProvider, STORAGE_PROVIDERS, cardReducer } from './services'
+import {
+  WindowToken,
+  windowProvider,
+  STORAGE_PROVIDERS,
+  cardReducer,
+  I18nService,
+} from './services'
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,6 +28,7 @@ import { WindowToken, windowProvider, STORAGE_PROVIDERS, cardReducer } from './s
     EffectsModule.forRoot([CardEffects]),
   ],
   providers: [
+    I18nService,
     { provide: WindowToken, useFactory: windowProvider },
     STORAGE_PROVIDERS,
     { provide: LocationStrategy, useClass: HashLocationStrategy },

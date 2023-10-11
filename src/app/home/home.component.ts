@@ -117,6 +117,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     } catch (err) {
       if (err.message === DBError.noData) {
+        this.showTutorialDialog()
         const cards = [
           {
             title: 'user data',
@@ -128,7 +129,6 @@ export class HomeComponent implements OnInit, OnDestroy {
           },
         ]
         this.store.dispatch(add({ cards }))
-        this.showTutorialDialog()
       }
     }
   }
@@ -552,10 +552,15 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
-  @HostListener('window:keydown.meta.a')
-  @HostListener('window:keydown.control.a')
+  @HostListener('window:keydown.meta.l')
+  @HostListener('window:keydown.control.l')
   showTutorialDialog() {
     const dialogRef = this._dialog.open<TutorialDialog>(TutorialDialog, {
+      width: null,
+      height: null,
+      maxWidth: null,
+      maxHeight: null,
+      containerClass: this.classes.dialog,
       disableClose: true,
     })
     dialogRef.afterClosed.subscribe(() => {

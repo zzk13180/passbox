@@ -22,9 +22,6 @@ $devui-font-title-weight: var(--devui-font-title-weight, bold); //标题文字�
 $devui-font-content-weight: var(--devui-font-content-weight, normal); //内容文字粗细
 $devui-line-height-base: var(--devui-line-height-base, 1.5); //规范行高
 
-
-$font-family: 'HuaweiFont', 'Helvetica','Arial', 'PingFangSC-Regular', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑','Microsoft JhengHei';
-
 @mixin font-content() {
   font-size: $devui-font-size;
   font-weight: $devui-font-content-weight;

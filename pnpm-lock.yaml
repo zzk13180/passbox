@@ -21,10 +21,10 @@ devDependencies:
     version: 15.0.0(@angular/core@16.2.6)(hammerjs@2.0.8)
   '@angular-builders/custom-webpack':
     specifier: 16.0.1
-    version: 16.0.1(@angular/compiler-cli@16.2.6)(@types/node@20.6.3)(typescript@5.1.6)
+    version: 16.0.1(@angular/compiler-cli@16.2.6)(@angular/localize@16.2.6)(@types/node@20.6.3)(typescript@5.1.6)
   '@angular-devkit/build-angular':
     specifier: ~16.2.3
-    version: 16.2.3(@angular/compiler-cli@16.2.6)(@types/node@20.6.3)(typescript@5.1.6)
+    version: 16.2.3(@angular/compiler-cli@16.2.6)(@angular/localize@16.2.6)(@types/node@20.6.3)(typescript@5.1.6)
   '@angular/animations':
     specifier: ^16.0.0 || ^17.0.0
     version: 16.2.6(@angular/core@16.2.6)
@@ -52,6 +52,9 @@ devDependencies:
   '@angular/language-service':
     specifier: ~16.2.6
     version: 16.2.6
+  '@angular/localize':
+    specifier: 16.2.6
+    version: 16.2.6(@angular/compiler-cli@16.2.6)(@angular/compiler@16.2.6)
   '@angular/material':
     specifier: ~16.2.5
     version: 16.2.5(@angular/animations@16.2.6)(@angular/cdk@16.2.5)(@angular/common@16.2.6)(@angular/core@16.2.6)(@angular/forms@16.2.6)(@angular/platform-browser@16.2.6)(rxjs@7.8.1)
@@ -169,6 +172,9 @@ devDependencies:
   rxjs:
     specifier: ~7.8.1
     version: 7.8.1
+  simplex-noise:
+    specifier: ^4.0.1
+    version: 4.0.1
   stylelint:
     specifier: ^15.10.3
     version: 15.10.3(typescript@5.1.6)
@@ -237,14 +243,14 @@ packages:
       '@jridgewell/trace-mapping': 0.3.19
     dev: true
 
-  /@angular-builders/custom-webpack@16.0.1(@angular/compiler-cli@16.2.6)(@types/node@20.6.3)(typescript@5.1.6):
+  /@angular-builders/custom-webpack@16.0.1(@angular/compiler-cli@16.2.6)(@angular/localize@16.2.6)(@types/node@20.6.3)(typescript@5.1.6):
     resolution: {integrity: sha512-C6INC8UOYDcp8LJwNhE0m66yp+nZX50JdgGI8oRn7fqw3gO58qhDgXrR/8BCrSeC8eOx8WxSuvBJ6u+9dozhyw==}
     engines: {node: ^14.20.0 || ^16.13.0 || >=18.10.0}
     peerDependencies:
       '@angular/compiler-cli': ^16.0.0
     dependencies:
       '@angular-devkit/architect': 0.1602.3(chokidar@3.5.3)
-      '@angular-devkit/build-angular': 16.2.3(@angular/compiler-cli@16.2.6)(@types/node@20.6.3)(typescript@5.1.6)
+      '@angular-devkit/build-angular': 16.2.3(@angular/compiler-cli@16.2.6)(@angular/localize@16.2.6)(@types/node@20.6.3)(typescript@5.1.6)
       '@angular-devkit/core': 16.2.3(chokidar@3.5.3)
       '@angular/compiler-cli': 16.2.6(@angular/compiler@16.2.6)(typescript@5.1.6)
       lodash: 4.17.21
@@ -292,7 +298,7 @@ packages:
       - chokidar
     dev: true
 
-  /@angular-devkit/build-angular@16.2.3(@angular/compiler-cli@16.2.6)(@types/node@20.6.3)(typescript@5.1.6):
+  /@angular-devkit/build-angular@16.2.3(@angular/compiler-cli@16.2.6)(@angular/localize@16.2.6)(@types/node@20.6.3)(typescript@5.1.6):
     resolution: {integrity: sha512-GQo14ui3jGBa3ORslO9AcNLCmLuV6EohFk7KbHMTpTY1267z3kdkJfUXhwPKTYQX4ZvQZK2lHLMrSjpFQ5vtOQ==}
     engines: {node: ^16.14.0 || >=18.10.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -332,6 +338,7 @@ packages:
       '@angular-devkit/build-webpack': 0.1602.3(chokidar@3.5.3)(webpack-dev-server@4.15.1)(webpack@5.88.2)
       '@angular-devkit/core': 16.2.3(chokidar@3.5.3)
       '@angular/compiler-cli': 16.2.6(@angular/compiler@16.2.6)(typescript@5.1.6)
+      '@angular/localize': 16.2.6(@angular/compiler-cli@16.2.6)(@angular/compiler@16.2.6)
       '@babel/core': 7.22.9
       '@babel/generator': 7.22.9
       '@babel/helper-annotate-as-pure': 7.22.5
@@ -592,6 +599,23 @@ packages:
   /@angular/language-service@16.2.6:
     resolution: {integrity: sha512-CfGAPLTfYluyMdmYGIK/9hvHDZffLbKc+YZYVE5obgdVszeAJhjC60corbzNu30oTx5a994Q2OtdiKBgAJJ+Kg==}
     engines: {node: ^16.14.0 || >=18.10.0}
+    dev: true
+
+  /@angular/localize@16.2.6(@angular/compiler-cli@16.2.6)(@angular/compiler@16.2.6):
+    resolution: {integrity: sha512-sOkZcamHIpiklnbBXCplH7VhPV/aV1c0Cl62Q4lOa+pEnD1oPxE/oAQtFe+AHdf2rTnJhqCutvQDr5yGrIT+SQ==}
+    engines: {node: ^16.14.0 || >=18.10.0}
+    hasBin: true
+    peerDependencies:
+      '@angular/compiler': 16.2.6
+      '@angular/compiler-cli': 16.2.6
+    dependencies:
+      '@angular/compiler': 16.2.6(@angular/core@16.2.6)
+      '@angular/compiler-cli': 16.2.6(@angular/compiler@16.2.6)(typescript@5.1.6)
+      '@babel/core': 7.22.5
+      fast-glob: 3.3.0
+      yargs: 17.7.2
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /@angular/material@16.2.5(@angular/animations@16.2.6)(@angular/cdk@16.2.5)(@angular/common@16.2.6)(@angular/core@16.2.6)(@angular/forms@16.2.6)(@angular/platform-browser@16.2.6)(rxjs@7.8.1):
@@ -6323,6 +6347,17 @@ packages:
     resolution: {integrity: sha512-VxPP4NqbUjj6MaAOafWeUn2cXWLcCtljklUtZf0Ind4XQ+QPtmA0b18zZy0jIQx+ExRVCR/ZQpBmik5lXshNsw==}
     dev: true
 
+  /fast-glob@3.3.0:
+    resolution: {integrity: sha512-ChDuvbOypPuNjO8yIDf36x7BlZX1smcUMTTcyoIjycexOxd6DFsKsg21qVBzEmr3G7fUKIRy2/psii+CIUt7FA==}
+    engines: {node: '>=8.6.0'}
+    dependencies:
+      '@nodelib/fs.stat': 2.0.5
+      '@nodelib/fs.walk': 1.2.8
+      glob-parent: 5.1.2
+      merge2: 1.4.1
+      micromatch: 4.0.5
+    dev: true
+
   /fast-glob@3.3.1:
     resolution: {integrity: sha512-kNFPyjhh5cKjrUltxs+wFx+ZkbRaxxmZ+X0ZU31SOsxCEtP9VPgtq2teZw1DebupL5GmDaNQ6yKMMVcM41iqDg==}
     engines: {node: '>=8.6.0'}
@@ -10023,6 +10058,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       semver: 7.5.4
+    dev: true
+
+  /simplex-noise@4.0.1:
+    resolution: {integrity: sha512-zl/+bdSqW7HJOQ0oDbxrNYaF4F5ik0i7M6YOYmEoIJNtg16NpvWaTTM1Y7oV/7T0jFljawLgYPS81Uu2rsfo1A==}
     dev: true
 
   /slash@3.0.0:

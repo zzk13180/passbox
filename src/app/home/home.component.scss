@@ -30,3 +30,27 @@
   cursor: move;
   background: transparent;
 }
+
+.home-tooltip-description {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 54px;
+  height: 54px;
+  background: transparent;
+  cursor: help;
+}
+
+.home-tooltip-url {
+  position: absolute;
+  top: 0;
+  right: 54px;
+  width: 54px;
+  height: 54px;
+  background: transparent;
+  cursor: help;
+}
+
+.home-title {
+  cursor: default;
+}

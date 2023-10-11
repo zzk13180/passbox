@@ -85,14 +85,20 @@ Oh hi there! 😄
               [dStepsGuidePosition]="'right'"
             ></div>
             <ng-container>
-              <span
-                lyTyp="button"
-                [matTooltip]="card.url || ''"
-                [matTooltipPositionAtOrigin]="true"
-              >
+              <span lyTyp="button" class="home-title">
                 {{ card.title }}
               </span>
             </ng-container>
+            <div
+              class="home-tooltip-description"
+              [matTooltip]="card.description || ''"
+              [matTooltipPositionAtOrigin]="true"
+            ></div>
+            <div
+              class="home-tooltip-url"
+              [matTooltip]="card.url || ''"
+              [matTooltipPositionAtOrigin]="true"
+            ></div>
           </ly-panel-title>
         </ly-expansion-panel-header>
         <ly-paper>
