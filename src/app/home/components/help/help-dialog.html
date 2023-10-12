@@ -18,15 +18,18 @@ show help dialog 😄
   </ly-toolbar>
 
   <ly-drawer-container [withClass]="classes.drawerContainer">
-    <ly-drawer #_drawer="lyDrawer" [opened]="true" ly-paper [drawerWidth]="width">
+    <ly-drawer #_drawer="lyDrawer" [opened]="true" ly-paper drawerWidth="170px over@XSmall">
       <ly-list>
+        <button ly-list-item (click)="showTutorialDialog()">
+          <ly-icon ly-list-icon disablePadding>translate</ly-icon>
+          <span ly-line>Languages</span>
+        </button>
         <button ly-list-item (click)="openDevTools()">
           <ly-icon ly-list-icon disablePadding icon="open_devtools"></ly-icon>
           <span ly-line>DevTools</span>
         </button>
       </ly-list>
     </ly-drawer>
-
     <ly-drawer-content [withClass]="classes.drawerContent">
       <ly-card [lyMaxWidth]="320" [withClass]="classes.card">
         <ly-card-content>

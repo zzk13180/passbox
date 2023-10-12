@@ -51,7 +51,8 @@ import { TutorialDialog } from './components/tutorial/tutorial'
 
 class GlobalVariables implements PartialThemeVariables {
   typography = {
-    fontFamily: "'Noto Sans Arabic', Roboto, 'Noto Sans JP', 'Noto Sans SC', sans-serif",
+    fontFamily:
+      "'Noto Sans Arabic', 'Noto Sans', 'Noto Sans JP', 'Noto Sans SC', sans-serif",
   }
 }
 

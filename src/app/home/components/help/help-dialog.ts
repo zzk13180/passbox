@@ -3,7 +3,7 @@ show help dialog 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅*/
 import { Component } from '@angular/core'
 import { LyTheme2 } from '@alyle/ui'
-import { ElectronService } from 'src/app/services'
+import { ElectronService, NotificationService } from 'src/app/services'
 import { Card } from '../../../models'
 
 const STYLES = {
@@ -35,8 +35,6 @@ const STYLES = {
     margin: '4px',
   },
 }
-const DEFAULT = '170px over@XSmall'
-const MINI = '56px over@XSmall'
 
 @Component({
   selector: 'app-help-dialog',
@@ -44,27 +42,23 @@ const MINI = '56px over@XSmall'
 })
 export class HelpDialog {
   readonly classes = this._theme.addStyleSheet(STYLES)
-  mini = false
   appInfo = {
     name: '',
     version: '',
   }
 
-  get width() {
-    return this.mini ? MINI : DEFAULT
-  }
-
   constructor(
     private _theme: LyTheme2,
     private electronService: ElectronService,
+    private notificationService: NotificationService,
   ) {
     this.getAppInfo().then(appInfo => {
       this.appInfo = appInfo
     })
   }
 
-  toggleMini() {
-    this.mini = !this.mini
+  showTutorialDialog() {
+    this.notificationService.sendNotification('showTutorialDialog')
   }
 
   openDevTools() {

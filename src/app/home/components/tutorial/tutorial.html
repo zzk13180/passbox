@@ -167,9 +167,13 @@
                 Nederlands
               </button>
             </div>
-
             <ly-grid container justify="end" ly-dialog-actions>
-              <button ly-button class="tutorial-language-next">
+              <button
+                ly-button
+                class="tutorial-language-next"
+                cdkFocusInitial
+                (click)="next(1)"
+              >
                 <span [lyPf]="1">Next</span>
                 <ly-icon>navigate_next</ly-icon>
               </button>
@@ -177,9 +181,20 @@
           </div>
         </div>
       </div>
-      <div class="swiper-slide">is</div>
-      <div class="swiper-slide">your</div>
-      <div class="swiper-slide">name</div>
+      <div class="swiper-slide">
+        <div [className]="classes.intraContainer">
+          <div [className]="classes.intraContent">
+            <h1><img src="assets/svg/ready.svg" class="slide-image" /></h1>
+            <p class="slide-ready">Ready to Play?</p>
+            <ly-grid container justify="end" ly-dialog-actions>
+              <button ly-button raised (click)="dialogRef.close()">
+                <span [lyPf]="1">Continue</span>
+                <ly-icon>arrow_forward</ly-icon>
+              </button>
+            </ly-grid>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -10,11 +10,11 @@ import {
   AfterViewInit,
 } from '@angular/core'
 import { LyTheme2, StyleRenderer } from '@alyle/ui'
-import { Platform } from '@angular/cdk/platform'
 import { LyDialogRef } from '@alyle/ui/dialog'
 import Swiper from 'swiper'
 import { EffectCube, EffectCoverflow } from 'swiper/modules'
 import { createNoise3D } from 'simplex-noise'
+import { Subscription } from 'rxjs'
 import { I18nService, I18nLanguageEnum } from 'src/app/services'
 import { I18nText } from './tutorial.i18n'
 import { STYLES } from './STYLES.data'
@@ -32,30 +32,31 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
   private intra: Intra
   i18nText: I18nText = new I18nText()
   @ViewChild('swiperContainer') swiperContainer: ElementRef
+  subscription: Subscription
+  swiper: Swiper
   // eslint-disable-next-line max-params
   constructor(
     public dialogRef: LyDialogRef,
     readonly sRenderer: StyleRenderer,
     private theme: LyTheme2,
     private ngZone: NgZone,
-    private _platform: Platform,
     private i18nService: I18nService,
   ) {}
 
   ngOnInit(): void {
-    this.i18nService.languageChanges().subscribe(data => {
+    this.subscription = this.i18nService.languageChanges().subscribe(data => {
       this.i18nText.currentLanguage = data
     })
   }
 
   ngAfterViewInit() {
-    const swiper = new Swiper(this.swiperContainer.nativeElement, {
+    this.swiper = new Swiper(this.swiperContainer.nativeElement, {
       modules: [EffectCube, EffectCoverflow],
       effect: 'cube',
       createElements: true,
     })
-    swiper.slideTo(0)
-    swiper.on('slideChange', () => {
+    this.swiper.slideTo(0)
+    this.swiper.on('slideChange', () => {
       if (this.intra) {
         this.ngZone.runOutsideAngular(() => {
           this.intra.onWindowResize()
@@ -69,11 +70,14 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    if (this._platform.isBrowser) {
-      if (this.intra) {
-        this.intra.stop()
-      }
+    if (this.intra) {
+      this.intra.stop()
     }
+    this.subscription.unsubscribe()
+  }
+
+  next(step: number) {
+    this.swiper.slideTo(step, 600)
   }
 
   setLanguage(lang: string) {

@@ -117,7 +117,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     } catch (err) {
       if (err.message === DBError.noData) {
-        this.showTutorialDialog()
+        this.showTutorialDialog(true)
         const cards = [
           {
             title: 'user data',
@@ -552,9 +552,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
-  @HostListener('window:keydown.meta.l')
-  @HostListener('window:keydown.control.l')
-  showTutorialDialog() {
+  showTutorialDialog(showGuide?: boolean) {
     const dialogRef = this._dialog.open<TutorialDialog>(TutorialDialog, {
       width: null,
       height: null,
@@ -564,9 +562,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       disableClose: true,
     })
     dialogRef.afterClosed.subscribe(() => {
-      this.stepService.setSteps(guideSteps)
-      this.stepService.setCurrentIndex(0)
-      this.stepService.showGuide(true)
+      if (showGuide) {
+        this.stepService.setSteps(guideSteps)
+        this.stepService.setCurrentIndex(0)
+        this.stepService.showGuide(true)
+      }
     })
   }
 

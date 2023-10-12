@@ -1,9 +1,8 @@
-<div class="devui-shining-dot"></div>
+<div class="devui-shining-dot" #partyEL></div>
 <div class="devui-shining-plus"></div>
-<div class="devui-arrow"  #partyEL></div>
-<div class="devui-guide-container" >
+<div class="devui-arrow"></div>
+<div class="devui-guide-container">
   <p class="devui-title">{{ title }}</p>
-  <div class="icon icon-close" (click)="closeAll()"></div>
   <div class="devui-content" [innerHTML]="content | safe: 'html'"></div>
   <div class="devui-ctrl">
     <div *ngIf="dots.length > 1 && !extraConfig?.hideStepNav" class="devui-dots">
@@ -13,13 +12,16 @@
       ></em>
     </div>
     <div class="devui-guide-btn">
-      <div
+      <button
+        ly-button
+        raised
         *ngIf="stepIndex > 0 && !extraConfig?.hidePreStep"
         class="devui-prev-step"
         (click)="prev()"
       >
         Previous
-      </div>
+      </button>
+      <span>&nbsp;&nbsp;</span>
       <button
         ly-button
         raised
@@ -29,7 +31,10 @@
       >
         Continue
       </button>
-      <div *ngIf="stepIndex === stepsCount - 1" (click)="closeAll()">OK</div>
+      <span>&nbsp;&nbsp;</span>
+      <button ly-button raised *ngIf="stepIndex === stepsCount - 1" (click)="closeAll()">
+        OK
+      </button>
     </div>
   </div>
 </div>

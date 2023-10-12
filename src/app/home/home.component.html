@@ -80,9 +80,6 @@ Oh hi there! 😄
               cdkDragHandle
               (click)="eventStop($event)"
               class="home-drag-handle"
-              dStepsGuide
-              [stepIndex]="0"
-              [dStepsGuidePosition]="'right'"
             ></div>
             <ng-container>
               <span lyTyp="button" class="home-title">
@@ -90,13 +87,13 @@ Oh hi there! 😄
               </span>
             </ng-container>
             <div
-              class="home-tooltip-description"
-              [matTooltip]="card.description || ''"
+              class="home-tooltip-url"
+              [matTooltip]="card.url || ''"
               [matTooltipPositionAtOrigin]="true"
             ></div>
             <div
-              class="home-tooltip-url"
-              [matTooltip]="card.url || ''"
+              class="home-tooltip-description"
+              [matTooltip]="card.description || ''"
               [matTooltipPositionAtOrigin]="true"
             ></div>
           </ly-panel-title>
