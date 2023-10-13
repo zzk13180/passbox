@@ -29,9 +29,6 @@ export const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
         margin-right: calc(100% - 100vw)
         padding: 0
       }
-      ${expansion.panelTitle} {
-        font-weight: 500
-      }
       &::after {
         transition: border ${theme.animations.durations.entering}ms ${theme.animations.curves.standard}
         content: ''

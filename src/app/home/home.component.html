@@ -5,6 +5,12 @@ Oh hi there! 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅-->
 
 <div homeFileDrop (fileDrop)="onFileDrop($event)" class="container">
+  <div class="step-guide-container">
+    <div dStepsGuide [stepIndex]="1" [dStepsGuidePosition]="'bottom-left'"></div>
+    <div dStepsGuide [stepIndex]="0" [dStepsGuidePosition]="'bottom'"></div>
+    <div dStepsGuide [stepIndex]="3" [dStepsGuidePosition]="'bottom-right'"></div>
+    <div dStepsGuide [stepIndex]="2" [dStepsGuidePosition]="'bottom-right'"></div>
+  </div>
   <ly-toolbar position="static" bg="primary" style="padding: 0">
     <ly-icon class="menu-btn-left" (click)="openAppsDialog()">apps</ly-icon>
     <search class="home-search" (searchFn)="onSearch($event)" style="padding: 0" />
@@ -76,11 +82,7 @@ Oh hi there! 😄
       >
         <ly-expansion-panel-header class="home-panel-header">
           <ly-panel-title [class]="classes.title">
-            <div
-              cdkDragHandle
-              (click)="eventStop($event)"
-              class="home-drag-handle"
-            ></div>
+            <div cdkDragHandle (click)="eventStop($event)" class="home-drag-handle"></div>
             <ng-container>
               <span lyTyp="button" class="home-title">
                 {{ card.title }}

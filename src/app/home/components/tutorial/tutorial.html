@@ -1,6 +1,5 @@
-<div class="tutorial">
-  <button ly-button class="tutorial-skip" (click)="dialogRef.close()">
-    <span [lyPf]="1">Skip</span>
+<div class="tutorial" cdkFocusRegionEnd>
+  <button ly-button class="tutorial-skip" appearance="icon" (click)="dialogRef.close()">
     <ly-icon>close</ly-icon>
   </button>
   <canvas id="bg" [className]="classes.canvas"></canvas>
@@ -168,12 +167,7 @@
               </button>
             </div>
             <ly-grid container justify="end" ly-dialog-actions>
-              <button
-                ly-button
-                class="tutorial-language-next"
-                cdkFocusInitial
-                (click)="next(1)"
-              >
+              <button ly-button class="tutorial-language-next" (click)="next(1)">
                 <span [lyPf]="1">Next</span>
                 <ly-icon>navigate_next</ly-icon>
               </button>
@@ -181,7 +175,7 @@
           </div>
         </div>
       </div>
-      <div class="swiper-slide">
+      <div class="swiper-slide" cdkFocusRegionStart>
         <div [className]="classes.intraContainer">
           <div [className]="classes.intraContent">
             <h1><img src="assets/svg/ready.svg" class="slide-image" /></h1>

@@ -31,7 +31,7 @@ export class I18nText {
       '请选择您的首选语言。',
       'ご希望の言語を選択してください。',
       'Por favor, elige tu idioma preferido.',
-      'Bitte wählen Sie Ihre bevorzugte Sprache aus.',
+      'Bitte wählen Sie Ihre bevorzugte Sprache.',
       'Пожалуйста, выберите язык.',
       'Veuillez choisir votre langue préférée.',
       'Scegli la tua lingua preferita.',

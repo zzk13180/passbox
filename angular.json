@@ -50,7 +50,11 @@
               "./node_modules/katex/dist/katex.min.js",
               "./node_modules/quill/dist/quill.min.js"
             ],
-            "allowedCommonJsDependencies": ["quill"],
+            "allowedCommonJsDependencies": [
+              "quill",
+              "quill-image-resize-module",
+              "party-js"
+            ],
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,

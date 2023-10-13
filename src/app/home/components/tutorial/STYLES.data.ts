@@ -20,7 +20,6 @@ export const STYLES = (_theme: ThemeVariables, ref: ThemeRef) => {
       }
       & > p {
         user-select: none
-        font-weight: 300
       }
       & > h2 {
         height: 80px

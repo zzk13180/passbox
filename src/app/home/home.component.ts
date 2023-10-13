@@ -49,7 +49,7 @@ import { PasswordGeneratorDialog } from './components/password-generator/passwor
 import { TutorialDialog } from './components/tutorial/tutorial'
 import { StepsGuideService } from './components/steps-guide'
 import { STYLES } from './STYLES.data'
-import { guideSteps } from './guideSteps.data'
+import { steps } from './guide-steps.data'
 
 import type { CdkDragMove } from '@angular/cdk/drag-drop'
 
@@ -117,7 +117,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     } catch (err) {
       if (err.message === DBError.noData) {
-        this.showTutorialDialog(true)
         const cards = [
           {
             title: 'user data',
@@ -129,6 +128,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           },
         ]
         this.store.dispatch(add({ cards }))
+        this.showTutorialDialog()
       }
     }
   }
@@ -552,7 +552,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
-  showTutorialDialog(showGuide?: boolean) {
+  showTutorialDialog() {
     const dialogRef = this._dialog.open<TutorialDialog>(TutorialDialog, {
       width: null,
       height: null,
@@ -562,11 +562,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       disableClose: true,
     })
     dialogRef.afterClosed.subscribe(() => {
-      if (showGuide) {
-        this.stepService.setSteps(guideSteps)
-        this.stepService.setCurrentIndex(0)
-        this.stepService.showGuide(true)
-      }
+      this.stepService.setSteps(steps)
+      this.stepService.setCurrentIndex(0)
+      this.stepService.showGuide(true)
     })
   }
 
