@@ -11,7 +11,7 @@ import {
 import { StyleRenderer, lyl, ThemeVariables } from '@alyle/ui'
 import { LyDialogRef, LY_DIALOG_DATA } from '@alyle/ui/dialog'
 import { Store } from '@ngrx/store'
-import { ElectronService, remove, restore } from '../../../services'
+import { remove, restore } from '../../../services'
 import type { Card, CardState } from '../../../models'
 
 @Component({
@@ -22,7 +22,6 @@ import type { Card, CardState } from '../../../models'
 export class CardDeletedDialog {
   // eslint-disable-next-line max-params
   constructor(
-    private electronService: ElectronService,
     readonly sRenderer: StyleRenderer,
     public dialogRef: LyDialogRef,
     private ngZone: NgZone,

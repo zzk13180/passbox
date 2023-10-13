@@ -32,7 +32,7 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
   private intra: Intra
   i18nText: I18nText = new I18nText()
   @ViewChild('swiperContainer') swiperContainer: ElementRef
-  subscription: Subscription
+  private subscription: Subscription
   swiper: Swiper
   // eslint-disable-next-line max-params
   constructor(

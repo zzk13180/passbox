@@ -18,12 +18,13 @@ show help dialog 😄
   </ly-toolbar>
 
   <ly-drawer-container [withClass]="classes.drawerContainer">
-    <ly-drawer #_drawer="lyDrawer" [opened]="true" ly-paper drawerWidth="170px over@XSmall">
+    <ly-drawer
+      #_drawer="lyDrawer"
+      [opened]="true"
+      ly-paper
+      drawerWidth="170px over@XSmall"
+    >
       <ly-list>
-        <button ly-list-item (click)="showTutorialDialog()">
-          <ly-icon ly-list-icon disablePadding>translate</ly-icon>
-          <span ly-line>Languages</span>
-        </button>
         <button ly-list-item (click)="openDevTools()">
           <ly-icon ly-list-icon disablePadding icon="open_devtools"></ly-icon>
           <span ly-line>DevTools</span>
@@ -32,12 +33,19 @@ show help dialog 😄
     </ly-drawer>
     <ly-drawer-content [withClass]="classes.drawerContent">
       <ly-card [lyMaxWidth]="320" [withClass]="classes.card">
-        <ly-card-content>
-          <!-- <p lyTyp="body1">
-            TODO: add some text here
-          </p> -->
+        <ly-card-content [withClass]="classes.cardContent">
+          <p lyTyp="body1"> {{i18nText.thanks}} </p>
         </ly-card-content>
         <ly-card-actions>
+          <button
+            [withClass]="classes.linkbtn"
+            ly-button
+            raised
+            (click)="showTutorialDialog()"
+          >
+            <span [lyPf]="1" ly-line>Languages</span>
+            <ly-icon color="primary">translate</ly-icon>
+          </button>
           <button
             [withClass]="classes.linkbtn"
             ly-button

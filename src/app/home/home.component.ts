@@ -128,7 +128,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           },
         ]
         this.store.dispatch(add({ cards }))
-        this.showTutorialDialog()
+        this.showTutorialDialog(true)
       }
     }
   }
@@ -552,7 +552,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
-  showTutorialDialog() {
+  showTutorialDialog(showGuide?: boolean) {
     const dialogRef = this._dialog.open<TutorialDialog>(TutorialDialog, {
       width: null,
       height: null,
@@ -562,9 +562,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       disableClose: true,
     })
     dialogRef.afterClosed.subscribe(() => {
-      this.stepService.setSteps(steps)
-      this.stepService.setCurrentIndex(0)
-      this.stepService.showGuide(true)
+      if (showGuide) {
+        this.stepService.setSteps(steps)
+        this.stepService.setCurrentIndex(0)
+        this.stepService.showGuide(true)
+      }
     })
   }
 

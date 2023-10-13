@@ -1,59 +1,52 @@
 /*🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
 show help dialog 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅*/
-import { Component } from '@angular/core'
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core'
 import { LyTheme2 } from '@alyle/ui'
-import { ElectronService, NotificationService } from 'src/app/services'
+import { Subscription } from 'rxjs'
+import { I18nService, ElectronService, NotificationService } from 'src/app/services'
 import { Card } from '../../../models'
-
-const STYLES = {
-  toolbar: {
-    cursor: 'pointer',
-    userSelect: 'none',
-  },
-  toolbarIcon: {
-    marginRight: '16px',
-  },
-  title: {
-    fontFamily: 'Slkscr',
-  },
-  drawerContainer: {
-    height: '270px',
-    transform: 'translate3d(0,0,0)',
-  },
-  drawerContent: {
-    padding: 0,
-  },
-  card: {
-    minWidth: '320px',
-    minHeight: '320px',
-  },
-  icon: {
-    margin: '0 8px',
-  },
-  linkbtn: {
-    margin: '4px',
-  },
-}
+import { I18nText } from './help.i18n'
+import { STYLES } from './STYLES.data'
 
 @Component({
   selector: 'app-help-dialog',
   templateUrl: './help-dialog.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HelpDialog {
+export class HelpDialog implements OnInit, OnDestroy {
   readonly classes = this._theme.addStyleSheet(STYLES)
+  i18nText: I18nText = new I18nText()
   appInfo = {
     name: '',
     version: '',
   }
 
+  private subscription: Subscription
+  // eslint-disable-next-line max-params
   constructor(
     private _theme: LyTheme2,
+    private _cd: ChangeDetectorRef,
     private electronService: ElectronService,
     private notificationService: NotificationService,
+    private i18nService: I18nService,
   ) {
     this.getAppInfo().then(appInfo => {
       this.appInfo = appInfo
+      this._cd.markForCheck()
+    })
+  }
+
+  ngOnInit(): void {
+    this.subscription = this.i18nService.languageChanges().subscribe(data => {
+      this.i18nText.currentLanguage = data
+      this._cd.markForCheck()
     })
   }
 
@@ -91,5 +84,9 @@ export class HelpDialog {
   private async getAppInfo() {
     const appInfo = await this.electronService.getAppInfo()
     return appInfo
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe()
   }
 }
