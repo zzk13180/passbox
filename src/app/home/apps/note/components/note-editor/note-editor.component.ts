@@ -1,19 +1,18 @@
 import {
   Component,
   Input,
-  Output,
-  EventEmitter,
   AfterViewInit,
   ViewChild,
   ElementRef,
   ChangeDetectionStrategy,
-  OnChanges,
-  SimpleChanges,
+  OnDestroy,
 } from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
 import ImageResize from 'quill-image-resize-module'
 import Quill from 'quill'
 import { fromEvent } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
+import { NoteStoreService } from '../../store/note-store.service'
 import { Note } from '../../models'
 
 @Component({
@@ -22,18 +21,19 @@ import { Note } from '../../models'
   styleUrls: ['./note-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NoteEditorComponent implements AfterViewInit, OnChanges {
+export class NoteEditorComponent implements AfterViewInit, OnDestroy {
   @ViewChild('quillEditor') quillEditor: ElementRef
   @ViewChild('quillEditorToolbar') quillEditorToolbar: ElementRef
   @ViewChild('quillEditorContainer') quillEditorContainer: ElementRef
   @Input() note: Note
-  @Input() content: string
-  @Output() updatedTitle: EventEmitter<Note> = new EventEmitter<Note>()
-  @Output() updatedContent: EventEmitter<Note> = new EventEmitter<Note>()
-  @Output() delete: EventEmitter<Note> = new EventEmitter<Note>()
   private quill: Quill
 
-  ngAfterViewInit() {
+  constructor(
+    private noteStoreService: NoteStoreService,
+    private _dialog: MatDialog,
+  ) {}
+
+  async ngAfterViewInit() {
     const Font = Quill.import('formats/font')
     Font.whitelist = [
       "'Noto Sans Arabic', 'Noto Sans', 'Noto Sans JP', 'Noto Sans SC', sans-serif",
@@ -51,27 +51,41 @@ export class NoteEditorComponent implements AfterViewInit, OnChanges {
       theme: 'snow',
     })
     fromEvent(this.quill, 'text-change')
-      .pipe(debounceTime(500))
+      .pipe(debounceTime(300))
       .subscribe(() => {
         const txt = this.quill.getText()
-        if (txt !== this.note.content) {
-          this.note.content = txt
-          this.updatedContent.emit(this.note)
-        }
+        this.note.content = txt
+        this.noteStoreService.updatedContent(this.note)
       })
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['content'] && changes['content'].currentValue) {
-      this.quill.setText(changes['content'].currentValue)
-    }
+    this.quill.disable()
+    const content = await this.noteStoreService.getNoteContentById(this.note.id)
+    this.quill.setText(content)
+    this.quill.enable()
   }
 
   onTitleChanged(): void {
-    this.updatedTitle.emit(this.note)
+    this.noteStoreService.updatedTitle()
   }
 
   deleteNote(note: Note): void {
-    this.delete.emit(note)
+    const { dialog } = window.electronAPI
+    dialog.showMessageBox(
+      {
+        type: 'question',
+        message: 'Delete Note',
+        detail: 'Are you sure to delete this note?',
+        buttons: ['Cancel', 'Yes'],
+        defaultId: 1,
+        cancelId: 0,
+        noLink: true,
+      },
+      result => {
+        result.response === 1 && this.noteStoreService.deleteNoteById(note.id)
+      },
+    )
+  }
+
+  ngOnDestroy() {
+    this.quill = null
   }
 }

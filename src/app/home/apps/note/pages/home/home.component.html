@@ -18,14 +18,7 @@
     >
       <div class="tab-content">
         <div class="note-container">
-          <note-editor
-            [note]="note"
-            [content]="note.content"
-            (delete)="deleteNote($event)"
-            (updatedContent)="updatedContent($event)"
-            (updatedTitle)="updatedTitle($event)"
-          >
-          </note-editor>
+          <note-editor [note]="note"> </note-editor>
         </div>
       </div>
     </mat-tab>

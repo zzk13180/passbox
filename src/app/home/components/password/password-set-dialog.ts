@@ -53,16 +53,16 @@ export class PasswordSetDialog implements AfterViewInit {
     dialog.showMessageBox(
       {
         type: 'question',
-        title: 'confirm',
-        message: 'reset data',
-        detail: '⚠️ reset will lose all data ! are you sure ?',
-        buttons: ['yes', 'cancel'],
-        defaultId: 1,
-        cancelId: 1,
+        message: 'Reset Data',
+        detail:
+          'Warning: Resetting will result in the loss of all data! Are you sure to proceed?',
+        buttons: ['Cancel', 'Yes'],
+        defaultId: 0,
+        cancelId: 0,
         noLink: true,
       },
       async result => {
-        if (result.response === 0) {
+        if (result.response === 1) {
           await this.electronService.storageClear()
           this.dialogRef.close(true)
         }

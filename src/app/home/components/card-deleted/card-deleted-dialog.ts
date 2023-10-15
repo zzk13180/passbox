@@ -88,16 +88,15 @@ export class CardDeletedDialog {
     dialog.showMessageBox(
       {
         type: 'question',
-        title: 'confirm',
-        message: 'delete card',
-        detail: 'are you sure to delete this card?',
-        buttons: ['yes', 'cancel'],
-        defaultId: 0,
-        cancelId: 1,
+        message: 'Delete Card',
+        detail: 'Are you sure to delete this card?',
+        buttons: ['Cancel', 'Yes'],
+        defaultId: 1,
+        cancelId: 0,
         noLink: true,
       },
       result => {
-        result.response === 0 &&
+        result.response === 1 &&
           this.ngZone.run(() => {
             this.store.dispatch(remove({ card }))
             this.cards = this.cards.filter(c => c.id !== card.id)
