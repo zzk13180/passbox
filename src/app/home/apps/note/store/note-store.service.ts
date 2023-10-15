@@ -1,8 +1,4 @@
 import { Injectable } from '@angular/core'
-
-import { Subject } from 'rxjs'
-import { debounceTime } from 'rxjs/operators'
-
 import { Note } from '../models'
 import { NoteRepository } from '../repositories'
 
@@ -11,13 +7,9 @@ import { NoteRepository } from '../repositories'
 })
 export class NoteStoreService {
   private noteTabs: Note[]
-  private updateNoteContent$ = new Subject<Note>()
 
   constructor(private repository: NoteRepository) {
     this.noteTabs = repository.getNoteTabs()
-    this.updateNoteContent$.pipe(debounceTime(300)).subscribe(note => {
-      this.repository.updateNoteContent(note)
-    })
   }
 
   get notes(): Note[] {
@@ -52,7 +44,7 @@ export class NoteStoreService {
   }
 
   updatedContent(note: Note): void {
-    this.updateNoteContent$.next(note)
+    this.repository.updateNoteContent(note)
   }
 
   updatedTitle(): void {

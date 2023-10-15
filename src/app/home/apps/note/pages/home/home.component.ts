@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTabChangeEvent } from '@angular/material/tabs'
 import { ActivatedRoute, ParamMap } from '@angular/router'
@@ -11,8 +11,9 @@ import { Note } from '../../models'
   selector: 'note-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   notes: Note[]
   activeNoteIndex = 0
 
@@ -35,10 +36,6 @@ export class HomeComponent implements OnInit {
     })
   }
 
-  ngOnInit(): void {
-    // empty
-  }
-
   onTabChange(event: MatTabChangeEvent): void {
     this.setActiveNoteIndex(event.index)
   }
@@ -57,7 +54,6 @@ export class HomeComponent implements OnInit {
         messageHeader: 'delete this note?',
       },
     })
-
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.noteStoreService.deleteNoteById(note.id)

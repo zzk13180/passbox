@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { QuillModule } from 'ngx-quill'
 import { LyButtonModule } from '@alyle/ui/button'
 import { MatTabsModule } from '@angular/material/tabs'
 import { MatDialogModule } from '@angular/material/dialog'
@@ -31,7 +30,6 @@ import { ListComponent } from './pages/list/list.component'
     LyButtonModule,
     LyIconModule.forRoot(),
     MatDialogModule,
-    QuillModule.forRoot(),
   ],
 })
 export class NoteModule {}

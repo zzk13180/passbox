@@ -6,7 +6,6 @@ export class I18nText {
   constructor() {}
 
   get thanks(): string {
-    console.log('this.currentLanguage', this.currentLanguage)
     const data = [
       'Thank you for using my software! Your support means a lot to us.',
       '感谢您使用我的软件！您的支持对我们非常重要。',

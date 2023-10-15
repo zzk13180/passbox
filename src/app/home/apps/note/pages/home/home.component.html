@@ -20,6 +20,7 @@
         <div class="note-container">
           <note-editor
             [note]="note"
+            [content]="note.content"
             (delete)="deleteNote($event)"
             (updatedContent)="updatedContent($event)"
             (updatedTitle)="updatedTitle($event)"
