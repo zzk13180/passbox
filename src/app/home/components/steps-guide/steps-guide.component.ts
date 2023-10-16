@@ -28,6 +28,7 @@ import { ExtraConfig } from './steps-guide.types'
   preserveWhitespaces: false,
 })
 export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('partyEL') partyEL: ElementRef
   @HostBinding('class')
   get class() {
     return `devui-step-item ${this.position}`
@@ -37,8 +38,6 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
   get display() {
     return 'block'
   }
-
-  @ViewChild('partyEL') partyEL: ElementRef
 
   triggerElement: HTMLElement
   scrollElement: HTMLElement

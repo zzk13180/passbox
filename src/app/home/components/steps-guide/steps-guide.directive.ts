@@ -43,7 +43,6 @@ export class StepsGuideDirective implements OnInit, OnDestroy {
   @Input() set dStepsGuidePosition(pos: StepsGuidePositionType) {
     this._dStepsGuidePosition = pos
   }
-
   get dStepsGuidePosition(): StepsGuidePositionType {
     return this._dStepsGuidePosition || 'top'
   }
@@ -84,7 +83,6 @@ export class StepsGuideDirective implements OnInit, OnDestroy {
       this.destroyMutationObserver(true)
     }
   }
-
   @Input() beforeChange: (
     currentIndex,
     targetIndex,

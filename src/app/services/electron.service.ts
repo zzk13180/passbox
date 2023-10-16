@@ -2,22 +2,30 @@ import { Injectable } from '@angular/core'
 import type { Card } from '../models'
 import type { StorageKey } from '../enums/storageKey'
 
+type AppInfo = {
+  name: string
+  version: string
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ElectronService {
   private ipcRenderer = window.electronAPI.ipcRenderer
+  private appInfo: AppInfo
+  private userDataPath: string
 
   constructor() {}
 
-  async getAppInfo(): Promise<{ name: string; version: string }> {
-    const result = await this.ipcRenderer.invoke('get-app-info')
-    return result
+  async getAppInfo(): Promise<AppInfo> {
+    this.appInfo ??= await this.ipcRenderer.invoke('get-app-info')
+    return this.appInfo
   }
 
+  // return like: xxx/passbox.json
   async getUserDataPath(): Promise<string> {
-    const result = await this.ipcRenderer.invoke('get-user-data-path')
-    return result
+    this.userDataPath ??= await this.ipcRenderer.invoke('get-user-data-path')
+    return this.userDataPath
   }
 
   openDevTools() {

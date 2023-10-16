@@ -3,6 +3,7 @@
 <div class="devui-arrow"></div>
 <div class="devui-guide-container">
   <p class="devui-title">{{ title }}</p>
+  <ly-icon class="icon-close" (click)="closeAll()">close</ly-icon>
   <div class="devui-content" [innerHTML]="content | safe: 'html'"></div>
   <div class="devui-ctrl">
     <div *ngIf="dots.length > 1 && !extraConfig?.hideStepNav" class="devui-dots">

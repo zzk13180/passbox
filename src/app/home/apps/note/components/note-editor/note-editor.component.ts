@@ -6,14 +6,15 @@ import {
   ElementRef,
   ChangeDetectionStrategy,
   OnDestroy,
+  NgZone,
 } from '@angular/core'
-import { MatDialog } from '@angular/material/dialog'
 import ImageResize from 'quill-image-resize-module'
 import Quill from 'quill'
-import { fromEvent } from 'rxjs'
+import { fromEvent, Subscription } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 import { NoteStoreService } from '../../store/note-store.service'
 import { Note } from '../../models'
+import type { DeltaStatic } from 'quill'
 
 @Component({
   selector: 'note-editor',
@@ -27,40 +28,15 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
   @ViewChild('quillEditorContainer') quillEditorContainer: ElementRef
   @Input() note: Note
   private quill: Quill
+  private subscription: Subscription
 
   constructor(
     private noteStoreService: NoteStoreService,
-    private _dialog: MatDialog,
+    private ngZone: NgZone,
   ) {}
 
-  async ngAfterViewInit() {
-    const Font = Quill.import('formats/font')
-    Font.whitelist = [
-      "'Noto Sans Arabic', 'Noto Sans', 'Noto Sans JP', 'Noto Sans SC', sans-serif",
-    ]
-    Quill.register('modules/imageResize', ImageResize)
-    this.quill = new Quill(this.quillEditor.nativeElement, {
-      bounds: this.quillEditorContainer.nativeElement,
-      modules: {
-        toolbar: this.quillEditorToolbar.nativeElement,
-        syntax: true,
-        imageResize: {
-          displaySize: true,
-        },
-      },
-      theme: 'snow',
-    })
-    fromEvent(this.quill, 'text-change')
-      .pipe(debounceTime(300))
-      .subscribe(() => {
-        const txt = this.quill.getText()
-        this.note.content = txt
-        this.noteStoreService.updatedContent(this.note)
-      })
-    this.quill.disable()
-    const content = await this.noteStoreService.getNoteContentById(this.note.id)
-    this.quill.setText(content)
-    this.quill.enable()
+  ngAfterViewInit() {
+    this.ngZone.runOutsideAngular(() => this.initQuill())
   }
 
   onTitleChanged(): void {
@@ -85,7 +61,59 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
     )
   }
 
+  private async initQuill(): Promise<void> {
+    const Font = Quill.import('formats/font')
+    Font.whitelist = [
+      "'Noto Sans Arabic', 'Noto Sans', 'Noto Sans JP', 'Noto Sans SC', sans-serif",
+    ]
+    Quill.register('modules/imageResize', ImageResize)
+    const parchment = Quill.import('parchment')
+    const block = parchment.query('block')
+    block.tagName = 'DIV'
+    Quill.register(block, true)
+    this.quill = new Quill(this.quillEditor.nativeElement, {
+      bounds: this.quillEditorContainer.nativeElement,
+      modules: {
+        toolbar: this.quillEditorToolbar.nativeElement,
+        syntax: true,
+        imageResize: {
+          displaySize: true,
+        },
+      },
+      theme: 'snow',
+      placeholder: 'Write something...',
+    })
+    // register text-change event
+    this.subscription = fromEvent(this.quill, 'text-change')
+      .pipe(debounceTime(300))
+      .subscribe(([_delta, _oldContents, source]) => {
+        if (source === 'user') {
+          let content: string
+          try {
+            const value = this.quill.getContents()
+            content = JSON.stringify(value)
+          } catch (_) {
+            content = this.quill.getText()
+          }
+          this.noteStoreService.updatedContent({ ...this.note, content })
+        }
+      })
+    // init content
+    this.quill.disable()
+    try {
+      const value = await this.noteStoreService.getNoteContentById(this.note.id)
+      const content: DeltaStatic = JSON.parse(value)
+      this.quill.setContents(content, 'silent')
+      this.quill.getModule('history').clear()
+    } catch (_) {
+      console.error(_)
+    } finally {
+      this.quill.enable()
+    }
+  }
+
   ngOnDestroy() {
+    this.subscription && this.subscription.unsubscribe()
     this.quill = null
   }
 }

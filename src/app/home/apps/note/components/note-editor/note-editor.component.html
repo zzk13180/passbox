@@ -8,7 +8,6 @@
         (change)="onTitleChanged()"
       />
     </label>
-
     <div class="actions">
       <button ly-button size="small">
         <ly-icon color="warn" (click)="deleteNote(note)">delete</ly-icon>
@@ -24,19 +23,18 @@
         <button class="ql-strike"></button>
       </span>
       <span class="ql-formats">
+        <button class="ql-image"></button>
+        <button class="ql-code-block"></button>
+        <button class="ql-formula"></button>
+        <button class="ql-clean"></button>
+      </span>
+      <span class="ql-formats">
         <select class="ql-align">
           <option label="left"></option>
           <option label="center" value="center"></option>
           <option label="right" value="right"></option>
           <option label="justify" value="justify"></option>
         </select>
-      </span>
-      <span class="ql-formats">
-        <button class="ql-image"></button>
-        <button class="ql-code-block"></button>
-        <button class="ql-formula"></button>
-      </span>
-      <span class="ql-formats">
         <select class="ql-header">
           <option value="1">Heading</option>
           <option value="2">Subheading</option>

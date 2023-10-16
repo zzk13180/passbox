@@ -61,10 +61,13 @@ export class PasswordSetDialog implements AfterViewInit {
         cancelId: 0,
         noLink: true,
       },
-      async result => {
+      result => {
         if (result.response === 1) {
-          await this.electronService.storageClear()
-          this.dialogRef.close(true)
+          this.ngZone.run(async () => {
+            await this.electronService.storageClear()
+            this.dialogRef.close(true)
+            this._cd.detectChanges()
+          })
         }
       },
     )

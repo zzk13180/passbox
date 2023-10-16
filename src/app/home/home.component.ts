@@ -47,7 +47,7 @@ import { AppsDialog } from './components/apps-dialog/apps-dialog'
 import { HelpDialog } from './components/help/help-dialog'
 import { PasswordGeneratorDialog } from './components/password-generator/password-generator'
 import { TutorialDialog } from './components/tutorial/tutorial'
-import { StepsGuideService } from './components/steps-guide'
+import { StepsGuideService, OperateResponse } from './components/steps-guide'
 import { STYLES } from './STYLES.data'
 import { steps } from './guide-steps.data'
 
@@ -567,6 +567,12 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.stepService.showGuide(true)
       }
     })
+  }
+
+  stepOperateChange(event: OperateResponse) {
+    if (event.clickType === 'close') {
+      this.stepService.showGuide(false)
+    }
   }
 
   ngOnDestroy() {
