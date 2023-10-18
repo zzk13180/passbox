@@ -1,5 +1,5 @@
-import { Inject, Injectable } from '@angular/core'
-import { LocalStorage } from 'src/app/services'
+import { Injectable } from '@angular/core'
+import { ElectronService } from 'src/app/services'
 
 export class Todo {
   private _title: String
@@ -25,12 +25,16 @@ export class Todo {
   providedIn: 'root',
 })
 export class TodoStore {
-  readonly storageKey = 'apps-todo'
-  todos: Array<Todo>
+  readonly KEY = 'todolist'
+  private path: string
+  todos: Array<Todo> = []
 
-  constructor(@Inject(LocalStorage) private storage: Storage) {
-    const persistedTodos = JSON.parse(this.storage.getItem(this.storageKey) || '[]')
-    // Normalize back into classes
+  constructor(private electronService: ElectronService) {}
+
+  async load() {
+    await this.ensurePath()
+    const str = await this.electronService.readFile(this.path)
+    const persistedTodos = JSON.parse(str || '[]')
     this.todos = persistedTodos.map((todo: { _title: String; completed: boolean }) => {
       const ret = new Todo(todo._title)
       ret.completed = todo.completed as boolean
@@ -38,8 +42,9 @@ export class TodoStore {
     })
   }
 
-  private updateStore() {
-    this.storage.setItem(this.storageKey, JSON.stringify(this.todos))
+  private async updateStore() {
+    await this.ensurePath()
+    this.electronService.writeFile(this.path, JSON.stringify(this.todos))
   }
 
   private getWithCompleted(completed: boolean) {
@@ -81,5 +86,19 @@ export class TodoStore {
   add(title: String) {
     this.todos.push(new Todo(title))
     this.updateStore()
+  }
+
+  private async ensurePath(): Promise<void> {
+    this.path ??= await this.getPath()
+  }
+
+  private async getPath(): Promise<string> {
+    const { platform } = window.electronAPI.process
+    const isWin = platform === 'win32'
+    const separator = isWin ? '\\' : '/'
+    const dataPath = await this.electronService.getUserDataPath()
+    const appInfo = await this.electronService.getAppInfo()
+    const reg = new RegExp(`${appInfo.name}.json$`)
+    return dataPath.replace(reg, `${this.KEY}${separator}${this.KEY}.json`)
   }
 }

@@ -1,4 +1,4 @@
-<div class="apps-todo">
+<div class="apps-todo mat-typography">
   <section class="todoapp">
     <header class="header">
       <button class="go-home" ly-button appearance="icon" (click)="openAppsDialog()">
@@ -34,9 +34,9 @@
           </div>
           <input
             class="edit"
+            #editedtodo
             *ngIf="todo.editing"
             [value]="todo.title"
-            #editedtodo
             (blur)="stopEditing(todo, editedtodo.value)"
             (keyup.enter)="updateEditingTodo(todo, editedtodo.value)"
             (keyup.escape)="cancelEditingTodo(todo)"

@@ -20,7 +20,7 @@ import type { Todo } from './apps-todo-store'
   styleUrls: ['./todo.component.scss'],
 })
 export class TodoComponent implements OnDestroy, AfterViewInit {
-  readonly delay = 300
+  readonly delay = 100
   @ViewChild('newTodoInput', { static: true }) newTodoInputElement: ElementRef
   destroy$ = new Subject()
 
@@ -31,6 +31,7 @@ export class TodoComponent implements OnDestroy, AfterViewInit {
   ) {}
 
   ngAfterViewInit() {
+    this.todoStore.load()
     this.renderer.selectRootElement(this.newTodoInputElement.nativeElement).focus()
     fromEvent(this.newTodoInputElement.nativeElement, 'keydown')
       .pipe(

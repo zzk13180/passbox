@@ -86,25 +86,25 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
     // register text-change event
     this.subscription = fromEvent(this.quill, 'text-change')
       .pipe(debounceTime(300))
-      .subscribe(([_delta, _oldContents, source]) => {
-        if (source === 'user') {
-          let content: string
-          try {
-            const value = this.quill.getContents()
-            content = JSON.stringify(value)
-          } catch (_) {
-            content = this.quill.getText()
-          }
-          this.noteStoreService.updatedContent({ ...this.note, content })
+      .subscribe(() => {
+        let content: string
+        try {
+          const value = this.quill.getContents()
+          content = JSON.stringify(value)
+        } catch (_) {
+          content = this.quill.getText()
         }
+        this.noteStoreService.updatedContent({ ...this.note, content })
       })
     // init content
     this.quill.disable()
     try {
       const value = await this.noteStoreService.getNoteContentById(this.note.id)
-      const content: DeltaStatic = JSON.parse(value)
-      this.quill.setContents(content, 'silent')
-      this.quill.getModule('history').clear()
+      if (value) {
+        const content: DeltaStatic = JSON.parse(value)
+        this.quill.setContents(content, 'silent')
+        this.quill.getModule('history').clear()
+      }
     } catch (_) {
       console.error(_)
     } finally {

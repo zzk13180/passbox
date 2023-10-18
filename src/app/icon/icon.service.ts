@@ -3,6 +3,7 @@ import { DOCUMENT } from '@angular/common'
 import { Observable } from 'rxjs'
 import { LyTheme2 } from '@alyle/ui'
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
+import { SVG_ICONS } from './svg-icons'
 
 const STYLE_PRIORITY = -2
 
@@ -55,10 +56,12 @@ export class LyIconService {
     @Optional() @Inject(DOCUMENT) private _document: any,
     private theme: LyTheme2,
   ) {
+    for (const [name, svg] of SVG_ICONS) {
+      this.addSvgIconLiteral(name, this._sanitizer.bypassSecurityTrustHtml(svg))
+    }
     this.defaultSvgIcon =
       '<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"></circle></svg>'
   }
-
 
   addSvgIconLiteral(key: string, literal: SafeHtml) {
     const sanitizedLiteral = this._sanitizer.sanitize(SecurityContext.HTML, literal)

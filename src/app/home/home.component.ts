@@ -8,14 +8,12 @@ import {
   NgZone,
   OnDestroy,
 } from '@angular/core'
-import { DomSanitizer } from '@angular/platform-browser'
 import { StyleRenderer, LyTheme2 } from '@alyle/ui'
 import { LyDialog } from '@alyle/ui/dialog'
 import { LySnackBar } from '@alyle/ui/snack-bar'
 import { Observable, take, Subscription } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import { Store, select } from '@ngrx/store'
-import { SVG_ICONS, LyIconService } from 'src/app/icon'
 import { StorageKey, DBError } from '../enums/storageKey'
 import { Card, CardState } from '../models'
 import {
@@ -83,12 +81,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private cryptoService: CryptoService,
     private notificationService: NotificationService,
     private stepService: StepsGuideService,
-    iconService: LyIconService,
-    sanitizer: DomSanitizer,
   ) {
-    for (const [name, svg] of SVG_ICONS) {
-      iconService.addSvgIconLiteral(name, sanitizer.bypassSecurityTrustHtml(svg))
-    }
     this.subscription = this.notificationService.getNotification().subscribe(message => {
       try {
         this[message]()

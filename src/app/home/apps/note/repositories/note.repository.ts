@@ -15,8 +15,8 @@ export class NoteRepository {
   ) {}
 
   getNoteTabs(): Note[] {
-    const notes = JSON.parse(this.storage.getItem(this.KEY))
-    return notes || []
+    const notes = JSON.parse(this.storage.getItem(this.KEY) || '[]')
+    return notes
   }
 
   setNoteTabs(notes: Note[]): void {
