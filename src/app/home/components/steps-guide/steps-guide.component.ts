@@ -72,7 +72,7 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.dots = new Array(this.stepsCount)
     this.elm.nativeElement.style.zIndex = this.zIndex
-    this.subScriber = fromEvent(window, 'resize')
+    this.subScriber = fromEvent(this.document.defaultView, 'resize')
       .pipe(debounceTime(this.SCROLL_REFRESH_INTERVAL))
       .subscribe(() => {
         this.updatePosition()
@@ -91,7 +91,9 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
         this.triggerElement,
       )
       this.scrollElement =
-        currentScrollElement === this.document.body ? window : currentScrollElement
+        currentScrollElement === this.document.body
+          ? this.document.defaultView
+          : currentScrollElement
     }
     const scrollSubscriber = fromEvent(this.scrollElement, 'scroll')
       .pipe(

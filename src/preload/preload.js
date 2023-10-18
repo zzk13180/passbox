@@ -57,6 +57,20 @@ const globals = {
       )
     },
   },
+  customLocalStorage: {
+    setItem(key, value) {
+      ipcRenderer.send('custom-local-storage-set-item', key, value)
+    },
+    getItem(key) {
+      return ipcRenderer.sendSync('custom-local-storage-get-item', key)
+    },
+    removeItem(key) {
+      ipcRenderer.send('custom-local-storage-remove-item', key)
+    },
+    clear() {
+      ipcRenderer.send('custom-local-storage-clear')
+    },
+  },
 }
 
 contextBridge.exposeInMainWorld('electronAPI', globals)

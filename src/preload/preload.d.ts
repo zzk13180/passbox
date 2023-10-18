@@ -34,6 +34,7 @@ declare global {
         showMessageBox: (options: any, cb: (...args: any[]) => void) => void
         showOpenDialog: (options: any, cb: (...args: any[]) => void) => void
       }
+      customLocalStorage: Storage // Omit<Storage, 'key'>
     }
   }
 }

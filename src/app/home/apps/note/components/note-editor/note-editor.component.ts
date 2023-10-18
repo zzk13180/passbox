@@ -8,13 +8,12 @@ import {
   OnDestroy,
   NgZone,
 } from '@angular/core'
-import ImageResize from 'quill-image-resize-module'
-import Quill from 'quill'
 import { fromEvent, Subscription } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
+import { QuillService } from '../../services/quill.service'
 import { NoteStoreService } from '../../store/note-store.service'
 import { Note } from '../../models'
-import type { DeltaStatic } from 'quill'
+import type { Quill, DeltaStatic } from 'quill'
 
 @Component({
   selector: 'note-editor',
@@ -32,6 +31,7 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private noteStoreService: NoteStoreService,
+    private quillService: QuillService,
     private ngZone: NgZone,
   ) {}
 
@@ -62,15 +62,7 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   private async initQuill(): Promise<void> {
-    const Font = Quill.import('formats/font')
-    Font.whitelist = [
-      "'Noto Sans Arabic', 'Noto Sans', 'Noto Sans JP', 'Noto Sans SC', sans-serif",
-    ]
-    Quill.register('modules/imageResize', ImageResize)
-    const parchment = Quill.import('parchment')
-    const block = parchment.query('block')
-    block.tagName = 'DIV'
-    Quill.register(block, true)
+    const Quill = await this.quillService.getQuill()
     this.quill = new Quill(this.quillEditor.nativeElement, {
       bounds: this.quillEditorContainer.nativeElement,
       modules: {

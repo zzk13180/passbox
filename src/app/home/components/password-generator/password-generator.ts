@@ -1,7 +1,8 @@
 /*🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
 show password-generator dialog 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅*/
-import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { Component, ChangeDetectionStrategy, Injector } from '@angular/core'
+import { DOCUMENT } from '@angular/common'
 import { LyDialogRef } from '@alyle/ui/dialog'
 
 @Component({
@@ -10,7 +11,12 @@ import { LyDialogRef } from '@alyle/ui/dialog'
 })
 export class PasswordGeneratorDialog {
   securePassword: string
-  constructor(public dialogRef: LyDialogRef) {
+  private window: Window
+  constructor(
+    public dialogRef: LyDialogRef,
+    private injector: Injector,
+  ) {
+    this.window = this.injector.get(DOCUMENT).defaultView
     this.securePassword = this.generateSecurePassword(22, true, true, true, true)
   }
 
@@ -41,7 +47,7 @@ export class PasswordGeneratorDialog {
     }
 
     const passwordArray = new Uint8Array(length)
-    const crypto = window.crypto || (window as any).msCrypto
+    const crypto = this.window.crypto || (this.window as any).msCrypto
 
     if (!crypto || !crypto.getRandomValues) {
       throw new Error('Crypto.getRandomValues() is not supported in this environment.')

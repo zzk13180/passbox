@@ -48,7 +48,6 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "src/assets/js/highlight.min.js",
               "katex/dist/katex.min.js",
               "quill/dist/quill.min.js"
             ],

@@ -9,13 +9,7 @@ import { AppComponent } from './app.component'
 import { AppRoutingModule } from './app-routing.module'
 import { HomeModule } from './home/home.module'
 import { CardEffects } from './effects'
-import {
-  WindowToken,
-  windowProvider,
-  STORAGE_PROVIDERS,
-  cardReducer,
-  I18nService,
-} from './services'
+import { STORAGE_PROVIDERS, cardReducer, I18nService } from './services'
 
 @NgModule({
   declarations: [AppComponent],
@@ -29,7 +23,6 @@ import {
   ],
   providers: [
     I18nService,
-    { provide: WindowToken, useFactory: windowProvider },
     STORAGE_PROVIDERS,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
   ],

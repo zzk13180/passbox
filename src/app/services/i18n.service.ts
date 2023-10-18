@@ -38,7 +38,7 @@ export const i18nLanguageIndexMap = {
 
 @Injectable({ providedIn: 'root' })
 export class I18nService {
-  readonly LANGUAGE_KEY = 'passbox::language'
+  readonly LANGUAGE_KEY = 'language'
   private currentLang: I18nLanguageEnum = I18nLanguageEnum.English
   private i18nSubject = new ReplaySubject<I18nLanguageEnum>(1)
 

@@ -71,6 +71,10 @@ class WindowMain {
       defaults: {},
       name: app.name,
     }),
+    private customLocalStorage = new Store({
+      defaults: {},
+      name: `${app.name}-custom-local-storage`,
+    }),
   ) {}
 
   init() {
@@ -277,6 +281,22 @@ class WindowMain {
       dialog.showOpenDialog(options).then(result => {
         event.reply('show-open-dialog-reply', eventId, result)
       })
+    })
+
+    ipcMain.on('custom-local-storage-set-item', (event, key: string, value: any) => {
+      this.customLocalStorage.set(key, value)
+    })
+
+    ipcMain.on('custom-local-storage-get-item', (event, key: string) => {
+      event.returnValue = this.customLocalStorage.get(key)
+    })
+
+    ipcMain.on('custom-local-storage-remove-item', (event, key: string) => {
+      this.customLocalStorage.delete(key)
+    })
+
+    ipcMain.on('custom-local-storage-clear', () => {
+      this.customLocalStorage.clear()
     })
   }
 
