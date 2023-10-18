@@ -11,6 +11,7 @@
     "!LICENSE",
     "!pnpm-lock.yaml",
     "!src/",
+    "!dist/assets/fonts/",
     "!angular.json",
     "!tsconfig.json",
     "!passbox-user-data/",

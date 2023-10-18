@@ -13,7 +13,8 @@ body {
   font-family: 'Noto Sans JP';
   font-style: normal;
   font-weight: normal;
-  src: url('./assets/fonts/noto/NotoSansJP-VariableFont_wght.ttf') format('truetype');
+  src: url(./assets/fonts/noto/noto-sans-jp-v52-japanese-regular.woff2)
+    format('woff2');
 }
 
 /* chinese-simplified */
@@ -21,7 +22,7 @@ body {
   font-family: 'Noto Sans SC';
   font-style: normal;
   font-weight: normal;
-  src: url('./assets/fonts/noto/NotoSansSC-VariableFont_wght.ttf') format('truetype');
+  src: url(./assets/fonts/noto/noto-sans-sc-v36-chinese-simplified-regular.woff2) format('woff2');
 }
 
 /* arabic */
@@ -29,8 +30,8 @@ body {
   font-family: 'Noto Sans Arabic';
   font-style: normal;
   font-weight: normal;
-  src: url('./assets/fonts/noto/NotoSansArabic-VariableFont_wdth,wght.ttf')
-    format('truetype');
+  src: url(./assets/fonts/noto/noto-sans-arabic-v18-arabic-regular.woff2)
+    format('woff2');
 }
 
 @font-face {
@@ -44,7 +45,7 @@ body {
   font-family: Slkscr;
   font-style: normal;
   font-weight: normal;
-  src: url('./assets/fonts/slkscr.ttf') format('truetype');
+  src: url(./assets/fonts/slkscr.ttf) format('truetype');
 }
 
 /* https://fonts.googleapis.com/css?family=Noto+Sans:300,400,500|Material+Icons */

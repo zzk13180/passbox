@@ -1,13 +1,13 @@
 <div class="apps-emoji">
-  <div className="component-search-input">
-    <input type="text" />
-    <!-- <input onChange="{this.handleChange}" /> -->
-  </div>
-  <div className="component-emoji-results">
-    <div className="component-emoji-result-row">
-      <!-- <img alt="{this.props.title}" src="{src}" /> -->
-      <span className="title">this.props.title</span>
-      <span className="info">Click to copy emoji</span>
-    </div>
-  </div>
+  <section class="apps-emoji-box">
+    <header class="apps-emoji-header">
+      <button class="go-home" ly-button appearance="icon" (click)="openAppsDialog()">
+        <ly-icon>apps</ly-icon>
+      </button>
+      <input class="apps-emoji-input" placeholder="Search Emoji" />
+    </header>
+    <section class="apps-emoji-list">
+      <div class="emojis" *ngFor="let emoji of emojis">{{ emoji.symbol }}</div>
+    </section>
+  </section>
 </div>

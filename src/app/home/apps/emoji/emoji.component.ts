@@ -1,12 +1,18 @@
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
+import { LyDialog } from '@alyle/ui/dialog'
+import { AppsDialog } from 'src/app/home/components/apps-dialog/apps-dialog'
+import { emojis } from './emoji.data'
 
 @Component({
-  selector: 'emoji',
+  selector: 'apps-emoji',
   templateUrl: './emoji.component.html',
   styleUrls: ['./emoji.component.scss'],
 })
-export class EmojiComponent implements OnInit {
-  constructor() {}
+export class EmojiComponent {
+  emojis = emojis
+  constructor(private _dialog: LyDialog) {}
 
-  ngOnInit(): void {}
+  openAppsDialog() {
+    this._dialog.open<AppsDialog>(AppsDialog, {})
+  }
 }
