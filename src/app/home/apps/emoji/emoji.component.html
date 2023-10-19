@@ -1,13 +1,32 @@
 <div class="apps-emoji">
   <section class="apps-emoji-box">
     <header class="apps-emoji-header">
-      <button class="go-home" ly-button appearance="icon" (click)="openAppsDialog()">
+      <button class="go-passbox" ly-button appearance="icon" (click)="openAppsDialog()">
         <ly-icon>apps</ly-icon>
       </button>
-      <input class="apps-emoji-input" placeholder="Search Emoji" />
+      <search
+        cssClass="apps-emoji-search"
+        placeholder="search"
+        (searchFn)="onSearch($event)"
+      />
+      <ly-slider
+        [ngClass]="classes.slider"
+        (change)="sliderChange($event)"
+        [min]="10"
+        [max]="110"
+        [value]="24"
+      />
     </header>
-    <section class="apps-emoji-list">
-      <div class="emojis" *ngFor="let emoji of emojis">{{ emoji.symbol }}</div>
-    </section>
+    <main class="apps-emoji-list">
+      <span
+        class="emojis"
+        *ngFor="let emoji of emojis; trackBy: trackByFn"
+        [ngStyle]="{
+          fontSize: fontSize + 'px'
+        }"
+      >
+        {{ emoji.symbol }}
+      </span>
+    </main>
   </section>
 </div>
