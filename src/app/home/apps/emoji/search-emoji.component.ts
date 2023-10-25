@@ -27,7 +27,7 @@ import { debounceTime, filter, map, takeUntil } from 'rxjs/operators'
 })
 export class SearchComponent implements OnDestroy, AfterViewInit {
   @Input() cssClass: string
-  @Input() placeholder = 'search'
+  @Input() placeholder = '搜索'
   @Input() isKeyupSearch = true
   @Input() delay = 300
   @Input() disabled = false

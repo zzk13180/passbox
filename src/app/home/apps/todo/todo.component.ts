@@ -36,7 +36,9 @@ export class TodoComponent implements OnDestroy, AfterViewInit {
     fromEvent(this.newTodoInputElement.nativeElement, 'keydown')
       .pipe(
         takeUntil(this.destroy$),
-        filter((keyEvent: KeyboardEvent) => keyEvent.key === 'Enter'),
+        filter((keyEvent: KeyboardEvent) => {
+          return keyEvent.shiftKey && keyEvent.key === 'Enter'
+        }),
         debounceTime(this.delay),
       )
       .subscribe(_keyEvent => {

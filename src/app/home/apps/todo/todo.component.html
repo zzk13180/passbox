@@ -4,7 +4,7 @@
       <button class="go-home" ly-button appearance="icon" (click)="openAppsDialog()">
         <ly-icon>apps</ly-icon>
       </button>
-      <input #newTodoInput class="new-todo" placeholder="write and press enter" />
+      <input #newTodoInput class="new-todo" placeholder="输入文字" />
     </header>
     <section class="main" *ngIf="todoStore.todos.length > 0">
       <input
@@ -38,8 +38,8 @@
             *ngIf="todo.editing"
             [value]="todo.title"
             (blur)="stopEditing(todo, editedtodo.value)"
-            (keyup.enter)="updateEditingTodo(todo, editedtodo.value)"
-            (keyup.escape)="cancelEditingTodo(todo)"
+            (keydown.shift.enter)="updateEditingTodo(todo, editedtodo.value)"
+            (keydown.escape)="cancelEditingTodo(todo)"
           />
         </li>
       </ul>

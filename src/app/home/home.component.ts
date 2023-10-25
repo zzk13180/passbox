@@ -95,7 +95,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.cards$ = theCardsStore.pipe(select(selectCards))
     this.deletedCards$ = theCardsStore.pipe(select(selectDeletedCards))
     const { isRequiredLogin } = await this.userStateService.getUserState()
-    if (isRequiredLogin) {
+    const userPassword = this.userStateService.getUserPassword()
+    if (isRequiredLogin && !userPassword) {
       this.setPassword(true)
     } else {
       this.initTheCards()

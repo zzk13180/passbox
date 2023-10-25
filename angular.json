@@ -47,10 +47,7 @@
               "@angular/material/prebuilt-themes/pink-bluegrey.css",
               "src/styles.scss"
             ],
-            "scripts": [
-              "katex/dist/katex.min.js",
-              "quill/dist/quill.min.js"
-            ],
+            "scripts": ["katex/dist/katex.min.js", "quill/dist/quill.min.js"],
             "allowedCommonJsDependencies": [
               "quill",
               "quill-image-resize-module",
@@ -109,12 +106,6 @@
             }
           },
           "defaultConfiguration": "development"
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "passbox:build"
-          }
         }
       }
     }

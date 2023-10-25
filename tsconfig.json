@@ -17,7 +17,7 @@
     "module": "ES2022",
     "useDefineForClassFields": false,
     "lib": ["ES2022", "dom"],
-    "types": ["./src/preload/preload.d.ts", "@angular/localize"],
+    "types": ["./src/preload/preload.d.ts"],
   },
   "exclude": ["node_modules"],
   "include": ["src/main.ts"],

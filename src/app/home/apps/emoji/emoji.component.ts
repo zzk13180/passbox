@@ -30,9 +30,39 @@ export class EmojiComponent {
     private theme: LyTheme2,
   ) {
     this.fuse = new Fuse<Emoji>(emojis, {
-      keys: ['title', 'symbol', 'keywords'],
+      keys: [
+        'title',
+        'symbol',
+        'keywords',
+        'titleI18n.English',
+        'titleI18n.Chinese',
+        'titleI18n.Japanese',
+        'titleI18n.Spanish',
+        'titleI18n.German',
+        'titleI18n.French',
+        'titleI18n.Italian',
+        'titleI18n.Portuguese',
+        'titleI18n.Polish',
+        'titleI18n.Arabic',
+        'titleI18n.Persian',
+        'titleI18n.Indonesian',
+        'titleI18n.Dutch',
+        'keywordsI18n.English',
+        'keywordsI18n.Chinese',
+        'keywordsI18n.Japanese',
+        'keywordsI18n.Spanish',
+        'keywordsI18n.German',
+        'keywordsI18n.Russian',
+        'keywordsI18n.French',
+        'keywordsI18n.Italian',
+        'keywordsI18n.Portuguese',
+        'keywordsI18n.Polish',
+        'keywordsI18n.Arabic',
+        'keywordsI18n.Persian',
+        'keywordsI18n.Indonesian',
+        'keywordsI18n.Dutch',
+      ],
       useExtendedSearch: true,
-      minMatchCharLength: 2,
       threshold: 0.4,
       ignoreLocation: true,
       sortFn: (a, b) => a.score - b.score,
@@ -40,7 +70,6 @@ export class EmojiComponent {
   }
 
   onSearch(term: string) {
-    console.log(term)
     if (term === '') {
       this.emojis = emojis
     } else {
@@ -59,6 +88,6 @@ export class EmojiComponent {
   }
 
   trackByFn(index: number, item: Emoji) {
-    return item.title
+    return item.symbol
   }
 }

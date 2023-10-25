@@ -92,7 +92,6 @@ const searchHandler = (cards: Card[], term: string): Card[] => {
       },
     ],
     useExtendedSearch: true,
-    minMatchCharLength: 2,
     threshold: 0.4,
     ignoreLocation: true,
     sortFn: (a, b) => a.score - b.score,
