@@ -1,7 +1,7 @@
 import { NgModule, ModuleWithProviders } from '@angular/core'
 import { LyCommonModule } from '@alyle/ui'
 
-import { LyIcon } from './icon'
+import { LyIcon } from './icon.directive'
 
 @NgModule({
   declarations: [LyIcon],

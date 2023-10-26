@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { LyDialog } from '@alyle/ui/dialog'
-import { AppsDialog } from 'src/app/home/components/apps-dialog/apps-dialog'
+import { AppsDialog } from 'src/app/home/components/apps-dialog/apps-dialog.component'
 import { NoteStoreService } from '../../store/note-store.service'
 
 @Component({

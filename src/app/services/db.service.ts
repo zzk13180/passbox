@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { StorageKey, DBError } from '../enums/storageKey'
+import { StorageKey, DBError } from 'src/app/enums'
 import { CryptoService } from './crypto.service'
 import { ElectronService } from './electron.service'
 import type { CardState } from '../models'

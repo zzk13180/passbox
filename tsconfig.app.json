@@ -1,7 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../out-tsc/app"
+    "outDir": "./out-tsc/app",
+    "types": ["./src/preload/preload.d.ts"]
   },
-  "exclude": ["dist", "node_modules"]
+  "files": ["src/main.ts"],
+  "include": ["src/**/*.d.ts"]
 }

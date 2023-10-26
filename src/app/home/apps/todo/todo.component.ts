@@ -10,7 +10,7 @@ import {
 import { fromEvent, Subject } from 'rxjs'
 import { debounceTime, filter, takeUntil } from 'rxjs/operators'
 import { LyDialog } from '@alyle/ui/dialog'
-import { AppsDialog } from 'src/app/home/components/apps-dialog/apps-dialog'
+import { AppsDialog } from 'src/app/home/components/apps-dialog/apps-dialog.component'
 import { TodoStore } from './apps-todo-store'
 import type { Todo } from './apps-todo-store'
 

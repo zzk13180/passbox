@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
     "declaration": false,
-    "experimentalDecorators": true,
-    "lib": ["es2020", "dom"],
+    "lib": ["ES2022", "dom"],
     "moduleResolution": "node",
-    "sourceMap": true,
+    "sourceMap": false,
     "target": "es5",
     "typeRoots": ["node_modules/@types"]
   },

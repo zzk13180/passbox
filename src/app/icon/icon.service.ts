@@ -3,7 +3,7 @@ import { DOCUMENT } from '@angular/common'
 import { Observable } from 'rxjs'
 import { LyTheme2 } from '@alyle/ui'
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
-import { SVG_ICONS } from './svg-icons'
+import { SVG_ICONS } from './svg-icons.data'
 
 const STYLE_PRIORITY = -2
 

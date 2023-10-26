@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core'
 import * as pako from 'pako'
-import { CipherString } from '../models/domain/cipherString'
-import { EncryptedObject } from '../models/domain/encryptedObject'
-import { CryptoService as CryptoServiceAbstraction } from '../models/abstractions/crypto.service'
+import { CipherString, EncryptedObject } from '../models'
+
 import { fromBufferToB64 } from '../utils/crypto.util'
-import { CryptoFunctionService } from './cryptoFunction.service'
-import { UserStateService } from './userstate.service'
-import type { UserState } from './userstate.service'
+import { CryptoFunctionService } from './crypto-function.service'
+import { UserStateService } from './user-state.service'
+import type { UserState } from './user-state.service'
 
 @Injectable({
   providedIn: 'root',
 })
-export class CryptoService implements CryptoServiceAbstraction {
+export class CryptoService {
   private password: ArrayBuffer | null = null
   private salt: ArrayBuffer | null = null
 
@@ -30,12 +29,11 @@ export class CryptoService implements CryptoServiceAbstraction {
     return key
   }
 
-  private async aesEncrypt(data: ArrayBuffer): Promise<EncryptedObject> {
-    const obj = new EncryptedObject()
-    obj.key = await this.makeKey()
-    obj.iv = await this.cryptoFunctionService.randomBytes(16)
-    obj.data = await this.cryptoFunctionService.aesEncrypt(data, obj.iv, obj.key)
-    return obj
+  private async aesEncrypt(arrayBuffer: ArrayBuffer): Promise<EncryptedObject> {
+    const key = await this.makeKey()
+    const iv = await this.cryptoFunctionService.randomBytes(16)
+    const data = await this.cryptoFunctionService.aesEncrypt(arrayBuffer, iv, key)
+    return { iv, data, key }
   }
 
   private async aesDecryptToUtf8(data: string, iv: string): Promise<string> {
@@ -96,7 +94,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     const encObj = await this.aesEncrypt(plainBuf)
     const iv = fromBufferToB64(encObj.iv)
     const data = fromBufferToB64(encObj.data)
-    return new CipherString(data, iv)
+    return { data, iv }
   }
 
   async decryptToUtf8(cipherString: CipherString): Promise<string> {

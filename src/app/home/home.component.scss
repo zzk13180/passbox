@@ -63,22 +63,27 @@
   top: 88px;
   left: 0;
   z-index: -1;
+
   div {
     height: 100%;
   }
+
   div:nth-child(1) {
     width: 10px;
     float: left;
   }
+
   div:nth-child(2) {
     width: 20px;
     margin-left: 40%;
     float: left;
   }
+
   div:nth-child(4) {
     width: 54px;
     float: right;
   }
+
   div:nth-child(3) {
     width: 54px;
     float: right;

@@ -1,4 +1,25 @@
 .apps-todo {
+  @media (width <= 430px) {
+    .footer {
+      height: 23px;
+    }
+
+    .filters {
+      bottom: 10px;
+    }
+  }
+
+  @media (width >= 899px) {
+    .learn-bar {
+      width: auto;
+      padding-left: 300px;
+    }
+
+    .learn-bar > .learn {
+      left: 8px;
+    }
+  }
+
   button {
     margin: 0;
     padding: 0;
@@ -9,7 +30,6 @@
     font-family: inherit;
     font-weight: inherit;
     color: inherit;
-    -webkit-appearance: none;
     appearance: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -28,14 +48,15 @@
     margin: 0;
     position: relative;
     box-shadow:
-      0 2px 4px 0 rgba(0, 0, 0, 0.2),
-      0 25px 50px 0 rgba(0, 0, 0, 0.1);
+      0 2px 4px 0 rgb(0 0 0 / 20%),
+      0 25px 50px 0 rgb(0 0 0 / 10%);
   }
 
   .header {
     position: relative;
     top: 0;
     left: 0;
+
     .go-home {
       cursor: pointer;
       color: #838383;
@@ -46,19 +67,7 @@
     }
   }
 
-  .todoapp input::-webkit-input-placeholder {
-    font-style: italic;
-    font-weight: 300;
-    color: #e6e6e6;
-  }
-
-  .todoapp input::-moz-placeholder {
-    font-style: italic;
-    font-weight: 300;
-    color: #e6e6e6;
-  }
-
-  .todoapp input::input-placeholder {
+  .todoapp input::placeholder {
     font-style: italic;
     font-weight: 300;
     color: #e6e6e6;
@@ -71,10 +80,10 @@
     font-size: 100px;
     font-weight: 100;
     text-align: center;
-    color: rgba(175, 47, 47, 0.15);
-    -webkit-text-rendering: optimizeLegibility;
-    -moz-text-rendering: optimizeLegibility;
-    text-rendering: optimizeLegibility;
+    color: rgb(175 47 47 / 15%);
+    -webkit-text-rendering: optimizelegibility;
+    -moz-text-rendering: optimizelegibility;
+    text-rendering: optimizelegibility;
   }
 
   .new-todo,
@@ -86,11 +95,10 @@
     font-family: inherit;
     font-weight: inherit;
     line-height: 1.4em;
-    border: 0;
     color: inherit;
     padding: 6px;
     border: 1px solid #999;
-    box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 -1px 5px 0 rgb(0 0 0 / 20%);
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -99,8 +107,8 @@
   .new-todo {
     padding: 16px 16px 16px 60px;
     border: none;
-    background: rgba(0, 0, 0, 0.003);
-    box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
+    background: rgb(0 0 0 / 0.3%);
+    box-shadow: inset 0 -2px 1px rgb(0 0 0 / 3%);
   }
 
   .main {
@@ -123,18 +131,17 @@
     position: absolute;
     top: -52px;
     left: -13px;
-    -webkit-transform: rotate(90deg);
     transform: rotate(90deg);
   }
 
-  .toggle-all + label:before {
+  .toggle-all + label::before {
     content: '❯';
     font-size: 22px;
     color: #e6e6e6;
-    padding: 10px 27px 10px 27px;
+    padding: 10px 27px;
   }
 
-  .toggle-all:checked + label:before {
+  .toggle-all:checked + label::before {
     color: #737373;
   }
 
@@ -143,8 +150,7 @@
     padding: 0;
     list-style: none;
     max-height: calc(100vh - 122px);
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden auto;
   }
 
   .todo-list li {
@@ -176,6 +182,7 @@
   .todo-list li .toggle {
     text-align: center;
     width: 40px;
+
     /* auto, since non-WebKit browsers doesn't support input styling */
     height: auto;
     position: absolute;
@@ -183,7 +190,6 @@
     bottom: 0;
     margin: auto 0;
     border: none; /* Mobile Safari */
-    -webkit-appearance: none;
     appearance: none;
   }
 
@@ -240,7 +246,7 @@
     color: #af5b5e;
   }
 
-  .todo-list li .destroy:after {
+  .todo-list li .destroy::after {
     content: '×';
   }
 
@@ -260,7 +266,7 @@
     border-top: 1px solid #e6e6e6;
   }
 
-  .footer:before {
+  .footer::before {
     content: '';
     position: absolute;
     right: 0;
@@ -269,11 +275,11 @@
     height: 50px;
     overflow: hidden;
     box-shadow:
-      0 1px 1px rgba(0, 0, 0, 0.2),
+      0 1px 1px rgb(0 0 0 / 20%),
       0 8px 0 -3px #f6f6f6,
-      0 9px 1px -3px rgba(0, 0, 0, 0.2),
+      0 9px 1px -3px rgb(0 0 0 / 20%),
       0 16px 0 -6px #f6f6f6,
-      0 17px 2px -6px rgba(0, 0, 0, 0.2);
+      0 17px 2px -6px rgb(0 0 0 / 20%);
   }
 
   .todo-count {
@@ -308,11 +314,11 @@
   }
 
   .filters li a:hover {
-    border-color: rgba(175, 47, 47, 0.1);
+    border-color: rgb(175 47 47 / 10%);
   }
 
   .filters li a.selected {
-    border-color: rgba(175, 47, 47, 0.2);
+    border-color: rgb(175 47 47 / 20%);
   }
 
   .clear-completed,
@@ -332,7 +338,7 @@
     margin: 65px auto 0;
     color: #bfbfbf;
     font-size: 10px;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    text-shadow: 0 1px 0 rgb(255 255 255 / 50%);
     text-align: center;
   }
 
@@ -348,31 +354,6 @@
 
   .info a:hover {
     text-decoration: underline;
-  }
-
-  /*
-	Hack to remove background from Mobile Safari.
-	Can't use it globally since it destroys checkboxes in Firefox
-*/
-  @media screen and (-webkit-min-device-pixel-ratio: 0) {
-    .toggle-all,
-    .todo-list li .toggle {
-      background: none;
-    }
-
-    .todo-list li .toggle {
-      height: 40px;
-    }
-  }
-
-  @media (max-width: 430px) {
-    .footer {
-      height: 23px;
-    }
-
-    .filters {
-      bottom: 10px;
-    }
   }
 
   hr {
@@ -438,14 +419,14 @@
 
   .quote {
     border: none;
-    margin: 20px 0 60px 0;
+    margin: 20px 0 60px;
   }
 
   .quote p {
     font-style: italic;
   }
 
-  .quote p:before {
+  .quote p::before {
     content: '“';
     font-size: 50px;
     opacity: 0.15;
@@ -454,7 +435,7 @@
     left: 3px;
   }
 
-  .quote p:after {
+  .quote p::after {
     content: '”';
     font-size: 50px;
     opacity: 0.15;
@@ -481,17 +462,17 @@
   .speech-bubble {
     position: relative;
     padding: 10px;
-    background: rgba(0, 0, 0, 0.04);
+    background: rgb(0 0 0 / 4%);
     border-radius: 5px;
   }
 
-  .speech-bubble:after {
+  .speech-bubble::after {
     content: '';
     position: absolute;
     top: 100%;
     right: 30px;
     border: 13px solid transparent;
-    border-top-color: rgba(0, 0, 0, 0.04);
+    border-top-color: rgb(0 0 0 / 4%);
   }
 
   .learn-bar > .learn {
@@ -501,19 +482,8 @@
     left: -300px;
     padding: 10px;
     border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: rgb(255 255 255 / 60%);
     transition-property: left;
     transition-duration: 500ms;
-  }
-
-  @media (min-width: 899px) {
-    .learn-bar {
-      width: auto;
-      padding-left: 300px;
-    }
-
-    .learn-bar > .learn {
-      left: 8px;
-    }
   }
 }

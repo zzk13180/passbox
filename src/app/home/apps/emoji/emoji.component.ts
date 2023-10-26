@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core'
 import Fuse from 'fuse.js'
 import { LyTheme2 } from '@alyle/ui'
 import { LyDialog } from '@alyle/ui/dialog'
-import { AppsDialog } from 'src/app/home/components/apps-dialog/apps-dialog'
+import { AppsDialog } from 'src/app/home/components/apps-dialog/apps-dialog.component'
 import { Emoji, emojis } from './emoji.data'
 
 const STYLES = {

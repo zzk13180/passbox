@@ -36,9 +36,5 @@
   "nsis": {
     "oneClick": false,
     "perMachine": true
-  },
-  "linux": {
-    "target": "AppImage",
-    "icon": "dist/assets/icons"
   }
 }

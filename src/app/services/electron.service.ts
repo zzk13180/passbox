@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import type { Card } from '../models'
-import type { StorageKey } from '../enums/storageKey'
+import type { StorageKey } from 'src/app/enums'
 
 type AppInfo = {
   name: string
