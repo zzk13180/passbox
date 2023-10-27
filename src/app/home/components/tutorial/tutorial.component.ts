@@ -9,7 +9,7 @@ import {
   ElementRef,
   AfterViewInit,
 } from '@angular/core'
-import { LyTheme2, StyleRenderer } from '@alyle/ui'
+import { LyClasses, LyTheme2, StyleRenderer } from '@alyle/ui'
 import { LyDialogRef } from '@alyle/ui/dialog'
 import Swiper from 'swiper'
 import { EffectCube, EffectCoverflow } from 'swiper/modules'
@@ -28,9 +28,9 @@ import { STYLES } from './STYLES.data'
   providers: [StyleRenderer],
 })
 export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
-  readonly classes = this.sRenderer.renderSheet(STYLES, 'root')
-  private intra: Intra
+  readonly classes: LyClasses<typeof STYLES>
   i18nText: I18nText = new I18nText()
+  intra: Intra
   @ViewChild('swiperContainer') swiperContainer: ElementRef
   private subscription: Subscription
   swiper: Swiper
@@ -41,7 +41,9 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
     private theme: LyTheme2,
     private ngZone: NgZone,
     private i18nService: I18nService,
-  ) {}
+  ) {
+    this.classes = this.sRenderer.renderSheet(STYLES, 'root')
+  }
 
   ngOnInit(): void {
     this.subscription = this.i18nService.languageChanges().subscribe(data => {

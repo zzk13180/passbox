@@ -9,7 +9,7 @@ export class SafePipe implements PipeTransform {
     this.sanitizer = sanitizer
   }
 
-  transform(value, type) {
+  transform(value: string, type: string) {
     switch (type) {
       case 'html':
         return this.sanitizer.bypassSecurityTrustHtml(value)

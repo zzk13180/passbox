@@ -8,20 +8,19 @@ import {
   TemplateRef,
   ViewRef,
 } from '@angular/core'
-
-import { DocumentRef } from '../window-ref'
+import { DOCUMENT } from '@angular/common'
 
 @Injectable()
 export class OverlayContainerRef {
   constructor(
     private _appRef: ApplicationRef,
-    private documentRef: DocumentRef,
     private _injector: Injector,
   ) {}
 
   insert(viewRef: ViewRef): ViewRef {
     this._appRef.attachView(viewRef)
-    this.documentRef.body.appendChild((viewRef as EmbeddedViewRef<any>).rootNodes[0])
+    const documentRef = this._injector.get(DOCUMENT)
+    documentRef.body.appendChild((viewRef as EmbeddedViewRef<any>).rootNodes[0])
     return viewRef
   }
 

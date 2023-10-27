@@ -18,7 +18,7 @@ import { fromEvent, Subscription } from 'rxjs'
 import { debounceTime, throttleTime } from 'rxjs/operators'
 import party from 'party-js'
 import { LocalStorage } from 'src/app/services'
-import { PositionService } from './positioning/positioning.service'
+import { PositionService } from './positioning.service'
 import { StepsGuideService } from './steps-guide.service'
 import { ExtraConfig } from './steps-guide.types'
 
@@ -63,7 +63,7 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
     private renderer: Renderer2,
     private positionService: PositionService,
     private elm: ElementRef,
-    @Inject(DOCUMENT) private doc: any,
+    @Inject(DOCUMENT) private doc: Document,
     @Inject(LocalStorage) private storage: Storage,
   ) {
     this.document = this.doc

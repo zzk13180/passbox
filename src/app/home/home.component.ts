@@ -45,9 +45,9 @@ import { AppsDialog } from './components/apps-dialog/apps-dialog.component'
 import { HelpDialog } from './components/help/help-dialog.component'
 import { PasswordGeneratorDialog } from './components/password-generator/password-generator-dialog.component'
 import { TutorialDialog } from './components/tutorial/tutorial.component'
-import { StepsGuideService, OperateResponse } from './components/steps-guide'
+import { StepsGuideService, OperateResponse } from './steps-guide'
 import { STYLES } from './STYLES.data'
-import { steps } from './guide-steps.data'
+import { steps } from './steps-guide.data'
 
 import type { CdkDragMove } from '@angular/cdk/drag-drop'
 

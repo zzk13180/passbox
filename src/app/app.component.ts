@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { StyleRenderer, ThemeVariables, WithStyles, lyl } from '@alyle/ui'
+import { LyClasses, StyleRenderer, ThemeVariables, WithStyles, lyl } from '@alyle/ui'
 
 const STYLES = (theme: ThemeVariables) => ({
   $global: lyl`{
@@ -22,6 +22,8 @@ const STYLES = (theme: ThemeVariables) => ({
   providers: [StyleRenderer],
 })
 export class AppComponent implements WithStyles {
-  readonly classes = this.sRenderer.renderSheet(STYLES, true)
-  constructor(readonly sRenderer: StyleRenderer) {}
+  readonly classes: LyClasses<typeof STYLES>
+  constructor(readonly sRenderer: StyleRenderer) {
+    this.classes = this.sRenderer.renderSheet(STYLES, true)
+  }
 }

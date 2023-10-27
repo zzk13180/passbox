@@ -16,7 +16,7 @@ import {
 } from '@angular/core'
 import { Observable, Subscription } from 'rxjs'
 import { LocalStorage } from 'src/app/services'
-import { OverlayContainerRef } from './overlay-container'
+import { OverlayContainerRef } from './overlay-container-ref'
 import { throttle } from './throttle/throttle'
 import { StepsGuideComponent } from './steps-guide.component'
 import { StepsGuideService } from './steps-guide.service'
@@ -105,7 +105,7 @@ export class StepsGuideDirective implements OnInit, OnDestroy {
     private elm: ElementRef,
     private componentFactoryResolver: ComponentFactoryResolver,
     private overlayContainerRef: OverlayContainerRef,
-    @Inject(DOCUMENT) private doc: any,
+    @Inject(DOCUMENT) private doc: Document,
     @Inject(LocalStorage) private storage: Storage,
   ) {
     this.document = this.doc

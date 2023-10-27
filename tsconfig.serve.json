@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
+    "moduleResolution": "node",
     "declaration": false,
     "lib": ["ES2022", "dom"],
-    "moduleResolution": "node",
     "sourceMap": false,
     "target": "es5",
     "typeRoots": ["node_modules/@types"]
   },
-  "files": ["main.ts"],
+  "files": ["main/index.ts"],
   "exclude": ["node_modules"]
 }

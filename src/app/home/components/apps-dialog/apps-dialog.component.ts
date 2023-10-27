@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { LyDialogRef } from '@alyle/ui/dialog'
-import { ThemeVariables, lyl, StyleRenderer } from '@alyle/ui'
+import { LyClasses, ThemeVariables, lyl, StyleRenderer } from '@alyle/ui'
 
 const STYLES = (theme: ThemeVariables) => {
   const { breakpoints } = theme
@@ -66,9 +66,11 @@ const STYLES = (theme: ThemeVariables) => {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppsDialog {
-  readonly classes = this.sRenderer.renderSheet(STYLES)
+  readonly classes: LyClasses<typeof STYLES>
   constructor(
     public dialogRef: LyDialogRef,
     readonly sRenderer: StyleRenderer,
-  ) {}
+  ) {
+    this.classes = this.sRenderer.renderSheet(STYLES)
+  }
 }

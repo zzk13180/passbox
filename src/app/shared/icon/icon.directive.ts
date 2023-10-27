@@ -20,6 +20,7 @@ import {
   lyl,
   keyframesUniqueId,
   StyleRenderer,
+  LyClasses,
 } from '@alyle/ui'
 import { take } from 'rxjs/operators'
 import { FontClassOptions, LyIconService, SvgIcon } from './icon.service'
@@ -83,8 +84,11 @@ export const LyIconMixinBase = mixinStyleUpdater(
   exportAs: 'lyIcon',
   providers: [StyleRenderer],
 })
-export class LyIcon extends LyIconMixinBase implements OnChanges, OnInit, OnDestroy {
-  readonly classes = this.sRenderer.renderSheet(STYLES, true)
+export class LyIconDirective
+  extends LyIconMixinBase
+  implements OnChanges, OnInit, OnDestroy
+{
+  readonly classes: LyClasses<typeof STYLES>
   private _icon: string
   private _fontSet: string
   private _previousFontSet: FontClassOptions
@@ -135,6 +139,7 @@ export class LyIcon extends LyIconMixinBase implements OnChanges, OnInit, OnDest
   ) {
     super(theme)
     this.setAutoContrast()
+    this.classes = this.sRenderer.renderSheet(STYLES, true)
   }
 
   ngOnInit() {

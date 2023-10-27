@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core'
-import { WindowRef, DocumentRef } from '../window-ref'
+import { Injectable, Inject } from '@angular/core'
+import { DOCUMENT } from '@angular/common'
 
 @Injectable()
 export class PositionService {
-  constructor(
-    private documentRef: DocumentRef,
-    private windowRef: WindowRef,
-  ) {}
+  private windowRef: Window
+  constructor(@Inject(DOCUMENT) private documentRef: Document) {
+    this.windowRef = this.documentRef.defaultView!
+  }
 
   position(element: HTMLElement, round = true) {
     let elPosition
@@ -45,8 +45,8 @@ export class PositionService {
   offset(element: HTMLElement, round = true) {
     const elBcr = element.getBoundingClientRect()
     const viewportOffset = {
-      top: this.windowRef.pageYOffset - this.documentRef.documentElement.clientTop,
-      left: this.windowRef.pageXOffset - this.documentRef.documentElement.clientLeft,
+      top: this.windowRef.scrollY - this.documentRef.documentElement.clientTop,
+      left: this.windowRef.scrollX - this.documentRef.documentElement.clientLeft,
     }
 
     const elOffset = {

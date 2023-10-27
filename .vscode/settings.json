@@ -27,7 +27,11 @@
     "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
   },
   "files.exclude": {
-    "main.js": true,
+    // ".gitignore": true,
+    ".angular": true,
+    "node_modules": true,
+    "passbox-user-data": true,
+    "main/*.js": true,
     ".npmrc": true,
     "tsconfig.json": true,
     "tsconfig.app.json": true,
@@ -39,6 +43,7 @@
     ".github": true,
     ".eslintignore": true,
     ".eslintrc.yml": true,
+    ".eslintcache": true,
     ".prettierignore": true,
     ".prettierrc.json": true,
     ".stylelintignore": true,

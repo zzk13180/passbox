@@ -8,7 +8,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core'
-import { LyTheme2 } from '@alyle/ui'
+import { LyClasses, LyTheme2 } from '@alyle/ui'
 import { Subscription } from 'rxjs'
 import { I18nService, ElectronService, NotificationService } from 'src/app/services'
 import { Card } from '../../../models'
@@ -21,7 +21,7 @@ import { STYLES } from './STYLES.data'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpDialog implements OnInit, OnDestroy {
-  readonly classes = this._theme.addStyleSheet(STYLES)
+  readonly classes: LyClasses<typeof STYLES>
   i18nText: I18nText = new I18nText()
   appInfo = {
     name: '',
@@ -37,6 +37,7 @@ export class HelpDialog implements OnInit, OnDestroy {
     private notificationService: NotificationService,
     private i18nService: I18nService,
   ) {
+    this.classes = this._theme.addStyleSheet(STYLES)
     this.getAppInfo().then(appInfo => {
       this.appInfo = appInfo
       this._cd.markForCheck()

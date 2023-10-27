@@ -1,7 +1,7 @@
-import * as path from 'node:path'
-import * as cypto from 'node:crypto'
+import path from 'node:path'
+import cypto from 'node:crypto'
 import { parse, URL } from 'node:url'
-import * as fs from 'fs-extra'
+import fs from 'fs-extra'
 import {
   app,
   Tray,
@@ -14,6 +14,7 @@ import {
   BrowserWindow,
   MenuItemConstructorOptions,
 } from 'electron'
+import { OpenBrowserMenu } from './open-browser-menu'
 
 const Store = require('electron-store')
 const contextMenu = require('electron-context-menu')
@@ -27,38 +28,7 @@ interface Card {
   height?: number
 }
 
-class Main {
-  windowMain: WindowMain
-
-  constructor() {
-    if (this.isServer) {
-      const appDataPath = app.getAppPath()
-      app.setPath('userData', `${appDataPath}/${app.name}-user-data`)
-      app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
-    }
-    if (process.platform !== 'darwin') {
-      Menu.setApplicationMenu(null)
-    }
-    this.windowMain = new WindowMain(this.isServer)
-  }
-
-  get isServer(): boolean {
-    const args = process.argv.slice(1)
-    return args.some(val => val === '--serve')
-  }
-
-  bootstrap() {
-    this.windowMain.init()
-    if (this.isServer) {
-      this.windowMain.win.webContents.openDevTools()
-      this.windowMain.win.loadURL('http://localhost:4200')
-    } else {
-      this.windowMain.win.loadURL(`file://${path.join(__dirname, 'dist/index.html')}`)
-    }
-  }
-}
-
-class WindowMain {
+export class MainWindow {
   win: BrowserWindow
   isQuitting = false
   private tray: Tray
@@ -89,6 +59,7 @@ class WindowMain {
       height: 500,
       icon: path.join(
         __dirname,
+        '../',
         `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
       ),
       webPreferences: {
@@ -98,6 +69,7 @@ class WindowMain {
         spellcheck: false,
         preload: path.join(
           __dirname,
+          '../',
           `${this.isServe ? 'src' : 'dist'}/preload/preload.js`,
         ),
       },
@@ -328,10 +300,11 @@ class WindowMain {
       title: url,
       icon: path.join(
         __dirname,
+        '../',
         `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
       ),
     })
-    const menuTemplate = new BrowserMenu(win).init()
+    const menuTemplate = new OpenBrowserMenu(win).init()
     contextMenu({
       prepend: () => menuTemplate,
       window: win,
@@ -353,18 +326,24 @@ class WindowMain {
       this.tray = new Tray(
         path.join(
           __dirname,
+          '../',
           `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
         ),
       )
       this.tray.setPressedImage(
         path.join(
           __dirname,
+          '../',
           `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
         ),
       )
     } else {
       this.tray = new Tray(
-        path.join(__dirname, `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.png`),
+        path.join(
+          __dirname,
+          '../',
+          `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.png`,
+        ),
       )
     }
     this.tray.setToolTip(app.name)
@@ -423,215 +402,4 @@ class WindowMain {
     this.contextMenu = Menu.buildFromTemplate(menuItemOptions)
     this.tray.setContextMenu(this.contextMenu)
   }
-}
-
-class BrowserMenu {
-  constructor(private win: BrowserWindow) {}
-  private isOSX(): boolean {
-    return process.platform === 'darwin'
-  }
-
-  private zoomOut(): void {
-    this.win.webContents.zoomFactor -= 0.1
-  }
-
-  private zoomIn(): void {
-    this.win.webContents.zoomFactor += 0.1
-  }
-
-  private zoomReset(): void {
-    this.win.webContents.zoomFactor = 1.0
-  }
-
-  private goBack(): void {
-    this.win.webContents.goBack()
-  }
-
-  private goForward(): void {
-    this.win.webContents.goForward()
-  }
-
-  init(): MenuItemConstructorOptions[] {
-    const viewMenu: MenuItemConstructorOptions = {
-      label: '&View',
-      submenu: [
-        {
-          label: 'Back',
-          accelerator: this.isOSX() ? 'Cmd+Left' : 'Alt+Left',
-          click: (): void => this.goBack(),
-        },
-        {
-          label: 'Forward',
-          accelerator: this.isOSX() ? 'Cmd+Right' : 'Alt+Right',
-          click: (): void => this.goForward(),
-        },
-        {
-          label: 'Reload',
-          role: 'reload',
-        },
-        {
-          type: 'separator',
-        },
-        {
-          label: 'Toggle Full Screen',
-          accelerator: this.isOSX() ? 'Ctrl+Cmd+F' : 'F11',
-          enabled: this.win.isFullScreenable() || this.isOSX(),
-          visible: this.win.isFullScreenable() || this.isOSX(),
-          click: (): void => {
-            if (this.win.isFullScreenable()) {
-              this.win.setFullScreen(!this.win.isFullScreen())
-            } else if (this.isOSX()) {
-              this.win.setSimpleFullScreen(!this.win.isSimpleFullScreen())
-            }
-          },
-        },
-        {
-          label: 'Zoom In',
-          accelerator: 'CmdOrCtrl+=',
-          click: (): void => this.zoomIn(),
-        },
-        {
-          label: 'ZoomInAdditionalShortcut',
-          visible: false,
-          acceleratorWorksWhenHidden: true,
-          accelerator: 'CmdOrCtrl+numadd',
-          click: (): void => this.zoomIn(),
-        },
-        {
-          label: 'Zoom Out',
-          accelerator: 'CmdOrCtrl+-',
-          click: (): void => this.zoomOut(),
-        },
-        {
-          label: 'ZoomOutAdditionalShortcut',
-          visible: false,
-          acceleratorWorksWhenHidden: true,
-          accelerator: 'CmdOrCtrl+numsub',
-          click: (): void => this.zoomOut(),
-        },
-        {
-          label: 'Reset Zoom',
-          accelerator: 'CmdOrCtrl+0',
-          click: (): void => this.zoomReset(),
-        },
-        {
-          label: 'ZoomResetAdditionalShortcut',
-          visible: false,
-          acceleratorWorksWhenHidden: true,
-          accelerator: 'CmdOrCtrl+num0',
-          click: (): void => this.zoomReset(),
-        },
-        {
-          label: 'Toggle Developer Tools',
-          accelerator: this.isOSX() ? 'Alt+Cmd+I' : 'Ctrl+Shift+I',
-          click: () => this.win.webContents.toggleDevTools(),
-        },
-        {
-          label: 'Undo',
-          visible: false,
-          accelerator: 'CmdOrCtrl+Z',
-          role: 'undo',
-        },
-        {
-          label: 'Redo',
-          visible: false,
-          accelerator: 'Shift+CmdOrCtrl+Z',
-          role: 'redo',
-        },
-        {
-          label: 'Cut',
-          visible: false,
-          accelerator: 'CmdOrCtrl+X',
-          role: 'cut',
-        },
-        {
-          label: 'Copy',
-          visible: false,
-          accelerator: 'CmdOrCtrl+C',
-          role: 'copy',
-        },
-        {
-          label: 'Paste',
-          visible: false,
-          accelerator: 'CmdOrCtrl+V',
-          role: 'paste',
-        },
-        {
-          label: 'Select All',
-          visible: false,
-          accelerator: 'CmdOrCtrl+A',
-          role: 'selectAll',
-        },
-      ],
-    }
-    const closeWindow: MenuItemConstructorOptions = {
-      label: 'Close Window',
-      accelerator: 'CmdOrCtrl+W',
-      role: 'close',
-    }
-    const minWindow: MenuItemConstructorOptions = {
-      label: 'Minimize Window',
-      accelerator: 'CmdOrCtrl+M',
-      role: 'minimize',
-    }
-    const reloadWindow: MenuItemConstructorOptions = {
-      label: 'Reload Window',
-      accelerator: 'CmdOrCtrl+R',
-      role: 'reload',
-    }
-    const copyUrl: MenuItemConstructorOptions = {
-      label: 'Copy Current URL',
-      accelerator: 'CmdOrCtrl+L',
-      click: (): void => clipboard.writeText(this.win.webContents.getURL()),
-    }
-    const templates = [closeWindow, minWindow, reloadWindow, copyUrl, viewMenu]
-    return templates
-  }
-}
-
-const main = new Main()
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin' || main.windowMain.isQuitting) {
-    app.quit()
-    app.exit(0)
-  }
-})
-
-app.on('before-quit', () => {
-  main.windowMain.isQuitting = true
-})
-
-app.on('ready', () => {
-  main.bootstrap()
-})
-
-app.on('activate', (_e, hasVisibleWindows: boolean) => {
-  if (!main.windowMain.win) {
-    main.bootstrap()
-  } else if (process.platform === 'darwin' && !hasVisibleWindows) {
-    main.windowMain.win.show()
-    app.dock.show()
-  }
-})
-
-if (!app.requestSingleInstanceLock()) {
-  app.quit()
-  app.exit(0)
-} else {
-  app.on('second-instance', () => {
-    const { win } = main.windowMain
-    if (win) {
-      if (!win.isVisible()) {
-        win.show()
-      }
-      if (win.isMinimized()) {
-        win.restore()
-      }
-      win.once('ready-to-show', () => {
-        win.show()
-      })
-      win.focus()
-    }
-  })
 }

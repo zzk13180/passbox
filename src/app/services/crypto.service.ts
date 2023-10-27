@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import * as pako from 'pako'
+import pako from 'pako'
 import { CipherString, EncryptedObject } from '../models'
 
 import { fromBufferToB64 } from '../utils/crypto.util'

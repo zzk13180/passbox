@@ -16,7 +16,7 @@
     "email": "zzk13180@gmail.com",
     "url": "https://zhangzhankui.com/"
   },
-  "main": "main.js",
+  "main": "main/index.js",
   "private": true,
   "keywords": [
     "Electron",

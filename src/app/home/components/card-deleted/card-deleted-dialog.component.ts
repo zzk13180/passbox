@@ -8,7 +8,7 @@ import {
   ChangeDetectionStrategy,
   NgZone,
 } from '@angular/core'
-import { StyleRenderer, lyl, ThemeVariables } from '@alyle/ui'
+import { LyClasses, StyleRenderer, lyl, ThemeVariables } from '@alyle/ui'
 import { LyDialogRef, LY_DIALOG_DATA } from '@alyle/ui/dialog'
 import { Store } from '@ngrx/store'
 import { remove, restore } from '../../../services'
@@ -20,6 +20,7 @@ import type { Card, CardState } from '../../../models'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardDeletedDialog {
+  readonly classes: LyClasses<any>
   // eslint-disable-next-line max-params
   constructor(
     readonly sRenderer: StyleRenderer,
@@ -28,21 +29,21 @@ export class CardDeletedDialog {
     private _cd: ChangeDetectorRef,
     private store: Store<{ theCards: CardState }>,
     @Inject(LY_DIALOG_DATA) public cards: Card[],
-  ) {}
-
-  readonly classes = this.sRenderer.renderSheet((_theme: ThemeVariables) => {
-    return {
-      root: lyl`{
-        table {
-          width: 100%
-          min-width: 300px
-          th, td {
-            padding: 0 16px
+  ) {
+    this.classes = this.sRenderer.renderSheet((_theme: ThemeVariables) => {
+      return {
+        root: lyl`{
+          table {
+            width: 100%
+            min-width: 300px
+            th, td {
+              padding: 0 16px
+            }
           }
-        }
-      }`,
-    }
-  }, 'root')
+        }`,
+      }
+    }, 'root')
+  }
 
   columns = [
     {

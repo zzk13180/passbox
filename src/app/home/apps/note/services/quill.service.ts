@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core'
+import { Injectable, Inject } from '@angular/core'
 import { DOCUMENT } from '@angular/common'
 import hljs from 'highlight.js'
 import ImageResize from 'quill-image-resize-module'
@@ -9,11 +9,8 @@ import type Quill from 'quill'
 })
 export class QuillService {
   private Quill: typeof Quill
-  private document: Document = this.injector.get(DOCUMENT)
 
-  constructor(private injector: Injector) {
-    this.injector.get(DOCUMENT)
-  }
+  constructor(@Inject(DOCUMENT) private document: Document) {}
 
   async getQuill() {
     if (this.Quill) {

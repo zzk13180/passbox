@@ -1,4 +1,4 @@
-import * as pako from 'pako'
+import pako from 'pako'
 import { Injectable } from '@angular/core'
 import { fromB64ToArray, fromUtf8ToArray } from '../utils/crypto.util'
 import { DecryptParameters } from '../models'

@@ -1,7 +1,7 @@
 import { Injectable, Optional, Inject, SecurityContext } from '@angular/core'
 import { DOCUMENT } from '@angular/common'
 import { Observable } from 'rxjs'
-import { LyTheme2 } from '@alyle/ui'
+import { LyClasses, LyTheme2 } from '@alyle/ui'
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser'
 import { SVG_ICONS } from './svg-icons.data'
 
@@ -41,7 +41,7 @@ export class LyIconService {
    * Styles
    * @docs-private
    */
-  readonly classes = this.theme.addStyleSheet(styles, STYLE_PRIORITY)
+  readonly classes: LyClasses<typeof styles>
   readonly defaultSvgIcon: string
   get defaultClass() {
     return this._defaultClass
@@ -53,9 +53,10 @@ export class LyIconService {
 
   constructor(
     private _sanitizer: DomSanitizer,
-    @Optional() @Inject(DOCUMENT) private _document: any,
+    @Optional() @Inject(DOCUMENT) private _document: Document,
     private theme: LyTheme2,
   ) {
+    this.classes = this.theme.addStyleSheet(styles, STYLE_PRIORITY)
     for (const [name, svg] of SVG_ICONS) {
       this.addSvgIconLiteral(name, this._sanitizer.bypassSecurityTrustHtml(svg))
     }

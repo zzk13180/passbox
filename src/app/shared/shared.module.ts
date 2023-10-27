@@ -1,14 +1,35 @@
-// import { NgModule } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-// import { FormsModule } from '@angular/forms';
+import { NgModule, ModuleWithProviders } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { LyButtonModule } from '@alyle/ui/button'
+import { LyIconModule } from './icon'
+import { SafePipeModule } from './safe-pipe'
 
-// @NgModule({
-//   imports: [CommonModule, FormsModule],
-//   declarations: [],
-//   providers: [],
-//   exports: [
-//     CommonModule,
-//     FormsModule,
-//   ]
-// })
-// export class SharedModule { }
+@NgModule({
+  declarations: [],
+  providers: [],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
+    LyButtonModule,
+    LyIconModule,
+    SafePipeModule,
+  ],
+  exports: [
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
+    LyButtonModule,
+    LyIconModule,
+    SafePipeModule,
+  ],
+})
+export class SharedModule {
+  static forRoot(): ModuleWithProviders<SharedModule> {
+    return {
+      ngModule: SharedModule,
+      providers: [],
+    }
+  }
+}
