@@ -68,4 +68,8 @@ export class ElectronService {
   storageClear(): Promise<void> {
     return this.ipcRenderer.invoke('storage-clear')
   }
+
+  setAlwaysOnTop(flag: boolean) {
+    this.ipcRenderer.send('set-always-on-top', flag)
+  }
 }

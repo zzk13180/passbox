@@ -1,6 +1,33 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
-const eventEmitter = new EventEmitter()
+class EventRegistry {
+  #eventMap = new Map()
+
+  registry(handler) {
+    const uuid = crypto.randomUUID()
+    this.#eventMap.set(uuid, handler)
+    return uuid
+  }
+
+  emit(uuid, ...args) {
+    const handler = this.#eventMap.get(uuid)
+    if (handler) {
+      handler(...args)
+      return true
+    }
+    return false
+  }
+
+  off(uuid) {
+    this.#eventMap.delete(uuid)
+  }
+
+  clear() {
+    this.#eventMap.clear()
+  }
+}
+
+const eventRegistry = new EventRegistry()
 
 const globals = {
   ipcRenderer: {
@@ -38,11 +65,11 @@ const globals = {
   },
   dialog: {
     showMessageBox(options, cb) {
-      const eventId = eventEmitter.registry(cb)
+      const eventId = eventRegistry.registry(cb)
       ipcRenderer.send('show-message-box', options, eventId)
     },
     showOpenDialog(options, cb) {
-      const eventId = eventEmitter.registry(cb)
+      const eventId = eventRegistry.registry(cb)
       ipcRenderer.send('show-open-dialog', options, eventId)
     },
   },
@@ -52,7 +79,7 @@ const globals = {
         'popup-menu',
         menus.map(menu => ({
           label: menu.label,
-          eventId: eventEmitter.registry(menu.cb),
+          eventId: eventRegistry.registry(menu.cb),
         })),
       )
     },
@@ -76,41 +103,21 @@ const globals = {
 contextBridge.exposeInMainWorld('electronAPI', globals)
 
 ipcRenderer.on('show-message-box-reply', (_, eventId, ...args) => {
-  eventEmitter.emit(eventId, ...args)
-  eventEmitter.off(eventId)
+  eventRegistry.emit(eventId, ...args)
+  eventRegistry.off(eventId)
 })
 
 ipcRenderer.on('show-open-dialog-reply', (_, eventId, ...args) => {
-  eventEmitter.emit(eventId, ...args)
-  eventEmitter.off(eventId)
+  eventRegistry.emit(eventId, ...args)
+  eventRegistry.off(eventId)
 })
 
 ipcRenderer.on('popup-menu-click', (_, eventId) => {
-  eventEmitter.emit(eventId)
+  eventRegistry.emit(eventId)
 })
 
 ipcRenderer.on('popup-menu-close', (_, eventIds) => {
   eventIds.forEach(eventId => {
-    eventEmitter.off(eventId)
+    eventRegistry.off(eventId)
   })
 })
-
-function EventEmitter() {
-  const eventMap = new Map()
-  return {
-    registry(handler) {
-      const uuid = crypto.randomUUID()
-      eventMap.set(uuid, handler)
-      return uuid
-    },
-    emit(uuid, ...args) {
-      eventMap.get(uuid)?.(...args)
-    },
-    off(uuid) {
-      eventMap.delete(uuid)
-    },
-    clear() {
-      eventMap.clear()
-    },
-  }
-}

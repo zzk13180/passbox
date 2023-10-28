@@ -29,7 +29,7 @@ interface Card {
 }
 
 export class MainWindow {
-  win: BrowserWindow
+  browserWindow: BrowserWindow
   isQuitting = false
   private tray: Tray
   private contextMenu: Menu
@@ -45,15 +45,18 @@ export class MainWindow {
       defaults: {},
       name: `${app.name}-custom-local-storage`,
     }),
-  ) {}
+  ) {
+    this.registerIpcMain()
+  }
 
   init() {
     this.createWindow()
     this.enableTray()
+    // registerGlobalShortcut
   }
 
   private createWindow(): void {
-    this.win = new BrowserWindow({
+    this.browserWindow = new BrowserWindow({
       show: false,
       width: 430,
       height: 500,
@@ -75,33 +78,166 @@ export class MainWindow {
       },
     })
 
-    this.win.once('ready-to-show', () => {
-      this.win.show()
+    this.browserWindow.once('ready-to-show', () => {
+      this.browserWindow.show()
     })
 
-    this.win.on('closed', () => {
-      this.win.destroy()
+    this.browserWindow.on('closed', () => {
+      this.browserWindow.destroy()
     })
 
-    this.win.on('close', (e: Event) => {
+    this.browserWindow.on('close', (e: Event) => {
       if (!this.isQuitting) {
         e.preventDefault()
-        if (this.win) {
-          this.win.hide()
+        if (this.browserWindow) {
+          this.browserWindow.hide()
         }
         if (process.platform === 'darwin') {
           app.dock.hide()
         }
       }
     })
+  }
 
+  private openBrowser(card: Card): Promise<boolean> {
+    const { href, protocol, pathname } = parse(card.url)
+    let url = ''
+    if (protocol) {
+      url = href
+    } else if (pathname) {
+      if (!pathname.startsWith('/')) {
+        url = `http://${href}`
+      } else {
+        url = `file://${href}`
+      }
+      try {
+        // eslint-disable-next-line no-new
+        new URL(url)
+      } catch (_) {
+        url = ''
+      }
+    }
+    if (!url) {
+      dialog.showErrorBox('failed to open the link', `invalid url: ${card.url}`)
+      return Promise.resolve(false)
+    }
+    const browserWindow = new BrowserWindow({
+      width: card.width,
+      height: card.height,
+      title: url,
+      icon: path.join(
+        __dirname,
+        '../',
+        `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
+      ),
+      alwaysOnTop: true,
+    })
+    const menuTemplate = new OpenBrowserMenu(browserWindow).init()
+    contextMenu({
+      prepend: () => menuTemplate,
+      window: browserWindow,
+    })
+    if (process.platform !== 'darwin') {
+      browserWindow.setMenu(Menu.buildFromTemplate(menuTemplate))
+      browserWindow.setMenuBarVisibility(false)
+    }
+    browserWindow.on('closed', () => browserWindow.destroy())
+    browserWindow.loadURL(url)
+    return Promise.resolve(true)
+  }
+
+  private enableTray(): void {
+    if (this.tray) {
+      return
+    }
+    if (process.platform === 'darwin') {
+      this.tray = new Tray(
+        path.join(
+          __dirname,
+          '../',
+          `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
+        ),
+      )
+      this.tray.setPressedImage(
+        path.join(
+          __dirname,
+          '../',
+          `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
+        ),
+      )
+    } else {
+      this.tray = new Tray(
+        path.join(
+          __dirname,
+          '../',
+          `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.png`,
+        ),
+      )
+    }
+    this.tray.setToolTip(app.name)
+    this.changeTrayMenu()
+    if (process.platform !== 'darwin') {
+      const toggleWindow = () => {
+        if (this.browserWindow) {
+          this.browserWindow.show()
+          this.browserWindow.focus()
+        }
+      }
+      this.tray.on('click', () => toggleWindow())
+      this.tray.on('double-click', () => toggleWindow())
+      this.tray.on('right-click', () => {
+        this.tray.popUpContextMenu(this.contextMenu)
+      })
+    }
+  }
+
+  private changeTrayMenu(): void {
+    const initMenuItemOptions: Array<MenuItemConstructorOptions> = [
+      {
+        label: 'quit',
+        click: () => {
+          this.isQuitting = true
+          if (this.browserWindow) {
+            this.browserWindow.hide()
+            this.browserWindow.destroy()
+          }
+          if (this.tray) {
+            this.tray.destroy()
+          }
+          app.quit()
+          app.exit(0)
+        },
+      },
+      { type: 'separator' },
+      { type: 'separator' },
+    ]
+    if (process.platform === 'darwin') {
+      initMenuItemOptions.unshift({
+        label: 'show',
+        click: () => {
+          if (this.browserWindow) {
+            this.browserWindow.show()
+            this.browserWindow.focus()
+            app.dock.show()
+          }
+        },
+      })
+    }
+    const menuItemOptions: Array<MenuItemConstructorOptions> = [
+      ...initMenuItemOptions,
+      ...this.menuItems,
+    ]
+    this.contextMenu = Menu.buildFromTemplate(menuItemOptions)
+    this.tray.setContextMenu(this.contextMenu)
+  }
+
+  private registerIpcMain(): void {
     ipcMain.handle('get-user-data-path', (): string => {
       return this.store.path ?? ''
     })
 
     ipcMain.on('change-tray', (_, cards: Array<Card> = []) => {
       const menuItems: MenuItemConstructorOptions[] = []
-      // TODO : If lot of cards, tray menu will be slow. so set max menuItems length 999.
       for (let i = 0; i < cards.length; i++) {
         if (menuItems.length > 999) {
           break
@@ -136,7 +272,7 @@ export class MainWindow {
     })
 
     ipcMain.on('open-dev-tools', () => {
-      this.win.webContents.openDevTools()
+      this.browserWindow.webContents.openDevTools()
     })
 
     ipcMain.on('write-file', (event, pathname, content, options = 'utf-8') => {
@@ -270,136 +406,9 @@ export class MainWindow {
     ipcMain.on('custom-local-storage-clear', () => {
       this.customLocalStorage.clear()
     })
-  }
 
-  private openBrowser(card: Card): Promise<boolean> {
-    const { href, protocol, pathname } = parse(card.url)
-    let url = ''
-    if (protocol) {
-      url = href
-    } else if (pathname) {
-      if (!pathname.startsWith('/')) {
-        url = `http://${href}`
-      } else {
-        url = `file://${href}`
-      }
-      try {
-        // eslint-disable-next-line no-new
-        new URL(url)
-      } catch (_) {
-        url = ''
-      }
-    }
-    if (!url) {
-      dialog.showErrorBox('failed to open the link', `invalid url: ${card.url}`)
-      return Promise.resolve(false)
-    }
-    const win = new BrowserWindow({
-      width: card.width,
-      height: card.height,
-      title: url,
-      icon: path.join(
-        __dirname,
-        '../',
-        `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
-      ),
+    ipcMain.on('set-always-on-top', (event, flag: boolean) => {
+      this.browserWindow.setAlwaysOnTop(flag)
     })
-    const menuTemplate = new OpenBrowserMenu(win).init()
-    contextMenu({
-      prepend: () => menuTemplate,
-      window: win,
-    })
-    if (process.platform !== 'darwin') {
-      win.setMenu(Menu.buildFromTemplate(menuTemplate))
-      win.setMenuBarVisibility(false)
-    }
-    win.on('closed', () => win.destroy())
-    win.loadURL(url)
-    return Promise.resolve(true)
-  }
-
-  private enableTray(): void {
-    if (this.tray) {
-      return
-    }
-    if (process.platform === 'darwin') {
-      this.tray = new Tray(
-        path.join(
-          __dirname,
-          '../',
-          `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
-        ),
-      )
-      this.tray.setPressedImage(
-        path.join(
-          __dirname,
-          '../',
-          `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
-        ),
-      )
-    } else {
-      this.tray = new Tray(
-        path.join(
-          __dirname,
-          '../',
-          `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.png`,
-        ),
-      )
-    }
-    this.tray.setToolTip(app.name)
-    this.changeTrayMenu()
-    if (process.platform !== 'darwin') {
-      const toggleWindow = () => {
-        if (this.win) {
-          this.win.show()
-          this.win.focus()
-        }
-      }
-      this.tray.on('click', () => toggleWindow())
-      this.tray.on('double-click', () => toggleWindow())
-      this.tray.on('right-click', () => {
-        this.tray.popUpContextMenu(this.contextMenu)
-      })
-    }
-  }
-
-  private changeTrayMenu(): void {
-    const initMenuItemOptions: Array<MenuItemConstructorOptions> = [
-      {
-        label: 'quit',
-        click: () => {
-          this.isQuitting = true
-          if (this.win) {
-            this.win.hide()
-            this.win.destroy()
-          }
-          if (this.tray) {
-            this.tray.destroy()
-          }
-          app.quit()
-          app.exit(0)
-        },
-      },
-      { type: 'separator' },
-      { type: 'separator' },
-    ]
-    if (process.platform === 'darwin') {
-      initMenuItemOptions.unshift({
-        label: 'show',
-        click: () => {
-          if (this.win) {
-            this.win.show()
-            this.win.focus()
-            app.dock.show()
-          }
-        },
-      })
-    }
-    const menuItemOptions: Array<MenuItemConstructorOptions> = [
-      ...initMenuItemOptions,
-      ...this.menuItems,
-    ]
-    this.contextMenu = Menu.buildFromTemplate(menuItemOptions)
-    this.tray.setContextMenu(this.contextMenu)
   }
 }

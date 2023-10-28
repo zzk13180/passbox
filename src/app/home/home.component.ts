@@ -530,6 +530,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._dialog.open<HelpDialog>(HelpDialog, {})
   }
 
+  setAlwaysOnTop() {
+    this.electronService.setAlwaysOnTop(true)
+  }
+
   @HostListener('window:keydown.meta.g')
   @HostListener('window:keydown.control.g')
   showPasswordGeneratorDialog() {

@@ -27,7 +27,7 @@
     "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
   },
   "files.exclude": {
-    // ".gitignore": true,
+    ".gitignore": true,
     ".angular": true,
     "node_modules": true,
     "passbox-user-data": true,

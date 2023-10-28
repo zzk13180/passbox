@@ -25,10 +25,10 @@ class Main {
   bootstrap() {
     this.mainWindow.init()
     if (this.isServer) {
-      this.mainWindow.win.webContents.openDevTools()
-      this.mainWindow.win.loadURL('http://localhost:4200')
+      this.mainWindow.browserWindow.webContents.openDevTools()
+      this.mainWindow.browserWindow.loadURL('http://localhost:4200')
     } else {
-      this.mainWindow.win.loadURL(
+      this.mainWindow.browserWindow.loadURL(
         `file://${path.join(__dirname, '../', 'dist/index.html')}`,
       )
     }
@@ -53,10 +53,10 @@ app.on('ready', () => {
 })
 
 app.on('activate', (_e, hasVisibleWindows: boolean) => {
-  if (!main.mainWindow.win) {
+  if (!main.mainWindow.browserWindow) {
     main.bootstrap()
   } else if (process.platform === 'darwin' && !hasVisibleWindows) {
-    main.mainWindow.win.show()
+    main.mainWindow.browserWindow.show()
     app.dock.show()
   }
 })
@@ -66,18 +66,18 @@ if (!app.requestSingleInstanceLock()) {
   app.exit(0)
 } else {
   app.on('second-instance', () => {
-    const { win } = main.mainWindow
-    if (win) {
-      if (!win.isVisible()) {
-        win.show()
+    const { browserWindow } = main.mainWindow
+    if (browserWindow) {
+      if (!browserWindow.isVisible()) {
+        browserWindow.show()
       }
-      if (win.isMinimized()) {
-        win.restore()
+      if (browserWindow.isMinimized()) {
+        browserWindow.restore()
       }
-      win.once('ready-to-show', () => {
-        win.show()
+      browserWindow.once('ready-to-show', () => {
+        browserWindow.show()
       })
-      win.focus()
+      browserWindow.focus()
     }
   })
 }

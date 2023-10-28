@@ -178,6 +178,19 @@
       <div class="swiper-slide" cdkFocusRegionStart>
         <div [className]="classes.intraContainer">
           <div [className]="classes.intraContent">
+            <p class="slide-ready">TODO:This application is translated using ChatGPT, please feedback if any errors.</p>
+            <ly-grid container justify="end" ly-dialog-actions>
+              <button ly-button raised (click)="next(2)">
+                <span [lyPf]="1">Continue</span>
+                <ly-icon>arrow_forward</ly-icon>
+              </button>
+            </ly-grid>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-slide" cdkFocusRegionStart>
+        <div [className]="classes.intraContainer">
+          <div [className]="classes.intraContent">
             <h1><img src="assets/svg/ready.svg" class="slide-image" /></h1>
             <p class="slide-ready">Ready to Play?</p>
             <ly-grid container justify="end" ly-dialog-actions>
