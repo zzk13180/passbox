@@ -8,6 +8,12 @@ body {
   font-family: 'Noto Sans Arabic', 'Noto Sans', 'Noto Sans JP', 'Noto Sans SC', sans-serif;
 }
 
+@import url('swiper/scss');
+
+.cdk-overlay-container {
+  z-index: 1500;
+}
+
 /* japanese */
 @font-face {
   font-family: 'Noto Sans JP';
@@ -320,8 +326,4 @@ body {
   word-wrap: normal;
   direction: ltr;
   -webkit-font-smoothing: antialiased;
-}
-
-.cdk-overlay-container {
-  z-index: 1500;
 }

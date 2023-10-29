@@ -70,5 +70,8 @@ export const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
       height: 100vh
       border-radius: 0
     }`,
+    settingsDialog: lyl`{
+      z-index: 2
+    }`,
   }
 }

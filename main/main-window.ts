@@ -34,6 +34,7 @@ export class MainWindow {
   private tray: Tray
   private contextMenu: Menu
   private menuItems: Array<MenuItemConstructorOptions> = []
+  private openBrowserWindowAlwaysOnTop = true
 
   constructor(
     private isServe = false,
@@ -65,6 +66,7 @@ export class MainWindow {
         '../',
         `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
       ),
+      alwaysOnTop: true,
       webPreferences: {
         contextIsolation: true,
         nodeIntegration: false,
@@ -121,7 +123,7 @@ export class MainWindow {
       dialog.showErrorBox('failed to open the link', `invalid url: ${card.url}`)
       return Promise.resolve(false)
     }
-    const browserWindow = new BrowserWindow({
+    const openBrowserWindow = new BrowserWindow({
       width: card.width,
       height: card.height,
       title: url,
@@ -130,19 +132,19 @@ export class MainWindow {
         '../',
         `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
       ),
-      alwaysOnTop: true,
+      alwaysOnTop: this.openBrowserWindowAlwaysOnTop,
     })
-    const menuTemplate = new OpenBrowserMenu(browserWindow).init()
+    const menuTemplate = new OpenBrowserMenu(openBrowserWindow).init()
     contextMenu({
       prepend: () => menuTemplate,
-      window: browserWindow,
+      window: openBrowserWindow,
     })
     if (process.platform !== 'darwin') {
-      browserWindow.setMenu(Menu.buildFromTemplate(menuTemplate))
-      browserWindow.setMenuBarVisibility(false)
+      openBrowserWindow.setMenu(Menu.buildFromTemplate(menuTemplate))
+      openBrowserWindow.setMenuBarVisibility(false)
     }
-    browserWindow.on('closed', () => browserWindow.destroy())
-    browserWindow.loadURL(url)
+    openBrowserWindow.on('closed', () => openBrowserWindow.destroy())
+    openBrowserWindow.loadURL(url)
     return Promise.resolve(true)
   }
 
@@ -409,6 +411,10 @@ export class MainWindow {
 
     ipcMain.on('set-always-on-top', (event, flag: boolean) => {
       this.browserWindow.setAlwaysOnTop(flag)
+    })
+
+    ipcMain.on('set-always-on-top-open', (event, flag: boolean) => {
+      this.openBrowserWindowAlwaysOnTop = flag
     })
   }
 }

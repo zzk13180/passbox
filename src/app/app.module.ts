@@ -8,8 +8,8 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common'
 import { AppComponent } from './app.component'
 import { AppRoutingModule } from './app-routing.module'
 import { HomeModule } from './home/home.module'
-import { CardEffects } from './effects'
-import { STORAGE_PROVIDERS, cardReducer, I18nService } from './services'
+import { CardEffects, Settingsffects } from './effects'
+import { STORAGE_PROVIDERS, cardReducer, settingsReducer } from './services'
 
 @NgModule({
   declarations: [AppComponent],
@@ -18,11 +18,10 @@ import { STORAGE_PROVIDERS, cardReducer, I18nService } from './services'
     AppRoutingModule,
     BrowserAnimationsModule,
     HomeModule,
-    StoreModule.forRoot({ theCards: cardReducer }),
-    EffectsModule.forRoot([CardEffects]),
+    StoreModule.forRoot({ theCards: cardReducer, theSettings: settingsReducer }),
+    EffectsModule.forRoot([CardEffects, Settingsffects]),
   ],
   providers: [
-    I18nService,
     STORAGE_PROVIDERS,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
   ],

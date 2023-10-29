@@ -29,6 +29,7 @@ import { LySelectModule } from '@alyle/ui/select'
 import { LyTableModule } from '@alyle/ui/table'
 import { LyDrawerModule } from '@alyle/ui/drawer'
 import { LyCardModule } from '@alyle/ui/card'
+import { LyRadioModule } from '@alyle/ui/radio'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { HomeRoutingModule } from './home-routing.module'
 import { FileDropDirective } from './file-drop.directive'
@@ -45,6 +46,7 @@ import { SearchComponent } from './components/search/search.component'
 import { homeSecretShowComponent } from './components/secret-show/secret-show.component'
 import { StepsGuideModule } from './steps-guide'
 import { TutorialDialog } from './components/tutorial/tutorial.component'
+import { SettingsDialog } from './components/settings/settings.component'
 
 class GlobalVariables implements PartialThemeVariables {
   typography = {
@@ -68,6 +70,7 @@ class GlobalVariables implements PartialThemeVariables {
     ImportPasswordDialog,
     FileDropDirective,
     TutorialDialog,
+    SettingsDialog,
   ],
   imports: [
     HomeRoutingModule,
@@ -90,6 +93,7 @@ class GlobalVariables implements PartialThemeVariables {
     LyOverlayModule,
     LyDrawerModule,
     LyCardModule,
+    LyRadioModule,
     ScrollingModule,
     DragDropModule,
     SharedModule,

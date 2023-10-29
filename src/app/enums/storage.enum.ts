@@ -1,6 +1,7 @@
 export enum StorageKey {
   cards = 'cards',
   userState = 'userState',
+  userSettings = 'userSettings',
 }
 
 export enum DBError {

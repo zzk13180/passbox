@@ -18,7 +18,7 @@ import { fromEvent, Subscription } from 'rxjs'
 import { debounceTime, throttleTime } from 'rxjs/operators'
 import party from 'party-js'
 import { LocalStorage } from 'src/app/services'
-import { PositionService } from './positioning.service'
+import { PositionService } from './position.service'
 import { StepsGuideService } from './steps-guide.service'
 import { ExtraConfig } from './steps-guide.types'
 

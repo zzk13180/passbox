@@ -9,8 +9,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core'
 import { LyClasses, LyTheme2 } from '@alyle/ui'
-import { Subscription } from 'rxjs'
-import { I18nService, ElectronService, NotificationService } from 'src/app/services'
+import { ElectronService } from 'src/app/services'
 import { Card } from '../../../models'
 import { I18nText } from './help.i18n'
 import { STYLES } from './STYLES.data'
@@ -22,20 +21,17 @@ import { STYLES } from './STYLES.data'
 })
 export class HelpDialog implements OnInit, OnDestroy {
   readonly classes: LyClasses<typeof STYLES>
-  i18nText: I18nText = new I18nText()
   appInfo = {
     name: '',
     version: '',
   }
 
-  private subscription: Subscription
   // eslint-disable-next-line max-params
   constructor(
+    public i18nText: I18nText,
     private _theme: LyTheme2,
     private _cd: ChangeDetectorRef,
     private electronService: ElectronService,
-    private notificationService: NotificationService,
-    private i18nService: I18nService,
   ) {
     this.classes = this._theme.addStyleSheet(STYLES)
     this.getAppInfo().then(appInfo => {
@@ -44,15 +40,11 @@ export class HelpDialog implements OnInit, OnDestroy {
     })
   }
 
-  ngOnInit(): void {
-    this.subscription = this.i18nService.languageChanges().subscribe(data => {
-      this.i18nText.currentLanguage = data
-      this._cd.markForCheck()
-    })
-  }
+  ngOnInit(): void {}
 
   showTutorialDialog() {
-    this.notificationService.sendNotification('showTutorialDialog')
+    // TODO
+    // this.notificationService.sendNotification('showTutorialDialog')
   }
 
   openDevTools() {
@@ -87,7 +79,5 @@ export class HelpDialog implements OnInit, OnDestroy {
     return appInfo
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe()
-  }
+  ngOnDestroy() {}
 }

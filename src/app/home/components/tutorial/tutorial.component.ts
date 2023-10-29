@@ -14,8 +14,9 @@ import { LyDialogRef } from '@alyle/ui/dialog'
 import Swiper from 'swiper'
 import { EffectCube, EffectCoverflow } from 'swiper/modules'
 import { createNoise3D } from 'simplex-noise'
-import { Subscription } from 'rxjs'
-import { I18nService, I18nLanguageEnum } from 'src/app/services'
+import { Store } from '@ngrx/store'
+import { updateLanguage } from 'src/app/services/ngrx.service'
+import { I18nLanguageEnum } from 'src/app/enums'
 import { I18nText } from './tutorial.i18n'
 import { STYLES } from './STYLES.data'
 
@@ -29,32 +30,28 @@ import { STYLES } from './STYLES.data'
 })
 export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
   readonly classes: LyClasses<typeof STYLES>
-  i18nText: I18nText = new I18nText()
+  i18nEnum = I18nLanguageEnum
   intra: Intra
   @ViewChild('swiperContainer') swiperContainer: ElementRef
-  private subscription: Subscription
   swiper: Swiper
   // eslint-disable-next-line max-params
   constructor(
+    public i18nText: I18nText,
     public dialogRef: LyDialogRef,
     readonly sRenderer: StyleRenderer,
     private theme: LyTheme2,
     private ngZone: NgZone,
-    private i18nService: I18nService,
+    private store: Store,
   ) {
     this.classes = this.sRenderer.renderSheet(STYLES, 'root')
   }
 
-  ngOnInit(): void {
-    this.subscription = this.i18nService.languageChanges().subscribe(data => {
-      this.i18nText.currentLanguage = data
-    })
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit() {
     this.swiper = new Swiper(this.swiperContainer.nativeElement, {
       modules: [EffectCube, EffectCoverflow],
-      effect: 'cube',
+      effect: 'coverflow',
       createElements: true,
     })
     this.swiper.slideTo(0)
@@ -75,15 +72,14 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
     if (this.intra) {
       this.intra.stop()
     }
-    this.subscription.unsubscribe()
   }
 
   next(step: number) {
-    this.swiper.slideTo(step, 600)
+    this.swiper.slideTo(step, 700)
   }
 
-  setLanguage(lang: string) {
-    this.i18nService.setLanguage(lang as I18nLanguageEnum)
+  setLanguage(lang: I18nLanguageEnum) {
+    this.store.dispatch(updateLanguage({ language: lang }))
   }
 
   @HostListener('window:resize') _resize$() {

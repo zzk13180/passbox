@@ -1,5 +1,11 @@
-<div class="tutorial" cdkFocusRegionEnd>
-  <button ly-button class="tutorial-skip" appearance="icon" (click)="dialogRef.close()">
+<div class="tutorial">
+  <button
+    ly-button
+    cdkFocusRegionStart
+    class="tutorial-skip"
+    appearance="icon"
+    (click)="dialogRef.close()"
+  >
     <ly-icon>close</ly-icon>
   </button>
   <canvas id="bg" [className]="classes.canvas"></canvas>
@@ -16,9 +22,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'en'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.English
                 }"
-                (click)="setLanguage('en')"
+                (click)="setLanguage(i18nEnum.English)"
               >
                 English
               </button>
@@ -27,9 +33,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'zh'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.Chinese
                 }"
-                (click)="setLanguage('zh')"
+                (click)="setLanguage(i18nEnum.Chinese)"
               >
                 中文
               </button>
@@ -38,9 +44,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'ja'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.Japanese
                 }"
-                (click)="setLanguage('ja')"
+                (click)="setLanguage(i18nEnum.Japanese)"
               >
                 日本語
               </button>
@@ -49,9 +55,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'es'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.Spanish
                 }"
-                (click)="setLanguage('es')"
+                (click)="setLanguage(i18nEnum.Spanish)"
               >
                 Español
               </button>
@@ -60,9 +66,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'de'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.German
                 }"
-                (click)="setLanguage('de')"
+                (click)="setLanguage(i18nEnum.German)"
               >
                 Deutsch
               </button>
@@ -71,9 +77,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'ru'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.Russian
                 }"
-                (click)="setLanguage('ru')"
+                (click)="setLanguage(i18nEnum.Russian)"
               >
                 Русский
               </button>
@@ -82,9 +88,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'fr'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.French
                 }"
-                (click)="setLanguage('fr')"
+                (click)="setLanguage(i18nEnum.French)"
               >
                 Français
               </button>
@@ -93,9 +99,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'it'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.Italian
                 }"
-                (click)="setLanguage('it')"
+                (click)="setLanguage(i18nEnum.Italian)"
               >
                 Italiano
               </button>
@@ -104,9 +110,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'pt'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.Portuguese
                 }"
-                (click)="setLanguage('pt')"
+                (click)="setLanguage(i18nEnum.Portuguese)"
               >
                 Português
               </button>
@@ -115,9 +121,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'pl'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.Polish
                 }"
-                (click)="setLanguage('pl')"
+                (click)="setLanguage(i18nEnum.Polish)"
               >
                 Polski
               </button>
@@ -126,9 +132,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'ar'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.Arabic
                 }"
-                (click)="setLanguage('ar')"
+                (click)="setLanguage(i18nEnum.Arabic)"
               >
                 العربية
               </button>
@@ -137,9 +143,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'fa'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.Persian
                 }"
-                (click)="setLanguage('fa')"
+                (click)="setLanguage(i18nEnum.Persian)"
               >
                 زبان فارسی
               </button>
@@ -148,9 +154,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'id'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.Indonesian
                 }"
-                (click)="setLanguage('id')"
+                (click)="setLanguage(i18nEnum.Indonesian)"
               >
                 Bahasa Indonesia
               </button>
@@ -159,9 +165,9 @@
                 raised
                 color="primary"
                 [ngClass]="{
-                  'tutorial-active-btn': i18nText.currentLanguage === 'nl'
+                  'tutorial-active-btn': i18nText.currentLanguage === i18nEnum.Dutch
                 }"
-                (click)="setLanguage('nl')"
+                (click)="setLanguage(i18nEnum.Dutch)"
               >
                 Nederlands
               </button>
@@ -175,10 +181,13 @@
           </div>
         </div>
       </div>
-      <div class="swiper-slide" cdkFocusRegionStart>
+      <div class="swiper-slide">
         <div [className]="classes.intraContainer">
           <div [className]="classes.intraContent">
-            <p class="slide-ready">TODO:This application is translated using ChatGPT, please feedback if any errors.</p>
+            <p class="slide-ready">
+              TODO:This application is translated using ChatGPT, please feedback if any
+              errors.
+            </p>
             <ly-grid container justify="end" ly-dialog-actions>
               <button ly-button raised (click)="next(2)">
                 <span [lyPf]="1">Continue</span>
@@ -188,7 +197,7 @@
           </div>
         </div>
       </div>
-      <div class="swiper-slide" cdkFocusRegionStart>
+      <div class="swiper-slide">
         <div [className]="classes.intraContainer">
           <div [className]="classes.intraContent">
             <h1><img src="assets/svg/ready.svg" class="slide-image" /></h1>

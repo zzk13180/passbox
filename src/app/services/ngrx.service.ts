@@ -5,11 +5,22 @@ import {
   createAction,
   props,
   createSelector,
+  createFeatureSelector,
 } from '@ngrx/store'
 import Fuse from 'fuse.js'
 import { v4 as uuid } from 'uuid'
 import { moveItemInArray } from '../utils/array.util'
-import type { Card, CardState } from '../models'
+import { I18nLanguageEnum } from '../enums'
+import type { Card, CardState, SettingsState } from '../models'
+
+export const initSettings = createAction(
+  '[Settings] InitSettings',
+  props<{ settings: SettingsState }>(),
+)
+export const updateLanguage = createAction(
+  '[Settings] ModifySettings',
+  props<{ language: I18nLanguageEnum }>(),
+)
 
 export const initCards = createAction(
   '[Card List] InitCards',
@@ -28,14 +39,33 @@ export const sort = createAction(
 export const search = createAction('[Card List] Search', props<{ term: string }>())
 export const restore = createAction('[Card List] Restore', props<{ card: Card }>())
 
-const initialState: CardState = {
+const initialSettingsState: SettingsState = {
+  currentLang: I18nLanguageEnum.English,
+}
+export function settingsReducer(state: SettingsState, action: Action) {
+  const _reducer = createReducer(
+    initialSettingsState,
+    on(initSettings, (_state, { settings }) => settings),
+    on(updateLanguage, (_state, { language }) => ({ ..._state, currentLang: language })),
+  )
+  return _reducer(state, action)
+}
+
+const settingsSelector = createFeatureSelector<SettingsState>('theSettings')
+
+export const selectLanguage = createSelector(
+  settingsSelector,
+  (state: SettingsState) => state.currentLang,
+)
+
+const initialCardState: CardState = {
   term: '',
   items: [],
   deletedItems: [],
 }
 export function cardReducer(state: CardState, action: Action) {
   const _reducer = createReducer(
-    initialState,
+    initialCardState,
     on(initCards, (_state, { theCards }) => ({
       ...theCards,
       term: '', // reset search term when init
@@ -75,44 +105,31 @@ export function cardReducer(state: CardState, action: Action) {
   return _reducer(state, action)
 }
 
+const fuse = new Fuse([], {
+  keys: ['title', 'description', 'secret', 'url'],
+  useExtendedSearch: true,
+  threshold: 0.4,
+  ignoreLocation: true,
+  sortFn: (a, b) => a.score - b.score,
+})
+
 const searchHandler = (cards: Card[], term: string): Card[] => {
-  const fuse = new Fuse(cards, {
-    keys: [
-      {
-        name: 'title',
-        weight: 0.7,
-      },
-      {
-        name: 'description',
-        weight: 0.5,
-      },
-      {
-        name: 'url',
-        weight: 0.3,
-      },
-    ],
-    useExtendedSearch: true,
-    threshold: 0.4,
-    ignoreLocation: true,
-    sortFn: (a, b) => a.score - b.score,
-  })
+  fuse.setCollection(cards)
   const result = fuse.search(term).map(item => item.item)
   return result
 }
 
-export const selectCards = createSelector(
-  (state: CardState) => state.items,
-  (state: CardState) => state.term,
-  (items, term) => {
-    let result: Card[] = items
-    if (term && result?.length) {
-      result = searchHandler(result, term)
-    }
-    return result
-  },
-)
+const cardSelector = createFeatureSelector<CardState>('theCards')
+
+export const selectCards = createSelector(cardSelector, (state: CardState) => {
+  let result: Card[] = state.items
+  if (state.term && result?.length) {
+    result = searchHandler(result, state.term)
+  }
+  return result
+})
 
 export const selectDeletedCards = createSelector(
+  cardSelector,
   (state: CardState) => state.deletedItems,
-  deletedItems => deletedItems,
 )

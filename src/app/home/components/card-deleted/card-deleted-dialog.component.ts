@@ -12,7 +12,7 @@ import { LyClasses, StyleRenderer, lyl, ThemeVariables } from '@alyle/ui'
 import { LyDialogRef, LY_DIALOG_DATA } from '@alyle/ui/dialog'
 import { Store } from '@ngrx/store'
 import { remove, restore } from '../../../services'
-import type { Card, CardState } from '../../../models'
+import type { Card } from '../../../models'
 
 @Component({
   templateUrl: './card-deleted-dialog.component.html',
@@ -27,7 +27,7 @@ export class CardDeletedDialog {
     public dialogRef: LyDialogRef,
     private ngZone: NgZone,
     private _cd: ChangeDetectorRef,
-    private store: Store<{ theCards: CardState }>,
+    private store: Store,
     @Inject(LY_DIALOG_DATA) public cards: Card[],
   ) {
     this.classes = this.sRenderer.renderSheet((_theme: ThemeVariables) => {

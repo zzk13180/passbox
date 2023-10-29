@@ -5,27 +5,16 @@ card add form dialog 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅-->
 <div ly-dialog-content style="padding: 15px 24px 0 24px">
   <ly-field appearance="outlined" [lyWidth]="1">
-    <input
-      lyNativeControl
-      placeholder="title"
-      (keydown.shift.enter)="dialogRef.close(data)"
-      [(ngModel)]="data.title"
-    />
+    <input lyNativeControl placeholder="title" [(ngModel)]="data.title" />
   </ly-field>
   <ly-field appearance="outlined" [lyWidth]="1">
-    <input
-      lyNativeControl
-      placeholder="description"
-      (keydown.shift.enter)="dialogRef.close(data)"
-      [(ngModel)]="data.description"
-    />
+    <input lyNativeControl placeholder="description" [(ngModel)]="data.description" />
   </ly-field>
   <ly-field appearance="outlined" [lyWidth]="1">
     <input
       lyNativeControl
       placeholder="secret"
       [type]="!see ? 'password' : 'text'"
-      (keydown.shift.enter)="dialogRef.close(data)"
       [(ngModel)]="data.secret"
     />
     <button ly-button appearance="icon" lySuffix (click)="see = !see" tabindex="-1">
@@ -34,12 +23,7 @@ card add form dialog 😄
   </ly-field>
 
   <ly-field appearance="outlined" [lyWidth]="1" *ngIf="!_if; else _else">
-    <input
-      lyNativeControl
-      placeholder="url"
-      (keydown.shift.enter)="dialogRef.close(data)"
-      [(ngModel)]="data.url"
-    />
+    <input lyNativeControl placeholder="url" [(ngModel)]="data.url" />
     <button ly-button lySuffix appearance="icon" (click)="_if = !_if">
       <ly-icon>settings</ly-icon>
     </button>
@@ -47,20 +31,13 @@ card add form dialog 😄
 
   <ng-template #_else>
     <ly-field appearance="outlined" [lyWidth]="0.49">
-      <input
-        lyNativeControl
-        placeholder="width"
-        type="number"
-        (keydown.shift.enter)="dialogRef.close(data)"
-        [(ngModel)]="data.width"
-      />
+      <input lyNativeControl placeholder="width" type="number" [(ngModel)]="data.width" />
     </ly-field>
     <ly-field appearance="outlined" [lyWidth]="0.49" style="float: right">
       <input
         lyNativeControl
         placeholder="height"
         type="number"
-        (keydown.shift.enter)="dialogRef.close(data)"
         [(ngModel)]="data.height"
       />
       <button ly-button lySuffix appearance="icon" (click)="_if = !_if" tabindex="-1">

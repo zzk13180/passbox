@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { createEffect, Actions, ofType } from '@ngrx/effects'
 import { tap, withLatestFrom, debounceTime } from 'rxjs/operators'
-import { Store, select } from '@ngrx/store'
+import { Store } from '@ngrx/store'
 import { StorageKey } from 'src/app/enums'
 import { CardState } from '../models'
 import { DbService } from '../services/db.service'
@@ -42,7 +42,7 @@ export class CardEffects {
       this.actions$.pipe(
         ofType(initCards, search, add, modify, remove, sort, restore),
         debounceTime(300),
-        withLatestFrom(this.store.select('theCards').pipe(select(selectCards))),
+        withLatestFrom(this.store.select(selectCards)),
         tap(([_action, cards]) => this.electronService.changeTray(cards)),
       ),
     { dispatch: false },

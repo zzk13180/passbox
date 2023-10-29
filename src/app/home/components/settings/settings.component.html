@@ -1,0 +1,115 @@
+<div class="settings">
+  <ly-tabs position="fixed">
+    <ly-tab *ngFor="let label of labels; let i = index">
+      <button ly-tab-label [active]="activeIndex === i" (click)="next(i)">
+        {{ label }}
+      </button>
+    </ly-tab>
+  </ly-tabs>
+  <div class="swiper swiper-container" #swiperContainer>
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <ly-grid container>
+          <ly-grid item [col]="6">
+            <ly-field appearance="filled" [lyMaxWidth]="140">
+              <ly-label>Clearablesdsdsdsdsdsdsdsd</ly-label>
+              <input #_input lyNativeControl type="text" />
+              <button
+                ly-button
+                *ngIf="_input.value"
+                appearance="icon"
+                lySuffix
+                (click)="_input.value = ''"
+              >
+                <ly-icon>close</ly-icon>
+              </button>
+            </ly-field>
+          </ly-grid>
+          <ly-grid item [col]="6">
+            <ly-field appearance="filled" [lyMaxWidth]="140">
+              <ly-label>Clearablesdsdsdsdsdsdsdsd</ly-label>
+              <input #_input lyNativeControl [value]="'Text'" type="text" />
+              <button
+                ly-button
+                *ngIf="_input.value"
+                appearance="icon"
+                lySuffix
+                (click)="_input.value = ''"
+              >
+                <ly-icon>close</ly-icon>
+              </button>
+            </ly-field>
+          </ly-grid>
+          <ly-grid item [col]="6">
+            <ly-field appearance="filled" [lyMaxWidth]="140">
+              <ly-label>Clearablesdsdsdsdsdsdsdsd</ly-label>
+              <input #_input lyNativeControl [value]="'Text'" type="text" />
+              <button
+                ly-button
+                *ngIf="_input.value"
+                appearance="icon"
+                lySuffix
+                (click)="_input.value = ''"
+              >
+                <ly-icon>close</ly-icon>
+              </button>
+            </ly-field>
+          </ly-grid>
+        </ly-grid>
+      </div>
+      <div class="swiper-slide">
+        <ly-grid container>
+          <ly-grid item [col]="6">
+            <ly-field appearance="filled" [lyMaxWidth]="140">
+              <ly-label>Clearablesdsdsdsdsdsdsdsd</ly-label>
+              <input #_input0 lyNativeControl type="text" />
+              <button
+                ly-button
+                *ngIf="_input0.value"
+                appearance="icon"
+                lySuffix
+                (click)="_input0.value = ''"
+              >
+                <ly-icon>close</ly-icon>
+              </button>
+            </ly-field>
+          </ly-grid>
+          <ly-grid item [col]="6">
+            <ly-field appearance="filled" [lyMaxWidth]="140">
+              <ly-label>Clearablesdsdsdsdsdsdsdsd</ly-label>
+              <input #_input1 lyNativeControl type="text" />
+              <button
+                ly-button
+                *ngIf="_input1.value"
+                appearance="icon"
+                lySuffix
+                (click)="_input1.value = ''"
+              >
+                <ly-icon>close</ly-icon>
+              </button>
+            </ly-field>
+          </ly-grid>
+          <ly-grid item [col]="6">
+            <ly-field
+              appearance="filled"
+              [lyMaxWidth]="140"
+              [matTooltip]="'Clearablesdsdsdsdsdsdsdsd'"
+            >
+              <ly-label> Clearablesdsdsdsdsdsdsdsd </ly-label>
+              <input #_input2 lyNativeControl type="text" />
+              <button
+                ly-button
+                *ngIf="_input2.value"
+                appearance="icon"
+                lySuffix
+                (click)="_input2.value = ''"
+              >
+                <ly-icon>close</ly-icon>
+              </button>
+            </ly-field>
+          </ly-grid>
+        </ly-grid>
+      </div>
+    </div>
+  </div>
+</div>

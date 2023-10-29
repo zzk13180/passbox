@@ -8,10 +8,10 @@ import {
   NgZone,
   OnDestroy,
 } from '@angular/core'
-import { StyleRenderer, LyTheme2 } from '@alyle/ui'
+import { StyleRenderer, LyTheme2, LyClasses } from '@alyle/ui'
 import { LyDialog } from '@alyle/ui/dialog'
 import { LySnackBar } from '@alyle/ui/snack-bar'
-import { Observable, take, Subscription } from 'rxjs'
+import { Observable, take } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import { Store, select } from '@ngrx/store'
 import { StorageKey, DBError } from 'src/app/enums'
@@ -30,7 +30,6 @@ import {
   UserStateService,
   DbService,
   CryptoService,
-  NotificationService,
 } from '../services'
 
 import { downloadByData } from '../utils/download.util'
@@ -45,6 +44,7 @@ import { AppsDialog } from './components/apps-dialog/apps-dialog.component'
 import { HelpDialog } from './components/help/help-dialog.component'
 import { PasswordGeneratorDialog } from './components/password-generator/password-generator-dialog.component'
 import { TutorialDialog } from './components/tutorial/tutorial.component'
+import { SettingsDialog } from './components/settings/settings.component'
 import { StepsGuideService, OperateResponse } from './steps-guide'
 import { STYLES } from './STYLES.data'
 import { steps } from './steps-guide.data'
@@ -60,13 +60,12 @@ import type { CdkDragMove } from '@angular/cdk/drag-drop'
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild('sb') sb: LySnackBar
-  classes: any
+  classes: LyClasses<typeof STYLES>
   cards$: Observable<Array<Card>>
   deletedCards$: Observable<Array<Card>>
   readonly itemSize = 54
   private previousIndex = 0
   private distanceY = 0
-  private subscription: Subscription
   // eslint-disable-next-line max-params
   constructor(
     readonly sRenderer: StyleRenderer,
@@ -75,25 +74,17 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _dialog: LyDialog,
     private ngZone: NgZone,
     private _cd: ChangeDetectorRef,
-    private store: Store<{ theCards: CardState }>,
+    private store: Store<CardState>,
     private userStateService: UserStateService,
     private dbService: DbService,
     private cryptoService: CryptoService,
-    private notificationService: NotificationService,
     private stepService: StepsGuideService,
-  ) {
-    this.subscription = this.notificationService.getNotification().subscribe(message => {
-      try {
-        this[message]()
-      } catch (_) {}
-    })
-  }
+  ) {}
 
   async ngOnInit() {
     this.classes = this._theme.addStyleSheet(STYLES)
-    const theCardsStore = this.store.select('theCards')
-    this.cards$ = theCardsStore.pipe(select(selectCards))
-    this.deletedCards$ = theCardsStore.pipe(select(selectDeletedCards))
+    this.cards$ = this.store.select(selectCards)
+    this.deletedCards$ = this.store.select(selectDeletedCards)
     const { isRequiredLogin } = await this.userStateService.getUserState()
     const userPassword = this.userStateService.getUserPassword()
     if (isRequiredLogin && !userPassword) {
@@ -530,10 +521,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._dialog.open<HelpDialog>(HelpDialog, {})
   }
 
-  setAlwaysOnTop() {
-    this.electronService.setAlwaysOnTop(true)
-  }
-
   @HostListener('window:keydown.meta.g')
   @HostListener('window:keydown.control.g')
   showPasswordGeneratorDialog() {
@@ -573,7 +560,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe()
+  openSettings() {
+    const dialogRef = this._dialog.open<SettingsDialog>(SettingsDialog, {
+      containerClass: this.classes.settingsDialog,
+    })
+    dialogRef.afterClosed.subscribe(() => {
+      // empty
+    })
   }
+
+  ngOnDestroy() {}
 }

@@ -17,7 +17,6 @@ import {
 import { Observable, Subscription } from 'rxjs'
 import { LocalStorage } from 'src/app/services'
 import { OverlayContainerRef } from './overlay-container-ref'
-import { throttle } from './throttle/throttle'
 import { StepsGuideComponent } from './steps-guide.component'
 import { StepsGuideService } from './steps-guide.service'
 import {
@@ -67,29 +66,13 @@ export class StepsGuideDirective implements OnInit, OnDestroy {
   @Input() scrollToTargetSwitch = true
   // 引导向扩展配置
   @Input() extraConfig: ExtraConfig
-  // 允许用户指定一个dom反馈页面变化，通过MutationObserver监听该dom所属节点树变化触发resize事件使引导弹窗自动修正位置
-  @Input() set observerDom(dom: HTMLElement) {
-    if (dom) {
-      this._observerDom = dom
-      // 创建监听实例，并限制回调方法在500ms内只响应一次，避免多次响应dom变化造成性能负担
-      this.observer = new MutationObserver(
-        throttle(this.mutationCallBack, this.MUTATION_OBSERVER_TIME, {
-          leading: false,
-          trailing: true,
-        }),
-      )
-      this.observer.observe(this._observerDom, this.MUTATION_OBSERVER_CONFIG)
-    } else {
-      this.destroyMutationObserver(true)
-    }
-  }
+
   @Input() beforeChange: (
     currentIndex,
     targetIndex,
   ) => boolean | Promise<boolean> | Observable<boolean>
   // 点击引导操作触发，返回当前步骤和当前操作，比如上一步、下一步、关闭
   @Output() operateChange = new EventEmitter<OperateResponse>()
-  _observerDom: any
   stepRef: ComponentRef<StepsGuideComponent>
   observer: any
   toggle: any
@@ -136,11 +119,6 @@ export class StepsGuideDirective implements OnInit, OnDestroy {
               block: 'nearest',
               inline: 'nearest',
             })
-          }
-          // 如果该步骤设置了监听dom和监听实例，重启监听
-          if (this._observerDom && this.observer) {
-            this.observer.disconnect()
-            this.observer.observe(this._observerDom, this.MUTATION_OBSERVER_CONFIG)
           }
           setTimeout(() => {
             this.insert({
@@ -218,7 +196,6 @@ export class StepsGuideDirective implements OnInit, OnDestroy {
       this.observer.disconnect()
     }
     if (destroyAll) {
-      this._observerDom = undefined
       this.observer = undefined
     }
   }
