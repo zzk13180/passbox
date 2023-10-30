@@ -15,7 +15,7 @@ import Swiper from 'swiper'
 import { EffectCube, EffectCoverflow } from 'swiper/modules'
 import { createNoise3D } from 'simplex-noise'
 import { Store } from '@ngrx/store'
-import { updateLanguage } from 'src/app/services/ngrx.service'
+import { updateLanguage, selectLanguage } from 'src/app/services/ngrx.service'
 import { I18nLanguageEnum } from 'src/app/enums'
 import { I18nText } from './tutorial.i18n'
 import { STYLES } from './STYLES.data'
@@ -46,7 +46,11 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
     this.classes = this.sRenderer.renderSheet(STYLES, 'root')
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.store.select(selectLanguage).subscribe(language => {
+      this.i18nText.currentLanguage = language
+    })
+  }
 
   ngAfterViewInit() {
     this.swiper = new Swiper(this.swiperContainer.nativeElement, {

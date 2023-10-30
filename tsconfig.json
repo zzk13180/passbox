@@ -26,11 +26,10 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "types": ["./src/preload/preload.d.ts"],
     "lib": ["ES2020", "DOM", "DOM.Iterable"]
   },
   "exclude": ["node_modules"],
-  "include": ["src/main.ts"],
+  "include": ["src/**/*.ts"],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,

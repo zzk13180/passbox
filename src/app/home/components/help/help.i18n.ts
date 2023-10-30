@@ -1,16 +1,10 @@
 import { Injectable } from '@angular/core'
-import { Store } from '@ngrx/store'
-import { selectLanguage } from 'src/app/services/ngrx.service'
 import type { I18nLanguageEnum } from 'src/app/enums'
 
 @Injectable({ providedIn: 'root' })
 export class I18nText {
   currentLanguage: I18nLanguageEnum
-  constructor(private store: Store) {
-    this.store.select(selectLanguage).subscribe(language => {
-      this.currentLanguage = language
-    })
-  }
+  constructor() {}
 
   private thanksI18n: { [key in I18nLanguageEnum]: string } = {
     English: 'Thank you for using my software! Your support means a lot to us.',

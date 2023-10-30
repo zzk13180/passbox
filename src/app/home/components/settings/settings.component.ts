@@ -13,6 +13,8 @@ import { StyleRenderer } from '@alyle/ui'
 import { LyDialogRef } from '@alyle/ui/dialog'
 import Swiper from 'swiper'
 import { EffectCube, EffectCoverflow } from 'swiper/modules'
+import { Store } from '@ngrx/store'
+import { selectLanguage } from 'src/app/services/ngrx.service'
 import { I18nText } from './settings.i18n'
 
 @Component({
@@ -30,16 +32,21 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('swiperContainer') swiperContainer: ElementRef
 
+  // eslint-disable-next-line max-params
   constructor(
     public i18nText: I18nText,
     public dialogRef: LyDialogRef,
     readonly sRenderer: StyleRenderer,
     private _cb: ChangeDetectorRef,
+    private store: Store,
   ) {}
 
   ngOnInit(): void {
     this.activeIndex = 1
     Promise.resolve(true).then(() => (this.activeIndex = 0))
+    this.store.select(selectLanguage).subscribe(language => {
+      this.i18nText.currentLanguage = language
+    })
   }
 
   ngAfterViewInit() {

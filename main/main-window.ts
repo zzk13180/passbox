@@ -34,6 +34,7 @@ export class MainWindow {
   private tray: Tray
   private contextMenu: Menu
   private menuItems: Array<MenuItemConstructorOptions> = []
+  private openBrowserWindows: Array<BrowserWindow> = []
   private openBrowserWindowAlwaysOnTop = true
 
   constructor(
@@ -145,6 +146,7 @@ export class MainWindow {
     }
     openBrowserWindow.on('closed', () => openBrowserWindow.destroy())
     openBrowserWindow.loadURL(url)
+    this.openBrowserWindows.push(openBrowserWindow)
     return Promise.resolve(true)
   }
 
@@ -415,6 +417,9 @@ export class MainWindow {
 
     ipcMain.on('set-always-on-top-open', (event, flag: boolean) => {
       this.openBrowserWindowAlwaysOnTop = flag
+      this.openBrowserWindows.forEach(window => {
+        window.setAlwaysOnTop(flag)
+      })
     })
   }
 }

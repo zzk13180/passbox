@@ -13,7 +13,7 @@ import { LyDialog } from '@alyle/ui/dialog'
 import { LySnackBar } from '@alyle/ui/snack-bar'
 import { Observable, take } from 'rxjs'
 import { filter } from 'rxjs/operators'
-import { Store, select } from '@ngrx/store'
+import { Store } from '@ngrx/store'
 import { StorageKey, DBError } from 'src/app/enums'
 import { Card, CardState, CipherString } from '../models'
 import {
@@ -96,6 +96,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private async initTheCards(): Promise<void> {
     try {
+      // TODO : will move to effect
       const theCards = await this.dbService.getItem(StorageKey.cards)
       if (theCards) {
         this.store.dispatch(initCards({ theCards }))
@@ -255,6 +256,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
+  // TODO : Export is allowed only after setting a password ？
   exportData(event: Event): void {
     event.stopPropagation()
     const dialogRef = this._dialog.open<ExportSelectDialog>(ExportSelectDialog, {

@@ -9,7 +9,12 @@ import { AppComponent } from './app.component'
 import { AppRoutingModule } from './app-routing.module'
 import { HomeModule } from './home/home.module'
 import { CardEffects, Settingsffects } from './effects'
-import { STORAGE_PROVIDERS, cardReducer, settingsReducer } from './services'
+import {
+  STORAGE_PROVIDERS,
+  cardReducer,
+  settingsReducer,
+  KeyboardService,
+} from './services'
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,6 +27,7 @@ import { STORAGE_PROVIDERS, cardReducer, settingsReducer } from './services'
     EffectsModule.forRoot([CardEffects, Settingsffects]),
   ],
   providers: [
+    KeyboardService,
     STORAGE_PROVIDERS,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
   ],

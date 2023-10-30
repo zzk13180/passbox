@@ -9,7 +9,8 @@ import {
   ChangeDetectorRef,
 } from '@angular/core'
 import { LyClasses, LyTheme2 } from '@alyle/ui'
-import { ElectronService } from 'src/app/services'
+import { Store } from '@ngrx/store'
+import { ElectronService, selectLanguage } from 'src/app/services'
 import { Card } from '../../../models'
 import { I18nText } from './help.i18n'
 import { STYLES } from './STYLES.data'
@@ -29,18 +30,24 @@ export class HelpDialog implements OnInit, OnDestroy {
   // eslint-disable-next-line max-params
   constructor(
     public i18nText: I18nText,
+    private store: Store,
     private _theme: LyTheme2,
     private _cd: ChangeDetectorRef,
     private electronService: ElectronService,
   ) {
     this.classes = this._theme.addStyleSheet(STYLES)
+  }
+
+  ngOnInit(): void {
     this.getAppInfo().then(appInfo => {
       this.appInfo = appInfo
       this._cd.markForCheck()
     })
+    this.store.select(selectLanguage).subscribe(language => {
+      this.i18nText.currentLanguage = language
+      this._cd.markForCheck()
+    })
   }
-
-  ngOnInit(): void {}
 
   showTutorialDialog() {
     // TODO

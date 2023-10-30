@@ -80,6 +80,7 @@ export function cardReducer(state: CardState, action: Action) {
         item.id === card.id ? { ...item, ...card } : item,
       ),
     })),
+    // TODO removeCard and deleteCard(deletedItems) will make different
     on(remove, (state, { card }) => ({
       ...state,
       items: state.items.filter((item: Card) => item.id !== card.id),
