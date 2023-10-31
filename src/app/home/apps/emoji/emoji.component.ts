@@ -8,6 +8,8 @@ import Fuse from 'fuse.js'
 import { LyClasses, LyTheme2 } from '@alyle/ui'
 import { LyDialog } from '@alyle/ui/dialog'
 import { AppsDialog } from 'src/app/home/components/apps-dialog/apps-dialog.component'
+import { EmojiService } from './emoji.service'
+import { emojisTmpData } from './emoji.data'
 import type { Emoji } from './emoji.data'
 
 const STYLES = {
@@ -30,73 +32,84 @@ export class EmojiComponent implements OnInit {
   fontSize = 22
   emojis: Emoji[] = []
   private emojisOriginal: Emoji[] = []
-  private fuse: Fuse<Emoji>
-  #loading = true
+  private loading = true
+  private fuse = new Fuse<Emoji>([], {
+    keys: [
+      'title',
+      'symbol',
+      'keywords',
+      'titleI18n.English',
+      'titleI18n.Chinese',
+      'titleI18n.Japanese',
+      'titleI18n.Spanish',
+      'titleI18n.German',
+      'titleI18n.French',
+      'titleI18n.Italian',
+      'titleI18n.Portuguese',
+      'titleI18n.Polish',
+      'titleI18n.Arabic',
+      'titleI18n.Persian',
+      'titleI18n.Indonesian',
+      'titleI18n.Dutch',
+      'keywordsI18n.English',
+      'keywordsI18n.Chinese',
+      'keywordsI18n.Japanese',
+      'keywordsI18n.Spanish',
+      'keywordsI18n.German',
+      'keywordsI18n.Russian',
+      'keywordsI18n.French',
+      'keywordsI18n.Italian',
+      'keywordsI18n.Portuguese',
+      'keywordsI18n.Polish',
+      'keywordsI18n.Arabic',
+      'keywordsI18n.Persian',
+      'keywordsI18n.Indonesian',
+      'keywordsI18n.Dutch',
+    ],
+    useExtendedSearch: true,
+    threshold: 0.4,
+    ignoreLocation: true,
+    sortFn: (a, b) => a.score - b.score,
+  })
 
   constructor(
     private _dialog: LyDialog,
     private theme: LyTheme2,
     private _cd: ChangeDetectorRef,
+    private emojiService: EmojiService,
   ) {
     this.classes = this.theme.addStyleSheet(STYLES)
   }
 
   async ngOnInit() {
-    import('./emojis.json').then(({ default: emojis }) => {
-      this.emojisOriginal = emojis
-      this.emojis = emojis
-      this.fuse = new Fuse<Emoji>(this.emojis, {
-        keys: [
-          'title',
-          'symbol',
-          'keywords',
-          'titleI18n.English',
-          'titleI18n.Chinese',
-          'titleI18n.Japanese',
-          'titleI18n.Spanish',
-          'titleI18n.German',
-          'titleI18n.French',
-          'titleI18n.Italian',
-          'titleI18n.Portuguese',
-          'titleI18n.Polish',
-          'titleI18n.Arabic',
-          'titleI18n.Persian',
-          'titleI18n.Indonesian',
-          'titleI18n.Dutch',
-          'keywordsI18n.English',
-          'keywordsI18n.Chinese',
-          'keywordsI18n.Japanese',
-          'keywordsI18n.Spanish',
-          'keywordsI18n.German',
-          'keywordsI18n.Russian',
-          'keywordsI18n.French',
-          'keywordsI18n.Italian',
-          'keywordsI18n.Portuguese',
-          'keywordsI18n.Polish',
-          'keywordsI18n.Arabic',
-          'keywordsI18n.Persian',
-          'keywordsI18n.Indonesian',
-          'keywordsI18n.Dutch',
-        ],
-        useExtendedSearch: true,
-        threshold: 0.4,
-        ignoreLocation: true,
-        sortFn: (a, b) => a.score - b.score,
-      })
-      this.#loading = false
-      this._cd.markForCheck()
+    const { emojis } = this.emojiService
+    console.log(emojis)
+    if (emojis) {
+      this.initEmojis(emojis)
+      return
+    }
+    this.emojiService.getEmojis().then(emojis => {
+      setTimeout(() => {
+        this.initEmojis(emojis)
+      }, 500)
     })
-    const { emojisTmpData } = await import('./emoji.data')
-    console.log(emojisTmpData)
     const iterator = this.displayEmojiOneByOne(emojisTmpData)
     while (true) {
       const { value, done } = await iterator.next()
-      if (done || !this.#loading) {
+      if (done || !this.loading) {
         break
       }
       this.emojis.push(...value)
       this._cd.markForCheck()
     }
+  }
+
+  private initEmojis(emojis: Emoji[]) {
+    this.loading = false
+    this.emojis = emojis
+    this.emojisOriginal = emojis
+    this.fuse.setCollection(emojis)
+    this._cd.markForCheck()
   }
 
   private async *displayEmojiOneByOne(emojis: Emoji[]) {
