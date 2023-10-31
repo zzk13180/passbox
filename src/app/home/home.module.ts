@@ -38,7 +38,8 @@ import { CardAddDialog } from './components/card-add/card-add-dialog.component'
 import { CardDeletedDialog } from './components/card-deleted/card-deleted-dialog.component'
 import { ExportSelectDialog } from './components/export/export-select-dialog.component'
 import { ImportPasswordDialog } from './components/import/import-password-dialog.component'
-import { PasswordSetDialog } from './components/password/password-set-dialog.component'
+import { PasswordSetDialog } from './components/password-set/password-set-dialog.component'
+import { LoginDialog } from './components/login/login-dialog.component'
 import { AppsDialog } from './components/apps-dialog/apps-dialog.component'
 import { HelpDialog } from './components/help/help-dialog.component'
 import { PasswordGeneratorDialog } from './components/password-generator/password-generator-dialog.component'
@@ -64,8 +65,9 @@ class GlobalVariables implements PartialThemeVariables {
     SearchComponent,
     CardDeletedDialog,
     homeSecretShowComponent,
-    PasswordGeneratorDialog,
+    LoginDialog,
     PasswordSetDialog,
+    PasswordGeneratorDialog,
     ExportSelectDialog,
     ImportPasswordDialog,
     FileDropDirective,

@@ -3,7 +3,7 @@ card add form dialog 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅*/
 import { Component, Inject, ChangeDetectionStrategy, HostListener } from '@angular/core'
 import { LyDialogRef, LY_DIALOG_DATA } from '@alyle/ui/dialog'
-import type { Card } from '../../../models'
+import type { Card } from 'src/app/models'
 
 @Component({
   templateUrl: './card-add-dialog.component.html',

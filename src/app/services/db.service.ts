@@ -7,7 +7,7 @@ import type { CardState } from '../models'
 @Injectable({
   providedIn: 'root',
 })
-export class DbService {
+export class CardsDbService {
   constructor(
     private cryptoService: CryptoService,
     private electronService: ElectronService,

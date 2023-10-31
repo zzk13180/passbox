@@ -22,16 +22,21 @@ export const updateLanguage = createAction(
   props<{ language: I18nLanguageEnum }>(),
 )
 
+export const getCards = createAction('[Card List] Get The Cards From DB')
 export const initCards = createAction(
-  '[Card List] InitCards',
+  '[Card List] Init The Cards',
   props<{ theCards: CardState }>(),
 )
 export const add = createAction(
-  '[Card List] AddItem',
+  '[Card List] Add Item',
   props<{ cards: Omit<Card, 'id'>[] }>(),
 )
-export const modify = createAction('[Card List] ModifyItem', props<{ card: Card }>())
-export const remove = createAction('[Card List] RemoveItem', props<{ card: Card }>())
+export const modify = createAction('[Card List] Modify Item', props<{ card: Card }>())
+export const deleteCard = createAction('[Card List] Delete Item', props<{ card: Card }>())
+export const permanentlyDeleteCard = createAction(
+  '[Card List] Permanently Delete Item',
+  props<{ card: Card }>(),
+)
 export const sort = createAction(
   '[Card List] Sort',
   props<{ previousIndex: number; currentIndex: number }>(),
@@ -80,13 +85,14 @@ export function cardReducer(state: CardState, action: Action) {
         item.id === card.id ? { ...item, ...card } : item,
       ),
     })),
-    // TODO removeCard and deleteCard(deletedItems) will make different
-    on(remove, (state, { card }) => ({
+    on(deleteCard, (state, { card }) => ({
       ...state,
       items: state.items.filter((item: Card) => item.id !== card.id),
-      deletedItems: state.deletedItems.some((item: Card) => item.id === card.id)
-        ? state.deletedItems.filter((item: Card) => item.id !== card.id)
-        : [card, ...state.deletedItems],
+      deletedItems: [card, ...state.deletedItems],
+    })),
+    on(permanentlyDeleteCard, (state, { card }) => ({
+      ...state,
+      deletedItems: state.deletedItems.filter((item: Card) => item.id !== card.id),
     })),
     on(sort, (state, { previousIndex, currentIndex }) => {
       const items = [...state.items]

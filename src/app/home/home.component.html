@@ -52,7 +52,7 @@ Oh hi there! 😄
         <span class="spacer"></span>
         <span>Add「Ctrl + D」</span>
       </button>
-      <button ly-button ly-menu-item (click)="setPassword()">
+      <button ly-button ly-menu-item (click)="showSetPasswordDialog()">
         <ly-icon>lock</ly-icon>
         <span class="spacer"></span>
         <span>Set password</span>
@@ -144,7 +144,13 @@ Oh hi there! 😄
     </cdk-virtual-scroll-viewport>
   </ly-accordion>
 
-  <ng-template ly-snack-bar #sb="lySnackBar" [duration]="1000" let-msg="msg">
+  <ng-template
+    ly-snack-bar
+    #messages="lySnackBar"
+    [duration]="3000"
+    [horizontalPosition]="'center'"
+    let-msg="msg"
+  >
     <p style="margin: 0 auto; color: rgb(255, 41, 151)">{{ msg }}</p>
   </ng-template>
 </div>

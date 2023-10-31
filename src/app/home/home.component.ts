@@ -14,21 +14,20 @@ import { LySnackBar } from '@alyle/ui/snack-bar'
 import { Observable, take } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import { Store } from '@ngrx/store'
-import { StorageKey, DBError } from 'src/app/enums'
-import { Card, CardState, CipherString } from '../models'
+import { StorageKey } from 'src/app/enums'
+import { Card, CipherString } from '../models'
 import {
   ElectronService,
   add,
   sort,
   modify,
-  remove,
+  deleteCard,
   search,
-  initCards,
+  getCards,
   selectCards,
   selectDeletedCards,
   UserState,
   UserStateService,
-  DbService,
   CryptoService,
 } from '../services'
 
@@ -39,7 +38,8 @@ import { CardAddDialog } from './components/card-add/card-add-dialog.component'
 import { CardDeletedDialog } from './components/card-deleted/card-deleted-dialog.component'
 import { ExportSelectDialog } from './components/export/export-select-dialog.component'
 import { ImportPasswordDialog } from './components/import/import-password-dialog.component'
-import { PasswordSetDialog } from './components/password/password-set-dialog.component'
+import { PasswordSetDialog } from './components/password-set/password-set-dialog.component'
+import { LoginDialog } from './components/login/login-dialog.component'
 import { AppsDialog } from './components/apps-dialog/apps-dialog.component'
 import { HelpDialog } from './components/help/help-dialog.component'
 import { PasswordGeneratorDialog } from './components/password-generator/password-generator-dialog.component'
@@ -59,7 +59,7 @@ import type { CdkDragMove } from '@angular/cdk/drag-drop'
   providers: [StyleRenderer],
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  @ViewChild('sb') sb: LySnackBar
+  @ViewChild('messages') messages: LySnackBar
   classes: LyClasses<typeof STYLES>
   cards$: Observable<Array<Card>>
   deletedCards$: Observable<Array<Card>>
@@ -74,9 +74,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _dialog: LyDialog,
     private ngZone: NgZone,
     private _cd: ChangeDetectorRef,
-    private store: Store<CardState>,
+    private store: Store,
     private userStateService: UserStateService,
-    private dbService: DbService,
     private cryptoService: CryptoService,
     private stepService: StepsGuideService,
   ) {}
@@ -88,52 +87,41 @@ export class HomeComponent implements OnInit, OnDestroy {
     const { isRequiredLogin } = await this.userStateService.getUserState()
     const userPassword = this.userStateService.getUserPassword()
     if (isRequiredLogin && !userPassword) {
-      this.setPassword(true)
+      this.showSetPasswordDialog()
     } else {
-      this.initTheCards()
+      this.store.dispatch(getCards())
     }
   }
 
-  private async initTheCards(): Promise<void> {
-    try {
-      // TODO : will move to effect
-      const theCards = await this.dbService.getItem(StorageKey.cards)
-      if (theCards) {
-        this.store.dispatch(initCards({ theCards }))
-      }
-    } catch (err) {
-      if (err.message === DBError.noData) {
-        const cards = [
-          {
-            title: 'user data',
-            url: await this.electronService.getUserDataPath(),
-            description: 'All user data is stored in this file.',
-            secret: '',
-            width: 800,
-            height: 600,
-          },
-        ]
-        this.store.dispatch(add({ cards }))
-        this.showTutorialDialog(true)
-      }
-    }
+  showLoginDialog() {
+    const dialogRef = this._dialog.open<LoginDialog>(LoginDialog, {
+      width: null,
+      height: null,
+      maxWidth: null,
+      maxHeight: null,
+      containerClass: this.classes.dialog,
+      disableClose: true,
+    })
+    dialogRef.afterClosed.subscribe(() => {
+      this.store.dispatch(getCards())
+    })
   }
 
-  setPassword(isLogin?: boolean) {
-    const dialogRef = this._dialog.open<PasswordSetDialog, { isLogin: boolean }>(
-      PasswordSetDialog,
-      {
-        width: null,
-        height: null,
-        maxWidth: null,
-        maxHeight: null,
-        containerClass: this.classes.dialog,
-        data: { isLogin },
-        disableClose: true,
-      },
-    )
-    dialogRef.afterClosed.subscribe(result => {
-      result && this.initTheCards()
+  showSetPasswordDialog() {
+    const dialogRef = this._dialog.open<PasswordSetDialog>(PasswordSetDialog, {
+      width: null,
+      height: null,
+      maxWidth: null,
+      maxHeight: null,
+      containerClass: this.classes.dialog,
+      disableClose: true,
+    })
+    dialogRef.afterClosed.subscribe(err => {
+      if (err) {
+        this.messages.open({ msg: err.message }) // TODO
+      } else {
+        this.messages.open({ msg: 'set password success' })
+      }
     })
   }
 
@@ -160,7 +148,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       return
     }
     this.electronService.copyText(card[field])
-    this.sb.open({
+    this.messages.open({
       msg: `${field} is copied`,
     })
   }
@@ -196,7 +184,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       result => {
         result.response === 1 &&
           this.ngZone.run(() => {
-            this.store.dispatch(remove({ card }))
+            this.store.dispatch(deleteCard({ card }))
             this._cd.detectChanges()
           })
       },
@@ -209,7 +197,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
     if (!card.url) {
       this.ngZone.run(() => {
-        this.sb.open({ msg: 'error: url is empty' })
+        this.messages.open({ msg: 'error: url is empty' })
         this._cd.detectChanges()
       })
       return
@@ -243,7 +231,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.store.dispatch(modify({ card }))
           msg = 'modify success'
         }
-        this.sb.open({ msg })
+        this.messages.open({ msg })
         this._cd.markForCheck()
       })
   }
@@ -256,9 +244,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
-  // TODO : Export is allowed only after setting a password ？
   exportData(event: Event): void {
-    event.stopPropagation()
+    event?.stopPropagation()
     const dialogRef = this._dialog.open<ExportSelectDialog>(ExportSelectDialog, {
       width: 320,
     })
@@ -267,29 +254,31 @@ export class HomeComponent implements OnInit, OnDestroy {
         case 'plain':
           this.exportDataPlain()
           break
-        case 'encrypted':
-          this.exportEncryptedData()
-          break
         case 'html':
           this.exportDataHtml()
           break
+        case 'encrypted':
+          this.exportDataEncrypted()
+          break
         default:
-          this.exportEncryptedData()
+          this.exportDataEncrypted()
           break
       }
     })
   }
 
-  private async exportDataPlain() {
-    try {
-      const theCards: CardState = await this.dbService.getItem(StorageKey.cards)
-      downloadByData(JSON.stringify(theCards), 'passbox-data.json')
-    } catch (err) {
-      this.sb.open({ msg: `export data failed : ${err.message}` })
-    }
+  private exportDataPlain() {
+    this.cards$.pipe(take(1)).subscribe({
+      next: cards => {
+        downloadByData(JSON.stringify(cards, null, '\t'), 'passbox-data.json')
+      },
+      error: err => {
+        this.messages.open({ msg: `export data failed : ${err.message}` })
+      },
+    })
   }
 
-  private async exportDataHtml() {
+  private exportDataHtml() {
     const templateFn = (str: string) => `
     <!DOCTYPE NETSCAPE-Bookmark-file-1>
     <!-- This is an automatically generated file.
@@ -306,22 +295,29 @@ export class HomeComponent implements OnInit, OnDestroy {
         ${str}
       </DL><p>
     </DL>`
-    try {
-      const theCards: CardState = await this.dbService.getItem(StorageKey.cards)
-      let str = ''
-      theCards.items.forEach(card => {
-        if (card.title && card.url) {
-          str += `<DT><A HREF="${card.url}" data-id="${card.id}" >${card.title}</A>\n`
-        }
-      })
-      downloadByData(templateFn(str), 'passbox-bookmarks.html')
-    } catch (err) {
-      this.sb.open({ msg: `export data failed : ${err.message}` })
-    }
+    this.cards$.pipe(take(1)).subscribe({
+      next: cards => {
+        let str = ''
+        cards.forEach(card => {
+          if (card.title && card.url) {
+            str += `<DT><A HREF="${card.url}" data-id="${card.id}" >${card.title}</A>\n`
+          }
+        })
+        downloadByData(templateFn(str), 'passbox-bookmarks.html')
+      },
+      error: err => {
+        this.messages.open({ msg: `export data failed : ${err.message}` })
+      },
+    })
   }
 
-  private async exportEncryptedData() {
+  private async exportDataEncrypted() {
     try {
+      const userPassword = this.userStateService.getUserPassword()
+      if (!userPassword) {
+        this.messages.open({ msg: 'Please set a password first' })
+        return
+      }
       const theCardsStr: string = await this.electronService.storageGet(StorageKey.cards)
       const userStateStr: string = await this.electronService.storageGet(
         StorageKey.userState,
@@ -332,10 +328,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
       downloadByData(JSON.stringify(data), 'passbox-data.json')
     } catch (err) {
-      this.sb.open({ msg: `export data failed : ${err.message}` })
+      this.messages.open({ msg: `export data failed : ${err.message}` })
     }
   }
 
+  // TODO
   importData(event: Event): void {
     event.stopPropagation()
     const { dialog } = window.electronAPI
@@ -380,7 +377,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             }
           }
         } catch (error) {
-          this.sb.open({ msg: error.message })
+          this.messages.open({ msg: error.message })
         }
       },
     )
@@ -396,12 +393,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       cards = JSON.parse(data.cards)
       userState = JSON.parse(fromB64ToStr(data.userState))
     } catch (_) {
-      this.sb.open({ msg: 'failed : invalid data' })
+      this.messages.open({ msg: 'failed : invalid data' })
       return
     }
     const { isRequiredLogin } = userState as UserState
     if (isRequiredLogin) {
-      this.sb.open({ msg: 'need password' })
+      this.messages.open({ msg: 'need password' })
       const dialogRef = this._dialog.open<ImportPasswordDialog>(ImportPasswordDialog, {
         width: 320,
       })
@@ -414,14 +411,14 @@ export class HomeComponent implements OnInit, OnDestroy {
             result.password,
           )
         } catch (_) {
-          this.sb.open({ msg: 'failed : password error' })
+          this.messages.open({ msg: 'failed : password error' })
           return
         }
         let res = null
         try {
           res = JSON.parse(str)
         } catch (_) {
-          this.sb.open({ msg: 'failed : invalid data' })
+          this.messages.open({ msg: 'failed : invalid data' })
         }
         this.addImportedCards(res.items)
       })
@@ -434,12 +431,12 @@ export class HomeComponent implements OnInit, OnDestroy {
             try {
               res = JSON.parse(str)
             } catch (_) {
-              this.sb.open({ msg: 'failed : invalid data' })
+              this.messages.open({ msg: 'failed : invalid data' })
             }
             this.addImportedCards(res.items)
           })
       } catch (_) {
-        this.sb.open({ msg: 'failed : invalid data' })
+        this.messages.open({ msg: 'failed : invalid data' })
       }
     }
   }
@@ -459,7 +456,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           ),
       )
       this.store.dispatch(add({ cards: cardsToImport }))
-      this.sb.open({ msg: 'import success' })
+      this.messages.open({ msg: 'import success' })
       this.ngZone.run(() => {
         this._cd.detectChanges()
       })
@@ -533,7 +530,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed.subscribe(result => {
       if (result) {
         this.electronService.copyText(result)
-        this.sb.open({ msg: 'copied success' })
+        this.messages.open({ msg: 'copied success' })
       }
     })
   }

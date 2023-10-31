@@ -2,7 +2,7 @@
 Toggle whether the secret field is visible 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅*/
 import { Component, Input, Output, EventEmitter } from '@angular/core'
-import type { Card } from '../../../models'
+import type { Card } from 'src/app/models'
 
 @Component({
   selector: 'home-secret-show',

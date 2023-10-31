@@ -1,21 +1,32 @@
 import { Injectable } from '@angular/core'
 import { createEffect, Actions, ofType } from '@ngrx/effects'
-import { tap, withLatestFrom, debounceTime } from 'rxjs/operators'
-import { Store } from '@ngrx/store'
-import { StorageKey } from 'src/app/enums'
-import { CardState } from '../models'
-import { DbService } from '../services/db.service'
-import { ElectronService } from '../services/electron.service'
 import {
+  catchError,
+  EMPTY,
+  exhaustMap,
+  tap,
+  map,
+  from,
+  withLatestFrom,
+  debounceTime,
+} from 'rxjs'
+import { Store } from '@ngrx/store'
+import { StorageKey, DBError } from 'src/app/enums'
+import { CardState } from '../models'
+import {
+  CardsDbService,
+  ElectronService,
+  getCards,
   add,
   sort,
   modify,
-  remove,
+  deleteCard,
+  permanentlyDeleteCard,
   search,
   restore,
   initCards,
   selectCards,
-} from '../services/ngrx.service'
+} from '../services'
 
 @Injectable()
 export class CardEffects {
@@ -23,16 +34,31 @@ export class CardEffects {
     private actions$: Actions,
     private electronService: ElectronService,
     private store: Store<{ theCards: CardState }>,
-    private dbService: DbService,
+    private cardsDbService: CardsDbService,
   ) {}
+
+  getCardsFromDB = createEffect(() =>
+    this.actions$.pipe(
+      ofType(getCards),
+      // TODO handle errors and showTutorialDialog
+      exhaustMap(() =>
+        from(this.cardsDbService.getItem(StorageKey.cards)).pipe(
+          map(theCards => initCards({ theCards })),
+          catchError(() => EMPTY),
+        ),
+      ),
+    ),
+  )
 
   storeTheCards = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(add, modify, remove, sort, restore),
+        ofType(add, modify, deleteCard, permanentlyDeleteCard, sort, restore),
         debounceTime(300),
         withLatestFrom(this.store.select('theCards')),
-        tap(([_action, theCards]) => this.dbService.setItem(StorageKey.cards, theCards)),
+        tap(([_action, theCards]) =>
+          this.cardsDbService.setItem(StorageKey.cards, theCards),
+        ),
       ),
     { dispatch: false },
   )
@@ -40,7 +66,16 @@ export class CardEffects {
   changeTray = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(initCards, search, add, modify, remove, sort, restore),
+        ofType(
+          initCards,
+          search,
+          add,
+          modify,
+          deleteCard,
+          permanentlyDeleteCard,
+          sort,
+          restore,
+        ),
         debounceTime(300),
         withLatestFrom(this.store.select(selectCards)),
         tap(([_action, cards]) => this.electronService.changeTray(cards)),

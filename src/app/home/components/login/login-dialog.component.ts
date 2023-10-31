@@ -1,26 +1,22 @@
-/*🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
-set a password dialog 😄
-🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅*/
 import {
   Component,
-  Inject,
   NgZone,
   ChangeDetectorRef,
   ChangeDetectionStrategy,
   ViewChild,
   AfterViewInit,
 } from '@angular/core'
-import { LyDialogRef, LY_DIALOG_DATA } from '@alyle/ui/dialog'
+import { LyDialogRef } from '@alyle/ui/dialog'
 import { StorageKey } from 'src/app/enums'
-import { UserStateService, DbService, ElectronService } from '../../../services'
+import { UserStateService, CardsDbService, ElectronService } from 'src/app/services'
 import type { NgModel } from '@angular/forms'
-import type { CardState } from '../../../models'
+import type { CardState } from 'src/app/models'
 
 @Component({
-  templateUrl: './password-set-dialog.component.html',
+  templateUrl: './login-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PasswordSetDialog implements AfterViewInit {
+export class LoginDialog implements AfterViewInit {
   see = true
   _password = ''
   @ViewChild('passwordModel') passwordModel: NgModel
@@ -28,14 +24,10 @@ export class PasswordSetDialog implements AfterViewInit {
   constructor(
     public dialogRef: LyDialogRef,
     private userStateService: UserStateService,
-    private dbService: DbService,
+    private cardsDbService: CardsDbService,
     private ngZone: NgZone,
     private _cd: ChangeDetectorRef,
     private electronService: ElectronService,
-    @Inject(LY_DIALOG_DATA)
-    public data: {
-      isLogin: boolean
-    },
   ) {}
 
   ngAfterViewInit(): void {
@@ -65,7 +57,7 @@ export class PasswordSetDialog implements AfterViewInit {
         if (result.response === 1) {
           this.ngZone.run(async () => {
             await this.electronService.storageClear()
-            this.dialogRef.close(true)
+            this.dialogRef.close()
             this._cd.detectChanges()
           })
         }
@@ -77,37 +69,21 @@ export class PasswordSetDialog implements AfterViewInit {
     if (!this.passwordModel.valid) {
       return
     }
-    if (!this.data.isLogin) {
-      await this.changePassword()
-      this.dialogRef.close()
+    const loginOk = await this.login()
+    if (!loginOk) {
+      this.ngZone.run(() => {
+        this.passwordModel.control.setErrors({ passwordFail: true })
+        this._cd.detectChanges()
+      })
     } else {
-      const loginOk = await this.login()
-      if (!loginOk) {
-        this.ngZone.run(() => {
-          this.passwordModel.control.setErrors({ passwordFail: true })
-          this._cd.detectChanges()
-        })
-      } else {
-        this.dialogRef.close(true)
-      }
+      this.dialogRef.close()
     }
-  }
-
-  private async changePassword() {
-    let theCards: CardState
-    try {
-      theCards = await this.dbService.getItem(StorageKey.cards)
-    } catch (_) {}
-    await this.userStateService.setUserPassword(this._password)
-    try {
-      theCards && (await this.dbService.setItem(StorageKey.cards, theCards))
-    } catch (_) {}
   }
 
   private async login(): Promise<boolean> {
     await this.userStateService.setUserPassword(this._password)
     try {
-      await this.dbService.getItem(StorageKey.cards)
+      await this.cardsDbService.getItem(StorageKey.cards)
     } catch (_) {
       return false
     }

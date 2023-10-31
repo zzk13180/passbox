@@ -11,8 +11,8 @@ import {
 import { LyClasses, StyleRenderer, lyl, ThemeVariables } from '@alyle/ui'
 import { LyDialogRef, LY_DIALOG_DATA } from '@alyle/ui/dialog'
 import { Store } from '@ngrx/store'
-import { remove, restore } from '../../../services'
-import type { Card } from '../../../models'
+import { permanentlyDeleteCard, restore } from 'src/app/services'
+import type { Card } from 'src/app/models'
 
 @Component({
   templateUrl: './card-deleted-dialog.component.html',
@@ -99,7 +99,7 @@ export class CardDeletedDialog {
       result => {
         result.response === 1 &&
           this.ngZone.run(() => {
-            this.store.dispatch(remove({ card }))
+            this.store.dispatch(permanentlyDeleteCard({ card }))
             this.cards = this.cards.filter(c => c.id !== card.id)
             this._cd.detectChanges()
           })
