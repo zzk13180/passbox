@@ -35,7 +35,7 @@ export class MainWindow {
   private contextMenu: Menu
   private menuItems: Array<MenuItemConstructorOptions> = []
   private openBrowserWindows: Array<BrowserWindow> = []
-  private openBrowserWindowAlwaysOnTop = true
+  private openBrowserWindowAlwaysOnTop = false
 
   constructor(
     private isServe = false,
@@ -121,7 +121,11 @@ export class MainWindow {
       }
     }
     if (!url) {
-      dialog.showErrorBox('failed to open the link', `invalid url: ${card.url}`)
+      dialog.showMessageBox(this.browserWindow, {
+        type: 'error',
+        title: 'failed to open the link',
+        message: `invalid url: ${card.url}`,
+      })
       return Promise.resolve(false)
     }
     const openBrowserWindow = new BrowserWindow({
@@ -384,13 +388,13 @@ export class MainWindow {
     })
 
     ipcMain.on('show-message-box', (event, options: any, eventId: string) => {
-      dialog.showMessageBox(options).then(result => {
+      dialog.showMessageBox(this.browserWindow, options).then(result => {
         event.reply('show-message-box-reply', eventId, result)
       })
     })
 
     ipcMain.on('show-open-dialog', (event, options: any, eventId: string) => {
-      dialog.showOpenDialog(options).then(result => {
+      dialog.showOpenDialog(this.browserWindow, options).then(result => {
         event.reply('show-open-dialog-reply', eventId, result)
       })
     })

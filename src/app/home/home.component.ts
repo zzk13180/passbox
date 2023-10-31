@@ -26,9 +26,11 @@ import {
   getCards,
   selectCards,
   selectDeletedCards,
+  selectIsFirstTimeLogin,
   UserState,
   UserStateService,
   CryptoService,
+  updateIsFirstTimeLogin,
 } from '../services'
 
 import { downloadByData } from '../utils/download.util'
@@ -87,10 +89,27 @@ export class HomeComponent implements OnInit, OnDestroy {
     const { isRequiredLogin } = await this.userStateService.getUserState()
     const userPassword = this.userStateService.getUserPassword()
     if (isRequiredLogin && !userPassword) {
-      this.showSetPasswordDialog()
+      this.showLoginDialog()
     } else {
       this.store.dispatch(getCards())
     }
+    this.store.select(selectIsFirstTimeLogin).subscribe(isFirstTimeLogin => {
+      if (isFirstTimeLogin) {
+        const cards = [
+          {
+            title: 'TODO',
+            url: '',
+            description: 'TODO',
+            secret: '',
+            width: 800,
+            height: 600,
+          },
+        ]
+        this.showTutorialDialog(true)
+        this.store.dispatch(add({ cards }))
+        this.store.dispatch(updateIsFirstTimeLogin({ isFirstTimeLogin: false }))
+      }
+    })
   }
 
   showLoginDialog() {

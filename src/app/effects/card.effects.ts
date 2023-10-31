@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core'
 import { createEffect, Actions, ofType } from '@ngrx/effects'
 import {
   catchError,
-  EMPTY,
   exhaustMap,
   tap,
   map,
   from,
   withLatestFrom,
   debounceTime,
+  EMPTY,
 } from 'rxjs'
 import { Store } from '@ngrx/store'
 import { StorageKey, DBError } from 'src/app/enums'
@@ -26,6 +26,7 @@ import {
   restore,
   initCards,
   selectCards,
+  updateIsFirstTimeLogin,
 } from '../services'
 
 @Injectable()
@@ -40,11 +41,16 @@ export class CardEffects {
   getCardsFromDB = createEffect(() =>
     this.actions$.pipe(
       ofType(getCards),
-      // TODO handle errors and showTutorialDialog
       exhaustMap(() =>
         from(this.cardsDbService.getItem(StorageKey.cards)).pipe(
           map(theCards => initCards({ theCards })),
-          catchError(() => EMPTY),
+          catchError(error => {
+            if (error?.message === DBError.noData) {
+              return from([updateIsFirstTimeLogin({ isFirstTimeLogin: true })])
+            }
+            console.error(error)
+            return EMPTY
+          }),
         ),
       ),
     ),

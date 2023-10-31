@@ -14,23 +14,15 @@
       />
     </header>
     <main class="apps-emoji-list">
-      <ng-container *ngIf="isLoading; else elseBlock">
-        <div class="apps-emoji-skeleton" [lySkeleton]="true">
-          {{ '\u00A0' }}
-        </div>
-      </ng-container>
-
-      <ng-template #elseBlock>
-        <span
-          class="emojis"
-          *ngFor="let emoji of emojis; trackBy: trackByFn"
-          [ngStyle]="{
-            fontSize: fontSize + 'px'
-          }"
-        >
-          {{ emoji.symbol }}
-        </span>
-      </ng-template>
+      <span
+        class="emojis"
+        *ngFor="let emoji of emojis; trackBy: trackByFn"
+        [ngStyle]="{
+          fontSize: fontSize + 'px'
+        }"
+      >
+        {{ emoji.symbol }}
+      </span>
     </main>
   </section>
 </div>

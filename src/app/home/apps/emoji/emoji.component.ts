@@ -1,4 +1,9 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core'
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  OnInit,
+} from '@angular/core'
 import Fuse from 'fuse.js'
 import { LyClasses, LyTheme2 } from '@alyle/ui'
 import { LyDialog } from '@alyle/ui/dialog'
@@ -20,13 +25,13 @@ const STYLES = {
   styleUrls: ['./emoji.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EmojiComponent {
+export class EmojiComponent implements OnInit {
   readonly classes: LyClasses<typeof STYLES>
   fontSize = 22
   emojis: Emoji[] = []
-  isLoading = true
   private emojisOriginal: Emoji[] = []
   private fuse: Fuse<Emoji>
+  #loading = true
 
   constructor(
     private _dialog: LyDialog,
@@ -34,11 +39,12 @@ export class EmojiComponent {
     private _cd: ChangeDetectorRef,
   ) {
     this.classes = this.theme.addStyleSheet(STYLES)
-    import('./emoji.data').then(({ emojis }) => {
-      this.isLoading = false
-      this.emojis = emojis
+  }
+
+  async ngOnInit() {
+    import('./emojis.json').then(({ default: emojis }) => {
       this.emojisOriginal = emojis
-      this._cd.markForCheck()
+      this.emojis = emojis
       this.fuse = new Fuse<Emoji>(this.emojis, {
         keys: [
           'title',
@@ -77,7 +83,32 @@ export class EmojiComponent {
         ignoreLocation: true,
         sortFn: (a, b) => a.score - b.score,
       })
+      this.#loading = false
+      this._cd.markForCheck()
     })
+    const { emojisTmpData } = await import('./emoji.data')
+    console.log(emojisTmpData)
+    const iterator = this.displayEmojiOneByOne(emojisTmpData)
+    while (true) {
+      const { value, done } = await iterator.next()
+      if (done || !this.#loading) {
+        break
+      }
+      this.emojis.push(...value)
+      this._cd.markForCheck()
+    }
+  }
+
+  private async *displayEmojiOneByOne(emojis: Emoji[]) {
+    const arrs = []
+    const chunk = 7
+    for (let i = 0; i < emojis.length; i += chunk) {
+      arrs.push(emojis.slice(i, i + chunk))
+    }
+    for (const emojis of arrs) {
+      await new Promise(resolve => setTimeout(resolve, 50))
+      yield emojis
+    }
   }
 
   onSearch(term: string) {

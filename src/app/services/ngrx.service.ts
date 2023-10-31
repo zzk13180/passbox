@@ -17,8 +17,12 @@ export const initSettings = createAction(
   '[Settings] InitSettings',
   props<{ settings: SettingsState }>(),
 )
+export const updateIsFirstTimeLogin = createAction(
+  '[Settings] Update Is First Time Login',
+  props<{ isFirstTimeLogin: boolean }>(),
+)
 export const updateLanguage = createAction(
-  '[Settings] ModifySettings',
+  '[Settings] Update Language',
   props<{ language: I18nLanguageEnum }>(),
 )
 
@@ -45,18 +49,28 @@ export const search = createAction('[Card List] Search', props<{ term: string }>
 export const restore = createAction('[Card List] Restore', props<{ card: Card }>())
 
 const initialSettingsState: SettingsState = {
+  isFirstTimeLogin: false,
   currentLang: I18nLanguageEnum.English,
 }
 export function settingsReducer(state: SettingsState, action: Action) {
   const _reducer = createReducer(
     initialSettingsState,
     on(initSettings, (_state, { settings }) => settings),
-    on(updateLanguage, (_state, { language }) => ({ ..._state, currentLang: language })),
+    on(updateIsFirstTimeLogin, (state, { isFirstTimeLogin }) => ({
+      ...state,
+      isFirstTimeLogin,
+    })),
+    on(updateLanguage, (state, { language }) => ({ ...state, currentLang: language })),
   )
   return _reducer(state, action)
 }
 
 const settingsSelector = createFeatureSelector<SettingsState>('theSettings')
+
+export const selectIsFirstTimeLogin = createSelector(
+  settingsSelector,
+  (state: SettingsState) => state.isFirstTimeLogin,
+)
 
 export const selectLanguage = createSelector(
   settingsSelector,

@@ -26,6 +26,10 @@ export class CardsDbService {
     } catch (_) {
       throw new Error(DBError.errorWhileGettingData)
     }
+    const { items, deletedItems } = result || {}
+    if (![items, deletedItems].every(Array.isArray)) {
+      throw new Error(DBError.errorWhileGettingData)
+    }
     return result
   }
 
