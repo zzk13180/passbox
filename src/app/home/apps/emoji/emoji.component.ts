@@ -83,7 +83,6 @@ export class EmojiComponent implements OnInit {
 
   async ngOnInit() {
     const { emojis } = this.emojiService
-    console.log(emojis)
     if (emojis) {
       this.initEmojis(emojis)
       return

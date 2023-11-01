@@ -18,7 +18,7 @@ export class PasswordSetDialog implements AfterViewInit {
   see = true
   _password = ''
   @ViewChild('passwordModel') passwordModel: NgModel
-  // eslint-disable-next-line max-params
+
   constructor(
     public dialogRef: LyDialogRef,
     private userStateService: UserStateService,

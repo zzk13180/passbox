@@ -65,8 +65,8 @@ export class HelpDialog implements OnInit, OnDestroy {
       url: 'https://www.zhangzhankui.com/',
       description: '',
       secret: '',
-      width: 800,
-      height: 600,
+      width: 850,
+      height: 650,
     }
     switch (flag) {
       case 'issues':

@@ -67,7 +67,7 @@ export class MainWindow {
         '../',
         `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
       ),
-      alwaysOnTop: true,
+      alwaysOnTop: false,
       webPreferences: {
         contextIsolation: true,
         nodeIntegration: false,

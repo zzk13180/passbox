@@ -11,11 +11,9 @@ import {
 import { StyleRenderer, LyTheme2, LyClasses } from '@alyle/ui'
 import { LyDialog } from '@alyle/ui/dialog'
 import { LySnackBar } from '@alyle/ui/snack-bar'
-import { Observable, take } from 'rxjs'
-import { filter } from 'rxjs/operators'
+import { Observable, filter, take, Subscription } from 'rxjs'
 import { Store } from '@ngrx/store'
 import { StorageKey } from 'src/app/enums'
-import { Card, CipherString } from '../models'
 import {
   ElectronService,
   add,
@@ -27,15 +25,11 @@ import {
   selectCards,
   selectDeletedCards,
   selectIsFirstTimeLogin,
-  UserState,
   UserStateService,
   CryptoService,
   updateIsFirstTimeLogin,
 } from '../services'
-
 import { downloadByData } from '../utils/download.util'
-import { fromB64ToStr } from '../utils/crypto.util'
-import { html2cards } from './home.util'
 import { CardAddDialog } from './components/card-add/card-add-dialog.component'
 import { CardDeletedDialog } from './components/card-deleted/card-deleted-dialog.component'
 import { ExportSelectDialog } from './components/export/export-select-dialog.component'
@@ -50,7 +44,8 @@ import { SettingsDialog } from './components/settings/settings.component'
 import { StepsGuideService, OperateResponse } from './steps-guide'
 import { STYLES } from './STYLES.data'
 import { steps } from './steps-guide.data'
-
+import { CardsImportService } from './cards-import.service'
+import type { Card } from '../models'
 import type { CdkDragMove } from '@angular/cdk/drag-drop'
 
 @Component({
@@ -58,7 +53,7 @@ import type { CdkDragMove } from '@angular/cdk/drag-drop'
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [StyleRenderer],
+  providers: [StyleRenderer, CardsImportService],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild('messages') messages: LySnackBar
@@ -68,6 +63,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly itemSize = 54
   private previousIndex = 0
   private distanceY = 0
+  private subscriptions = new Subscription()
   // eslint-disable-next-line max-params
   constructor(
     readonly sRenderer: StyleRenderer,
@@ -80,6 +76,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private userStateService: UserStateService,
     private cryptoService: CryptoService,
     private stepService: StepsGuideService,
+    private cardsImportService: CardsImportService,
   ) {}
 
   async ngOnInit() {
@@ -97,12 +94,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (isFirstTimeLogin) {
         const cards = [
           {
-            title: 'TODO',
-            url: '',
-            description: 'TODO',
+            title: 'Google Translate',
+            url: 'https://translate.google.com/',
+            description: 'Google Translate',
             secret: '',
-            width: 800,
-            height: 600,
+            width: 850,
+            height: 650,
           },
         ]
         this.showTutorialDialog(true)
@@ -110,6 +107,33 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.store.dispatch(updateIsFirstTimeLogin({ isFirstTimeLogin: false }))
       }
     })
+    this.subscriptions.add(
+      this.cardsImportService.inputUserPassword$.subscribe(data => {
+        this.ngZone.run(() => {
+          const dialogRef = this._dialog.open<ImportPasswordDialog>(
+            ImportPasswordDialog,
+            {
+              width: 320,
+            },
+          )
+          dialogRef.afterClosed.subscribe(result => {
+            const { password: userPassword } = result
+            this.cardsImportService
+              .decryptData2cards({
+                ...data,
+                userPassword,
+              })
+              .then(cards => {
+                this.dispatchAddCards(cards)
+              })
+              .catch(err => {
+                this.messages.open({ msg: err?.message })
+              })
+          })
+          this._cd.detectChanges()
+        })
+      }),
+    )
   }
 
   showLoginDialog() {
@@ -137,7 +161,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
     dialogRef.afterClosed.subscribe(err => {
       if (err) {
-        this.messages.open({ msg: err.message }) // TODO
+        this.messages.open({ msg: err?.message })
       } else {
         this.messages.open({ msg: 'set password success' })
       }
@@ -151,8 +175,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         description: '',
         secret: '',
         url: event.path,
-        width: 800,
-        height: 600,
+        width: 850,
+        height: 650,
       },
     ]
     this.store.dispatch(add({ cards }))
@@ -233,18 +257,20 @@ export class HomeComponent implements OnInit, OnDestroy {
           description: card?.description ?? '',
           secret: card?.secret ?? '',
           url: card?.url ?? '',
-          width: card?.width ?? 800,
-          height: card?.height ?? 600,
+          width: card?.width ?? 850,
+          height: card?.height ?? 650,
         },
       })
       .afterClosed.pipe(filter(result => !!result))
       .subscribe(card => {
         let msg = ''
         if (flag === 'add') {
-          if (this.checkCardIsAvailable(card)) {
+          if (['title', 'description', 'secret', 'url'].some(key => card[key])) {
             this.store.dispatch(add({ cards: [card] }))
+            msg = 'add success'
+          } else {
+            msg = 'error: card is empty'
           }
-          msg = 'add success'
         }
         if (flag === 'modify') {
           this.store.dispatch(modify({ card }))
@@ -334,6 +360,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     try {
       const userPassword = this.userStateService.getUserPassword()
       if (!userPassword) {
+        // TODO: show password set dialog
         this.messages.open({ msg: 'Please set a password first' })
         return
       }
@@ -351,120 +378,22 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  // TODO
-  importData(event: Event): void {
-    event.stopPropagation()
-    const { dialog } = window.electronAPI
-    dialog.showOpenDialog(
-      {
-        title: 'import data',
-        filters: [
-          {
-            name: 'passbox',
-            extensions: ['json', 'html'],
-          },
-        ],
-        properties: ['openFile'],
-      },
-      async result => {
-        const filePath = result.filePaths?.[0]
-        if (!filePath) {
-          return
-        }
-        const data = await this.electronService.readFile(filePath)
-        const ext = filePath.split('.').pop()
-        try {
-          if (ext !== 'json') {
-            const cards = html2cards(data)
-            if (!cards.length || cards[0]?.toString() !== '[object Object]') {
-              throw new Error('invalid data')
-            }
-            this.addImportedCards(cards)
-          } else {
-            let jsonData = null
-            try {
-              jsonData = JSON.parse(data)
-            } catch (_) {
-              throw new Error('invalid data')
-            }
-            if (jsonData?.items?.length) {
-              this.addImportedCards(jsonData.items)
-            } else if (jsonData?.cards && jsonData?.userState) {
-              this.encryptedData2cards(jsonData)
-            } else {
-              throw new Error('invalid data')
-            }
-          }
-        } catch (error) {
-          this.messages.open({ msg: error.message })
-        }
-      },
-    )
-  }
-
-  private encryptedData2cards(data: {
-    [StorageKey.cards]: string
-    [StorageKey.userState]: string
-  }): void {
-    let cards: CipherString = null
-    let userState: UserState = null
+  async importData(event: Event) {
+    event?.stopPropagation()
+    let cards: Card[]
     try {
-      cards = JSON.parse(data.cards)
-      userState = JSON.parse(fromB64ToStr(data.userState))
-    } catch (_) {
-      this.messages.open({ msg: 'failed : invalid data' })
-      return
-    }
-    const { isRequiredLogin } = userState as UserState
-    if (isRequiredLogin) {
-      this.messages.open({ msg: 'need password' })
-      const dialogRef = this._dialog.open<ImportPasswordDialog>(ImportPasswordDialog, {
-        width: 320,
-      })
-      dialogRef.afterClosed.pipe(filter(result => !!result)).subscribe(async result => {
-        let str = ''
-        try {
-          str = await this.cryptoService.decryptToUtf8WithExternalUserState(
-            cards,
-            userState,
-            result.password,
-          )
-        } catch (_) {
-          this.messages.open({ msg: 'failed : password error' })
-          return
-        }
-        let res = null
-        try {
-          res = JSON.parse(str)
-        } catch (_) {
-          this.messages.open({ msg: 'failed : invalid data' })
-        }
-        this.addImportedCards(res.items)
-      })
-    } else {
-      try {
-        this.cryptoService
-          .decryptToUtf8WithExternalUserState(cards, userState)
-          .then(str => {
-            let res = null
-            try {
-              res = JSON.parse(str)
-            } catch (_) {
-              this.messages.open({ msg: 'failed : invalid data' })
-            }
-            this.addImportedCards(res.items)
-          })
-      } catch (_) {
-        this.messages.open({ msg: 'failed : invalid data' })
-      }
+      cards = await this.cardsImportService.importData()
+      this.dispatchAddCards(cards)
+    } catch (error) {
+      this.messages.open({ msg: error.message })
     }
   }
 
-  private addImportedCards(importedCards: Card[]): void {
+  private dispatchAddCards(importedCards: Card[]): void {
     this.cards$.pipe(take(1)).subscribe(cards => {
       const cardsToImport = importedCards.filter(
         card =>
-          this.checkCardIsAvailable(card) &&
+          ['title', 'description', 'secret', 'url'].some(key => card[key]) &&
           !cards.some(
             item =>
               item.id === card.id ||
@@ -476,15 +405,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       )
       this.store.dispatch(add({ cards: cardsToImport }))
       this.messages.open({ msg: 'import success' })
-      this.ngZone.run(() => {
-        this._cd.detectChanges()
-      })
+      this._cd.detectChanges()
     })
-  }
-
-  private checkCardIsAvailable(card: Card): boolean {
-    const keys = ['title', 'description', 'secret', 'url']
-    return keys.some(key => card[key])
   }
 
   viewMenu(card: Card) {
@@ -587,5 +509,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    this.subscriptions?.unsubscribe()
+  }
 }
