@@ -6,7 +6,7 @@ export class I18nText {
   currentLanguage: I18nLanguageEnum
   constructor() {}
 
-  private welcomeI18n: { [key in I18nLanguageEnum]: string } = {
+  #welcome: { [key in I18nLanguageEnum]: string } = {
     English: 'Welcome',
     Chinese: '欢迎',
     Japanese: 'ようこそ',
@@ -24,10 +24,10 @@ export class I18nText {
   }
 
   get welcome(): string {
-    return this.welcomeI18n[this.currentLanguage]
+    return this.#welcome[this.currentLanguage]
   }
 
-  private pleaseI18n: { [key in I18nLanguageEnum]: string } = {
+  #please: { [key in I18nLanguageEnum]: string } = {
     English: 'Please choose your preferred language.',
     Chinese: '请选择您的首选语言。',
     Japanese: 'ご希望の言語を選択してください。',
@@ -45,6 +45,6 @@ export class I18nText {
   }
 
   get please(): string {
-    return this.pleaseI18n[this.currentLanguage]
+    return this.#please[this.currentLanguage]
   }
 }

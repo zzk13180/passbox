@@ -37,7 +37,7 @@ export class CardsImportService {
     } catch (_) {
       throw new Error('invalid data')
     }
-    return result.items
+    return Array.isArray(result) ? result : result?.items
   }
 
   importData(): Promise<Card[]> {

@@ -57,6 +57,9 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
       modules: [EffectCube, EffectCoverflow],
       effect: 'coverflow',
       createElements: true,
+      coverflowEffect: {
+        slideShadows: false,
+      },
     })
     this.swiper.slideTo(0)
     this.swiper.on('slideChange', () => {

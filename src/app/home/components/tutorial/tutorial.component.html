@@ -1,11 +1,5 @@
 <div class="tutorial">
-  <button
-    ly-button
-    cdkFocusRegionStart
-    class="tutorial-skip"
-    appearance="icon"
-    (click)="dialogRef.close()"
-  >
+  <button ly-button class="tutorial-skip" appearance="icon" (click)="dialogRef.close()">
     <ly-icon>close</ly-icon>
   </button>
   <canvas id="bg" [className]="classes.canvas"></canvas>
@@ -184,12 +178,15 @@
       <div class="swiper-slide">
         <div [className]="classes.intraContainer">
           <div [className]="classes.intraContent">
-            <p class="slide-ready">
-              TODO:This application is translated using ChatGPT, please feedback if any
-              errors.
+            <p class="slide-ready statement">
+              {{ i18nText.statement }}
             </p>
-            <ly-grid container justify="end" ly-dialog-actions>
-              <button ly-button raised (click)="next(2)">
+            <ly-grid container justify="between" ly-dialog-actions style="width: 100vw">
+              <button ly-button class="tutorial-language-next" (click)="next(0)">
+                <ly-icon>arrow_back</ly-icon>
+                <span [lyPf]="1">&nbsp;Previous</span>
+              </button>
+              <button ly-button class="tutorial-language-next" (click)="next(2)">
                 <span [lyPf]="1">Continue</span>
                 <ly-icon>arrow_forward</ly-icon>
               </button>
@@ -203,7 +200,7 @@
             <h1><img src="assets/svg/ready.svg" class="slide-image" /></h1>
             <p class="slide-ready">Ready to Play?</p>
             <ly-grid container justify="end" ly-dialog-actions>
-              <button ly-button raised (click)="dialogRef.close()">
+              <button ly-button raised (click)="dialogRef.close()" cdkFocusRegionStart>
                 <span [lyPf]="1">Continue</span>
                 <ly-icon>arrow_forward</ly-icon>
               </button>

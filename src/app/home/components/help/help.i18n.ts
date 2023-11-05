@@ -6,7 +6,7 @@ export class I18nText {
   currentLanguage: I18nLanguageEnum
   constructor() {}
 
-  private thanksI18n: { [key in I18nLanguageEnum]: string } = {
+  #thanks: { [key in I18nLanguageEnum]: string } = {
     English: 'Thank you for using my software! Your support means a lot to us.',
     Chinese: '感谢您使用我的软件！您的支持对我们非常重要。',
     Japanese:
@@ -30,6 +30,6 @@ export class I18nText {
   }
 
   get thanks(): string {
-    return this.thanksI18n[this.currentLanguage]
+    return this.#thanks[this.currentLanguage]
   }
 }
