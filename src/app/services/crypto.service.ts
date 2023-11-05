@@ -11,8 +11,8 @@ import type { UserState } from './user-state.service'
   providedIn: 'root',
 })
 export class CryptoService {
-  private password: ArrayBuffer | null = null
-  private salt: ArrayBuffer | null = null
+  private password: ArrayBuffer
+  private salt: ArrayBuffer
 
   constructor(
     private cryptoFunctionService: CryptoFunctionService,
@@ -79,9 +79,6 @@ export class CryptoService {
   }
 
   async encrypt(plainValue: string | ArrayBuffer): Promise<CipherString> {
-    if (plainValue == null) {
-      return Promise.resolve(null)
-    }
     await this.checkPassword()
 
     let plainBuf: ArrayBuffer
@@ -111,5 +108,25 @@ export class CryptoService {
     this.initPassword(userState, userPassword)
     const result = await this.aesDecryptToUtf8(cipherString.data, cipherString.iv)
     return result
+  }
+
+  async encryptWithExternalUserPassword(
+    plainValue: string | ArrayBuffer,
+    userPassword: string,
+  ): Promise<CipherString> {
+    const userstate: UserState = await this.userStateService.getUserState()
+    this.initPassword(userstate, userPassword)
+
+    let plainBuf: ArrayBuffer
+    if (typeof plainValue === 'string') {
+      plainBuf = pako.deflate(plainValue).buffer
+    } else {
+      plainBuf = plainValue
+    }
+
+    const encObj = await this.aesEncrypt(plainBuf)
+    const iv = fromBufferToB64(encObj.iv)
+    const data = fromBufferToB64(encObj.data)
+    return { data, iv }
   }
 }

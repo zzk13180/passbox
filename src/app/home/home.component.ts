@@ -11,7 +11,7 @@ import {
 import { StyleRenderer, LyTheme2, LyClasses } from '@alyle/ui'
 import { LyDialog } from '@alyle/ui/dialog'
 import { LySnackBar } from '@alyle/ui/snack-bar'
-import { Observable, filter, take, Subscription } from 'rxjs'
+import { Observable, filter, take, Subscription, firstValueFrom } from 'rxjs'
 import { Store } from '@ngrx/store'
 import { StorageKey } from 'src/app/enums'
 import {
@@ -27,6 +27,7 @@ import {
   selectIsFirstTimeLogin,
   UserStateService,
   updateIsFirstTimeLogin,
+  CryptoService,
 } from '../services'
 import { downloadByData } from '../utils/download.util'
 import { CardAddDialog } from './components/card-add/card-add-dialog.component'
@@ -75,6 +76,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private userStateService: UserStateService,
     private stepService: StepsGuideService,
     private cardsImportService: CardsImportService,
+    private cryptoService: CryptoService,
   ) {}
 
   async ngOnInit() {
@@ -161,11 +163,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (!data) {
         return
       }
-      if (data.hasError) {
-        this.messages.open({ msg: data.message })
-      } else {
-        this.messages.open({ msg: data.message })
-      }
+      this.messages.open({ msg: data.message })
     })
   }
 
@@ -363,14 +361,24 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.messages.open({ msg: 'Please set a password first' })
       return
     }
-    // TODO : encrypt data with external password
+    const userPassword = this.userStateService.getUserPassword()
+    const userStateStr: string = await this.electronService.storageGet(
+      StorageKey.userState,
+    )
+    let cards: string
     try {
-      const theCardsStr: string = await this.electronService.storageGet(StorageKey.cards)
-      const userStateStr: string = await this.electronService.storageGet(
-        StorageKey.userState,
-      )
+      if (userPassword === password) {
+        cards = await this.electronService.storageGet(StorageKey.cards) // theCards
+      } else {
+        cards = JSON.stringify(
+          await this.cryptoService.encryptWithExternalUserPassword(
+            JSON.stringify(await firstValueFrom(this.cards$)),
+            password,
+          ),
+        )
+      }
       const data = {
-        cards: theCardsStr,
+        cards,
         userState: userStateStr,
       }
       downloadByData(JSON.stringify(data), 'passbox-data.json')
