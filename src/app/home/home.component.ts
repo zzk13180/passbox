@@ -26,7 +26,6 @@ import {
   selectDeletedCards,
   selectIsFirstTimeLogin,
   UserStateService,
-  CryptoService,
   updateIsFirstTimeLogin,
 } from '../services'
 import { downloadByData } from '../utils/download.util'
@@ -74,7 +73,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _cd: ChangeDetectorRef,
     private store: Store,
     private userStateService: UserStateService,
-    private cryptoService: CryptoService,
     private stepService: StepsGuideService,
     private cardsImportService: CardsImportService,
   ) {}
@@ -159,11 +157,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       containerClass: this.classes.dialog,
       disableClose: true,
     })
-    dialogRef.afterClosed.subscribe(err => {
-      if (err) {
-        this.messages.open({ msg: err?.message })
+    dialogRef.afterClosed.subscribe((data?: { hasError: boolean; message: Error }) => {
+      if (!data) {
+        return
+      }
+      if (data.hasError) {
+        this.messages.open({ msg: data.message })
       } else {
-        this.messages.open({ msg: 'set password success' })
+        this.messages.open({ msg: data.message })
       }
     })
   }
@@ -196,6 +197,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
+  // TODO: settings shortcut key
   @HostListener('window:keydown.meta.d')
   @HostListener('window:keydown.control.d')
   add() {
@@ -303,10 +305,10 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.exportDataHtml()
           break
         case 'encrypted':
-          this.exportDataEncrypted()
+          this.exportDataEncrypted(result.password)
           break
         default:
-          this.exportDataEncrypted()
+          this.exportDataEncrypted(result.password)
           break
       }
     })
@@ -356,14 +358,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
-  private async exportDataEncrypted() {
+  private async exportDataEncrypted(password: string) {
+    if (!password) {
+      this.messages.open({ msg: 'Please set a password first' })
+      return
+    }
+    // TODO : encrypt data with external password
     try {
-      const userPassword = this.userStateService.getUserPassword()
-      if (!userPassword) {
-        // TODO: show password set dialog
-        this.messages.open({ msg: 'Please set a password first' })
-        return
-      }
       const theCardsStr: string = await this.electronService.storageGet(StorageKey.cards)
       const userStateStr: string = await this.electronService.storageGet(
         StorageKey.userState,
@@ -461,6 +462,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._dialog.open<HelpDialog>(HelpDialog, {})
   }
 
+  // TODO: settings shortcut key
   @HostListener('window:keydown.meta.g')
   @HostListener('window:keydown.control.g')
   showPasswordGeneratorDialog() {
@@ -500,7 +502,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  openSettings() {
+  openSettingsDialog() {
     const dialogRef = this._dialog.open<SettingsDialog>(SettingsDialog, {
       containerClass: this.classes.settingsDialog,
     })

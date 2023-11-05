@@ -21,7 +21,10 @@ export class Settingsffects {
         debounceTime(300),
         withLatestFrom(this.store.select('theSettings')),
         tap(([_action, theSettings]) =>
-          this.storage.setItem(StorageKey.userSettings, JSON.stringify(theSettings)),
+          this.storage.setItem(
+            StorageKey.userSettings,
+            JSON.stringify(theSettings, null, '\t'),
+          ),
         ),
       ),
     { dispatch: false },

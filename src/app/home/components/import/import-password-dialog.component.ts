@@ -10,17 +10,17 @@ import { LyDialogRef } from '@alyle/ui/dialog'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImportPasswordDialog {
-  myForm = new UntypedFormGroup({
+  passwordForm = new UntypedFormGroup({
     password: new UntypedFormControl('', [Validators.required]),
   })
 
   get password() {
-    return this.myForm.get('password')!
+    return this.passwordForm.get('password')!
   }
 
   constructor(public dialogRef: LyDialogRef) {}
 
   onSubmit() {
-    this.dialogRef.close(this.myForm.value)
+    this.dialogRef.close(this.passwordForm.value)
   }
 }
