@@ -13,6 +13,8 @@ import { moveItemInArray } from '../utils/array.util'
 import { I18nLanguageEnum } from '../enums'
 import type { Card, CardState, SettingsState } from '../models'
 
+export const getSettings = createAction('[Settings] Get The Settings From DB')
+export const resetSettings = createAction('[Settings] Reset The Settings')
 export const initSettings = createAction(
   '[Settings] InitSettings',
   props<{ settings: SettingsState }>(),
@@ -51,6 +53,7 @@ export const restore = createAction('[Card List] Restore', props<{ card: Card }>
 const initialSettingsState: SettingsState = {
   isFirstTimeLogin: false,
   currentLang: I18nLanguageEnum.English,
+  KeyboardShortcutsBindings: [],
 }
 export function settingsReducer(state: SettingsState, action: Action) {
   const _reducer = createReducer(

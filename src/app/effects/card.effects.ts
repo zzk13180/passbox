@@ -62,6 +62,7 @@ export class CardEffects {
         ofType(add, modify, deleteCard, permanentlyDeleteCard, sort, restore),
         debounceTime(300),
         withLatestFrom(this.store.select('theCards')),
+        // TODO store theCards to cloud ? manage it like git ?
         tap(([_action, theCards]) =>
           this.cardsDbService.setItem(StorageKey.cards, theCards),
         ),

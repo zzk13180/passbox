@@ -1,6 +1,9 @@
 /* eslint-disable max-params */
 /* eslint-disable no-unneeded-ternary */
 /* eslint-disable no-bitwise */
+
+/* Original code: vscode/src/vs/base/common/keybinding.ts */
+
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.

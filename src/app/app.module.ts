@@ -13,7 +13,7 @@ import {
   STORAGE_PROVIDERS,
   cardReducer,
   settingsReducer,
-  KeyboardService,
+  KeyboardShortcutsService,
 } from './services'
 
 @NgModule({
@@ -27,7 +27,7 @@ import {
     EffectsModule.forRoot([CardEffects, Settingsffects]),
   ],
   providers: [
-    KeyboardService,
+    KeyboardShortcutsService,
     STORAGE_PROVIDERS,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
   ],

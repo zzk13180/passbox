@@ -1,4 +1,7 @@
 /* eslint-disable no-bitwise */
+
+/* Original code: vscode/src/vs/base/browser/keyboardEvent.ts */
+
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,21 +9,6 @@
 
 import { EVENT_KEY_CODE_MAP, KeyCode, KeyCodeUtils, KeyMod } from './keyboard-codes'
 import { KeyCodeChord } from './keyboard-bindings'
-
-function extractKeyCode(e: KeyboardEvent): KeyCode {
-  if (e.charCode) {
-    // "keypress" events mostly
-    const char = String.fromCharCode(e.charCode).toUpperCase()
-    return KeyCodeUtils.fromString(char)
-  }
-
-  const { keyCode } = e
-
-  if (keyCode === 3) {
-    return KeyCode.PauseBreak
-  }
-  return EVENT_KEY_CODE_MAP[keyCode] || KeyCode.Unknown
-}
 
 export interface IKeyboardEvent {
   readonly _standardKeyboardEventBrand: true
@@ -196,4 +184,19 @@ export class StandardKeyboardEvent implements IKeyboardEvent {
     }
     return new KeyCodeChord(this.ctrlKey, this.shiftKey, this.altKey, this.metaKey, key)
   }
+}
+
+function extractKeyCode(e: KeyboardEvent): KeyCode {
+  if (e.charCode) {
+    // "keypress" events mostly
+    const char = String.fromCharCode(e.charCode).toUpperCase()
+    return KeyCodeUtils.fromString(char)
+  }
+
+  const { keyCode } = e
+
+  if (keyCode === 3) {
+    return KeyCode.PauseBreak
+  }
+  return EVENT_KEY_CODE_MAP[keyCode] || KeyCode.Unknown
 }

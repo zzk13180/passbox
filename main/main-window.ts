@@ -1,7 +1,8 @@
 import path from 'node:path'
 import cypto from 'node:crypto'
 import { parse, URL } from 'node:url'
-import fs from 'fs-extra'
+import { readFileSync, unlinkSync, existsSync, mkdirSync } from 'node:fs'
+import { writeFile } from 'node:fs/promises'
 import {
   app,
   Tray,
@@ -15,8 +16,9 @@ import {
   MenuItemConstructorOptions,
 } from 'electron'
 import { OpenBrowserMenu } from './open-browser-menu'
+import { Store } from './store'
+import type { Store as StoreType } from './store'
 
-const Store = require('electron-store')
 const contextMenu = require('electron-context-menu')
 
 interface Card {
@@ -36,18 +38,15 @@ export class MainWindow {
   private menuItems: Array<MenuItemConstructorOptions> = []
   private openBrowserWindows: Array<BrowserWindow> = []
   private openBrowserWindowAlwaysOnTop = false
+  private cardStorage: StoreType
+  private customLocalStorage: StoreType
 
-  constructor(
-    private isServe = false,
-    private store = new Store({
-      defaults: {},
-      name: app.name,
-    }),
-    private customLocalStorage = new Store({
-      defaults: {},
-      name: `${app.name}-custom-local-storage`,
-    }),
-  ) {
+  constructor(private isServe = false) {
+    const userDataPath = app.getPath('userData')
+    const cardStoragePath = path.join(userDataPath, `${app.name}.json`)
+    const customLocalStoragePath = path.join(userDataPath, 'custom-local-storage.json')
+    this.cardStorage = new Store(cardStoragePath)
+    this.customLocalStorage = new Store(customLocalStoragePath)
     this.registerIpcMain()
   }
 
@@ -241,7 +240,7 @@ export class MainWindow {
 
   private registerIpcMain(): void {
     ipcMain.handle('get-user-data-path', (): string => {
-      return this.store.path ?? ''
+      return this.cardStorage.path ?? ''
     })
 
     ipcMain.on('change-tray', (_, cards: Array<Card> = []) => {
@@ -267,7 +266,7 @@ export class MainWindow {
     ipcMain.handle('read-file', (_, path: string): string => {
       let data = ''
       try {
-        data = fs.readFileSync(path, 'utf8')
+        data = readFileSync(path, 'utf8')
       } catch (_) {}
       return data
     })
@@ -284,7 +283,11 @@ export class MainWindow {
     })
 
     ipcMain.on('write-file', (event, pathname, content, options = 'utf-8') => {
-      fs.outputFile(pathname, content, options)
+      const directoryPath = path.dirname(pathname)
+      if (!existsSync(directoryPath)) {
+        mkdirSync(directoryPath, { recursive: true })
+      }
+      writeFile(pathname, content, options)
         .then(() => {})
         .catch(error => {
           event.reply('write-file-error', error.message)
@@ -292,27 +295,27 @@ export class MainWindow {
     })
 
     ipcMain.on('delete-file', (event, pathname) => {
-      fs.remove(pathname)
-        .then(() => {})
-        .catch(error => {
-          event.reply('delete-file-error', error.message)
-        })
+      try {
+        unlinkSync(pathname)
+      } catch (error) {
+        event.reply('delete-file-error', error.message)
+      }
     })
 
     ipcMain.on('open-browser', (_, card: Card) => {
       this.openBrowser(card)
     })
 
-    ipcMain.handle('storage-get', (_, key: string): string => {
-      return this.store.get(key, '')
+    ipcMain.handle('cards-get', (_, key: string) => {
+      return this.cardStorage.get(key)
     })
 
-    ipcMain.handle('storage-save', (_, key: string, value: string): void => {
-      return this.store.set(key, value)
+    ipcMain.handle('cards-save', (_, key: string, value: string) => {
+      this.cardStorage.set(key, value)
     })
 
-    ipcMain.handle('storage-clear', (_): void => {
-      return this.store.clear()
+    ipcMain.handle('cards-clear', _ => {
+      this.cardStorage.clear()
     })
 
     ipcMain.handle('clipboard-read-text', (): string => {

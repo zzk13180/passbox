@@ -1,17 +1,17 @@
 <h1 align="center">
   <span>passbox</span>
-  <img src="https://zzk13180.github.io/passbox/favicon.svg" alt='favicon' width='23'/>
+  <img src="https://apps.zhangzhankui.com/passbox/favicon.svg" alt='favicon' width='23'/>
 </h1>
 
 <p align="center">
   <a href="LICENSE">
-    <img src="https://zzk13180.github.io/passbox/license-MIT-informational.svg" alt="LICENSE">
+    <img src="https://apps.zhangzhankui.com/passbox/license-MIT-informational.svg" alt="LICENSE">
   </a>
-  <a href="https://zzk13180.github.io/passbox">
-    <img src="https://zzk13180.github.io/passbox/website-up-brightgreen.svg" alt="website">
+  <a href="https://apps.zhangzhankui.com/passbox">
+    <img src="https://apps.zhangzhankui.com/passbox/website-up-brightgreen.svg" alt="website">
   </a>
   <a href="https://github.com/zzk13180/passbox/releases">
-    <img src="https://zzk13180.github.io/passbox/v1.svg" alt="download">
+    <img src="https://apps.zhangzhankui.com/passbox/v1.svg" alt="download">
   </a>
 <p>
 
@@ -24,21 +24,17 @@
   </sub>
   <sub>
     more information in
-    <a href="https://zzk13180.github.io/passbox" target="_blank">Documentation🚀</a>
+    <a href="https://apps.zhangzhankui.com/passbox" target="_blank">Documentation🚀</a>
   </sub>
 </p>
 
 <br>
 
 <p align='center'>
-  <img src="https://zzk13180.github.io/passbox/preview.png" alt='preview'>
+  <img src="https://apps.zhangzhankui.com/passbox/preview.png" alt='preview'>
 </p>
 
 # Passbox
-
-This software promises to be permanently free and open source.  
-You are welcome to use and contribute to it.  
-If you have any questions, please submit an issue.
 
 ## Getting Started
 

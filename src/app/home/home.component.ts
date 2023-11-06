@@ -91,6 +91,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.store.dispatch(getCards())
     }
     this.store.select(selectIsFirstTimeLogin).subscribe(isFirstTimeLogin => {
+      // TODO ensure cards is empty
       if (isFirstTimeLogin) {
         const cards = [
           {

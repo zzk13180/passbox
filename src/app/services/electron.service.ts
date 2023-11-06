@@ -58,15 +58,15 @@ export class ElectronService {
   }
 
   storageSave(key: StorageKey, value: string): Promise<void> {
-    return this.ipcRenderer.invoke('storage-save', key, value)
+    return this.ipcRenderer.invoke('cards-save', key, value)
   }
 
   storageGet(key: StorageKey): Promise<string> {
-    return this.ipcRenderer.invoke('storage-get', key)
+    return this.ipcRenderer.invoke('cards-get', key)
   }
 
   storageClear(): Promise<void> {
-    return this.ipcRenderer.invoke('storage-clear')
+    return this.ipcRenderer.invoke('cards-clear')
   }
 
   setAlwaysOnTop(flag: boolean) {

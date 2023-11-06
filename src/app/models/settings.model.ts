@@ -1,6 +1,12 @@
-import { I18nLanguageEnum } from '../enums'
+import { I18nLanguageEnum, CommandEnum } from '../enums'
+
+export interface KeyboardShortcutsBindingItem {
+  cmd: CommandEnum
+  key?: string
+}
 
 export interface SettingsState {
   isFirstTimeLogin: boolean
   currentLang: I18nLanguageEnum
+  KeyboardShortcutsBindings: KeyboardShortcutsBindingItem[]
 }
