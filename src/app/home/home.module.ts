@@ -36,6 +36,7 @@ import { FileDropDirective } from './file-drop.directive'
 import { HomeComponent } from './home.component'
 import { CardAddDialog } from './components/card-add/card-add-dialog.component'
 import { CardDeletedDialog } from './components/card-deleted/card-deleted-dialog.component'
+import { CardHistoryDialog } from './components/card-history/card-history-dialog.component'
 import { ExportSelectDialog } from './components/export/export-select-dialog.component'
 import { ImportPasswordDialog } from './components/import/import-password-dialog.component'
 import { PasswordSetDialog } from './components/password-set/password-set-dialog.component'
@@ -64,6 +65,7 @@ class GlobalVariables implements PartialThemeVariables {
     HomeComponent,
     SearchComponent,
     CardDeletedDialog,
+    CardHistoryDialog,
     homeSecretShowComponent,
     LoginDialog,
     PasswordSetDialog,

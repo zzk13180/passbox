@@ -1,0 +1,39 @@
+<ly-accordion [withClass]="classes.expansion" [hasToggle]="false">
+  <ly-expansion-panel
+    *ngFor="let panel of versions; index as i"
+    [expanded]="panel.state"
+    (opened)="panel.state = true"
+    (closed)="panel.state = false"
+    (afterExpand)="getContent(panel.version, i)"
+  >
+    <ly-expansion-panel-header>
+      <ly-panel-title> {{ panel.title }}</ly-panel-title>
+      <button ly-button [color]="panel.state ? 'primary' : 'text'" appearance="icon">
+        <ly-expansion-icon [up]="panel.state"></ly-expansion-icon>
+      </button>
+    </ly-expansion-panel-header>
+    <table
+      *ngIf="isArray(panel.content); else _else"
+      ly-dialog-content
+      ly-table
+      [dataSource]="panel.content"
+      [lyElevation]="8"
+      [lyWidth]="1"
+    >
+      <ng-container *ngFor="let column of columns" [lyColumnDef]="column.columnDef">
+        <th ly-header-cell *lyHeaderCellDef> {{ column.header }} </th>
+        <td ly-cell *lyCellDef="let row">
+          {{ column.cell(row) }}
+        </td>
+      </ng-container>
+      <tr ly-header-row *lyHeaderRowDef="displayedColumns"></tr>
+      <tr ly-row *lyRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+    <ng-template #_else>
+      <p> {{ panel.content }} </p>
+    </ng-template>
+  </ly-expansion-panel>
+</ly-accordion>
+<div *ngIf="!versions.length">
+  <h4 ly-dialog-title>No Data</h4>
+</div>

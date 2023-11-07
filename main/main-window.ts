@@ -318,6 +318,10 @@ export class MainWindow {
       this.cardStorage.clear()
     })
 
+    ipcMain.handle('cards-get-history', (_, version: string) => {
+      return this.cardStorage.readHistory(version)
+    })
+
     ipcMain.handle('clipboard-read-text', (): string => {
       return clipboard.readText()
     })

@@ -1,5 +1,6 @@
 export enum StorageKey {
   cards = 'cards',
+  versions = 'versions',
   userState = 'userState',
   userSettings = 'userSettings',
 }

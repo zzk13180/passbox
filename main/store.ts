@@ -78,6 +78,11 @@ export class Store {
     return this.write('{}')
   }
 
+  readHistory(version: string) {
+    const versionPath = join(this.versionDirectory, `${version}.json`)
+    return readFileSync(versionPath, 'utf8')
+  }
+
   private write(data: string) {
     return this.locked ? this.addNext(data) : this.atomicWrite(data)
   }

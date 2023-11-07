@@ -107,7 +107,7 @@ export class CryptoService {
       password,
       salt,
       'sha256',
-      5000, // 600_000
+      5000, // TODO custom settings by user
     )
     return key
   }

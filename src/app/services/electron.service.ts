@@ -69,6 +69,10 @@ export class ElectronService {
     return this.ipcRenderer.invoke('cards-clear')
   }
 
+  storageGetHistoryItem(version: string): Promise<string> {
+    return this.ipcRenderer.invoke('cards-get-history', version)
+  }
+
   setAlwaysOnTop(flag: boolean) {
     this.ipcRenderer.send('set-always-on-top', flag)
   }

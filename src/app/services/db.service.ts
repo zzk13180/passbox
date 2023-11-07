@@ -45,4 +45,27 @@ export class CardsDbService {
     }
     return Promise.resolve(true)
   }
+
+  async getVersions(): Promise<string> {
+    const data = await this.electronService.storageGet(StorageKey.versions)
+    return data
+  }
+
+  async getHistoryItem(version: string): Promise<string | null> {
+    let data = null
+    try {
+      data = await this.electronService.storageGetHistoryItem(version)
+    } catch (_) {
+      return null
+    }
+    try {
+      const value = JSON.parse(data)
+      if (!value || !value.cards || !value.userState) {
+        return null
+      }
+    } catch (_) {
+      return null
+    }
+    return data
+  }
 }

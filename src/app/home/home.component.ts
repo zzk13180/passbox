@@ -32,6 +32,7 @@ import {
 import { downloadByData } from '../utils/download.util'
 import { CardAddDialog } from './components/card-add/card-add-dialog.component'
 import { CardDeletedDialog } from './components/card-deleted/card-deleted-dialog.component'
+import { CardHistoryDialog } from './components/card-history/card-history-dialog.component'
 import { ExportSelectDialog } from './components/export/export-select-dialog.component'
 import { ImportPasswordDialog } from './components/import/import-password-dialog.component'
 import { PasswordSetDialog } from './components/password-set/password-set-dialog.component'
@@ -500,6 +501,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   showHelpDialog() {
     this._dialog.open<HelpDialog>(HelpDialog, {})
+  }
+
+  showHistoryCards() {
+    this._dialog.open<CardHistoryDialog>(CardHistoryDialog, {})
   }
 
   // TODO: settings shortcut key
