@@ -1,11 +1,18 @@
-import { readFileSync, writeFileSync, renameSync, mkdirSync, existsSync } from 'node:fs'
-import { writeFile, rename } from 'node:fs/promises'
+import {
+  readFileSync,
+  writeFileSync,
+  renameSync,
+  mkdirSync,
+  existsSync,
+  unlinkSync,
+} from 'node:fs'
+import { writeFile, rename, copyFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 
-// TODO : Record the file modification history can restore the file to the previous version when an error occurs
 export class Store {
   private data: Record<string, string> = {}
   private tempPath: string
+  private versionDirectory: string
   private locked = false
   private nextPromise: Promise<void> | null = null
   private nextData: string | null = null
@@ -15,12 +22,17 @@ export class Store {
   private nextReject: (() => void) | null = null
   constructor(public path: string) {
     this.tempPath = join(dirname(path), `${basename(path)}.tmp`)
+    this.versionDirectory = join(
+      dirname(path),
+      `${basename(path)}-versions`.replace(/\./g, '-'),
+    )
     mkdirSync(dirname(this.path), { recursive: true })
+    mkdirSync(this.versionDirectory, { recursive: true })
     if (!existsSync(this.path)) {
       this.writeSync('{}')
-    } else {
-      this.data = this.readSync()
     }
+    this.data = this.readSync()
+    this.data.versions ??= ''
   }
 
   get(key: string) {
@@ -30,6 +42,26 @@ export class Store {
   set(key: string, value: string) {
     if (!(key in this.data) || this.data[key] !== value) {
       this.data[key] = value
+      const version = Store.genTimestamp()
+      const versions = this.data.versions.split(',').filter(Boolean)
+      // Maximum storage of 100 versions
+      if (versions.length > 99) {
+        const oldestVersion = versions[0]
+        this.data.versions = versions.slice(1).join(',')
+        const oldestVersionPath = join(this.versionDirectory, `${oldestVersion}.json`)
+        try {
+          unlinkSync(oldestVersionPath)
+        } catch (error) {
+          console.error(error)
+        }
+      }
+      this.data.versions += `${version},`
+      const newVersionPath = join(this.versionDirectory, `${version}.json`)
+      try {
+        copyFile(this.path, newVersionPath)
+      } catch (error) {
+        console.error(error)
+      }
       this.write(JSON.stringify(this.data))
     }
   }
@@ -52,12 +84,10 @@ export class Store {
 
   private addNext(data: string) {
     this.nextData = data
-    if (!this.nextPromise) {
-      this.nextPromise = new Promise((resolve, reject) => {
-        this.nextResolve = resolve
-        this.nextReject = reject
-      })
-    }
+    this.nextPromise ??= new Promise((resolve, reject) => {
+      this.nextResolve = resolve
+      this.nextReject = reject
+    })
     return new Promise((resolve, reject) => this.nextPromise?.then(resolve).catch(reject))
   }
 
@@ -99,5 +129,13 @@ export class Store {
       }
       throw error
     }
+  }
+
+  static genTimestamp() {
+    const now = new Date()
+    return now
+      .toLocaleString('en-GB')
+      .replace(/\/|,|:/g, '-')
+      .replace(/\s/g, '')
   }
 }

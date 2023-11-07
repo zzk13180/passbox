@@ -11,6 +11,8 @@ class Main {
       app.setPath('userData', `${appDataPath}/${app.name}-user-data`)
       app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
     }
+    // does not rely on browser storage
+    app.setPath('sessionData', app.getPath('temp'))
     if (process.platform !== 'darwin') {
       Menu.setApplicationMenu(null)
     }
