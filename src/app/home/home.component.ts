@@ -91,13 +91,44 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.store.dispatch(getCards())
     }
     this.store.select(selectIsFirstTimeLogin).subscribe(isFirstTimeLogin => {
-      // TODO ensure cards is empty
       if (isFirstTimeLogin) {
         const cards = [
           {
             title: 'Google Translate',
             url: 'https://translate.google.com/',
             description: 'Google Translate',
+            secret: '',
+            width: 850,
+            height: 650,
+          },
+          {
+            title: 'iCloud',
+            url: 'https://www.icloud.com/',
+            description: 'Apple cloud storage service',
+            secret: '',
+            width: 850,
+            height: 650,
+          },
+          {
+            title: 'Microsoft OneDrive',
+            url: 'https://onedrive.live.com/',
+            description: "Microsoft's cloud storage service",
+            secret: '',
+            width: 850,
+            height: 650,
+          },
+          {
+            title: 'Google Drive',
+            url: 'https://drive.google.com/',
+            description: 'Cloud storage service by Google',
+            secret: '',
+            width: 850,
+            height: 650,
+          },
+          {
+            title: 'Amazon S3',
+            url: 'https://aws.amazon.com/s3/',
+            description: 'Amazon Simple Storage Service',
             secret: '',
             width: 850,
             height: 650,

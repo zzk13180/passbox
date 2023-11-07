@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, renameSync, mkdirSync, existsSync } from '
 import { writeFile, rename } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 
+// TODO : Record the file modification history can restore the file to the previous version when an error occurs
 export class Store {
   private data: Record<string, string> = {}
   private tempPath: string

@@ -24,11 +24,11 @@ export class CardsDbService {
       const str = await this.cryptoService.decryptToUtf8(value)
       result = JSON.parse(str)
     } catch (_) {
-      throw new Error(DBError.errorWhileGettingData)
+      throw new Error(DBError.decryptError)
     }
     const { items, deletedItems } = result || {}
     if (![items, deletedItems].every(Array.isArray)) {
-      throw new Error(DBError.errorWhileGettingData)
+      throw new Error(DBError.dataFormatError)
     }
     return result
   }

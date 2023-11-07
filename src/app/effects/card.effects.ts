@@ -35,20 +35,28 @@ export class CardEffects {
     private actions$: Actions,
     private electronService: ElectronService,
     private store: Store<{ theCards: CardState }>,
-    private cardsDbService: CardsDbService,
+    private db: CardsDbService,
   ) {}
 
   getCardsFromDB = createEffect(() =>
     this.actions$.pipe(
       ofType(getCards),
       exhaustMap(() =>
-        from(this.cardsDbService.getItem(StorageKey.cards)).pipe(
+        from(this.db.getItem(StorageKey.cards)).pipe(
           map(theCards => initCards({ theCards })),
           catchError(error => {
             if (error?.message === DBError.noData) {
               return from([updateIsFirstTimeLogin({ isFirstTimeLogin: true })])
             }
-            console.error(error)
+            const { dialog } = window.electronAPI
+            dialog.showMessageBox(
+              {
+                type: 'error',
+                title: 'Error',
+                message: `Get Data Error. ${error.message} Please Feedback or Go back to the previous data version.`,
+              },
+              () => {},
+            )
             return EMPTY
           }),
         ),
@@ -62,10 +70,7 @@ export class CardEffects {
         ofType(add, modify, deleteCard, permanentlyDeleteCard, sort, restore),
         debounceTime(300),
         withLatestFrom(this.store.select('theCards')),
-        // TODO store theCards to cloud ? manage it like git ?
-        tap(([_action, theCards]) =>
-          this.cardsDbService.setItem(StorageKey.cards, theCards),
-        ),
+        tap(([_action, theCards]) => this.db.setItem(StorageKey.cards, theCards)),
       ),
     { dispatch: false },
   )
