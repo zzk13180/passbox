@@ -33,8 +33,12 @@ export const initCards = createAction(
   '[Card List] Init The Cards',
   props<{ theCards: CardState }>(),
 )
+export const addInitCards = createAction(
+  '[Card List] Add Init Items',
+  props<{ cards: Omit<Card, 'id'>[] }>(),
+)
 export const add = createAction(
-  '[Card List] Add Item',
+  '[Card List] Add Items',
   props<{ cards: Omit<Card, 'id'>[] }>(),
 )
 export const modify = createAction('[Card List] Modify Item', props<{ card: Card }>())
@@ -52,6 +56,7 @@ export const restore = createAction('[Card List] Restore', props<{ card: Card }>
 
 const initialSettingsState: SettingsState = {
   isFirstTimeLogin: false,
+  needRecordVersions: true,
   currentLang: I18nLanguageEnum.English,
   KeyboardShortcutsBindings: [],
 }
@@ -75,6 +80,11 @@ export const selectIsFirstTimeLogin = createSelector(
   (state: SettingsState) => state.isFirstTimeLogin,
 )
 
+export const selectNeedRecordVersions = createSelector(
+  settingsSelector,
+  (state: SettingsState) => state.needRecordVersions,
+)
+
 export const selectLanguage = createSelector(
   settingsSelector,
   (state: SettingsState) => state.currentLang,
@@ -91,6 +101,10 @@ export function cardReducer(state: CardState, action: Action) {
     on(initCards, (_state, { theCards }) => ({
       ...theCards,
       term: '', // reset search term when init
+    })),
+    on(addInitCards, (state, { cards }) => ({
+      ...state,
+      items: [...cards.map(item => ({ ...item, id: uuid() })), ...state.items],
     })),
     on(add, (state, { cards }) => ({
       ...state,

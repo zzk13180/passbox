@@ -17,6 +17,7 @@ import {
   CardsDbService,
   ElectronService,
   getCards,
+  addInitCards,
   add,
   sort,
   modify,
@@ -26,6 +27,7 @@ import {
   restore,
   initCards,
   selectCards,
+  selectNeedRecordVersions,
   updateIsFirstTimeLogin,
 } from '../services'
 
@@ -42,7 +44,7 @@ export class CardEffects {
     this.actions$.pipe(
       ofType(getCards),
       exhaustMap(() =>
-        from(this.db.getItem(StorageKey.cards)).pipe(
+        from(this.db.getCards(StorageKey.cards)).pipe(
           map(theCards => initCards({ theCards })),
           catchError(error => {
             if (error?.message === DBError.noData) {
@@ -67,10 +69,35 @@ export class CardEffects {
   storeTheCards = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(add, modify, deleteCard, permanentlyDeleteCard, sort, restore),
+        ofType(
+          addInitCards,
+          add,
+          modify,
+          deleteCard,
+          permanentlyDeleteCard,
+          sort,
+          restore,
+        ),
         debounceTime(300),
         withLatestFrom(this.store.select('theCards')),
-        tap(([_action, theCards]) => this.db.setItem(StorageKey.cards, theCards)),
+        withLatestFrom(this.store.select(selectNeedRecordVersions)),
+        tap(([[action, theCards], needRecordVersionsSettings]) => {
+          let needRecordVersions = false
+          if (
+            (action.type === add.type ||
+              action.type === modify.type ||
+              action.type === deleteCard.type ||
+              action.type === restore.type) &&
+            needRecordVersionsSettings
+          ) {
+            console.log('action', action)
+            console.log('action', needRecordVersionsSettings)
+
+            needRecordVersions = true
+          }
+          console.log('needRecordVersions', needRecordVersions)
+          this.db.setCards(StorageKey.cards, theCards, needRecordVersions)
+        }),
       ),
     { dispatch: false },
   )
@@ -81,6 +108,7 @@ export class CardEffects {
         ofType(
           initCards,
           search,
+          addInitCards,
           add,
           modify,
           deleteCard,

@@ -45,9 +45,9 @@ export class PasswordSetDialog implements AfterViewInit {
   private async changePassword() {
     let theCards: CardState
     try {
-      theCards = await this.cardsDbService.getItem(StorageKey.cards)
+      theCards = await this.cardsDbService.getCards(StorageKey.cards)
       await this.userStateService.setUserPassword(this._password)
-      this.cardsDbService.setItem(StorageKey.cards, theCards)
+      this.cardsDbService.setCards(StorageKey.cards, theCards)
     } catch (err) {
       this.dialogRef.close({
         hasError: true,

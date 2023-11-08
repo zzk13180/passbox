@@ -10,7 +10,6 @@ import { LyDialogRef } from '@alyle/ui/dialog'
 import { StorageKey } from 'src/app/enums'
 import { UserStateService, CardsDbService, ElectronService } from 'src/app/services'
 import type { NgModel } from '@angular/forms'
-import type { CardState } from 'src/app/models'
 
 @Component({
   templateUrl: './login-dialog.component.html',
@@ -83,7 +82,7 @@ export class LoginDialog implements AfterViewInit {
   private async login(): Promise<boolean> {
     await this.userStateService.setUserPassword(this._password)
     try {
-      await this.cardsDbService.getItem(StorageKey.cards)
+      await this.cardsDbService.getCards(StorageKey.cards)
     } catch (_) {
       return false
     }

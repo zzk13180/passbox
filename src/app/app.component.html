@@ -1,1 +1,11 @@
 <router-outlet></router-outlet>
+
+<ng-template
+  ly-snack-bar
+  #messages="lySnackBar"
+  [duration]="5000"
+  [horizontalPosition]="'center'"
+  let-msg="msg"
+>
+  <p class="msg">{{ msg }}</p>
+</ng-template>

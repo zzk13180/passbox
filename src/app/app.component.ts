@@ -1,5 +1,7 @@
-import { Component } from '@angular/core'
+import { Component, ViewChild, OnInit } from '@angular/core'
 import { LyClasses, StyleRenderer, ThemeVariables, WithStyles, lyl } from '@alyle/ui'
+import { LySnackBar } from '@alyle/ui/snack-bar'
+import { MessageService } from './services'
 
 const STYLES = (theme: ThemeVariables) => ({
   $global: lyl`{
@@ -21,9 +23,37 @@ const STYLES = (theme: ThemeVariables) => ({
   styleUrls: ['./app.component.scss'],
   providers: [StyleRenderer],
 })
-export class AppComponent implements WithStyles {
+export class AppComponent implements WithStyles, OnInit {
+  @ViewChild('messages') messages: LySnackBar
   readonly classes: LyClasses<typeof STYLES>
-  constructor(readonly sRenderer: StyleRenderer) {
+  private queue = []
+  private executing = false
+  constructor(
+    readonly sRenderer: StyleRenderer,
+    private messageService: MessageService,
+  ) {
     this.classes = this.sRenderer.renderSheet(STYLES, true)
+  }
+
+  ngOnInit() {
+    this.messageService.messagesObs.subscribe(message => {
+      this.queue.push(message)
+      if (!this.executing) {
+        this.executeQueue()
+      }
+    })
+  }
+
+  private async executeQueue() {
+    this.executing = true
+    while (this.queue.length) {
+      const message = this.queue.shift()
+      this.messages.open(message)
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      if (this.queue.length) {
+        this.messages.dismiss()
+      }
+    }
+    this.executing = false
   }
 }

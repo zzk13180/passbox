@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
+import { StorageKey } from 'src/app/enums'
 import type { Card } from '../models'
-import type { StorageKey } from 'src/app/enums'
 
 type AppInfo = {
   name: string
@@ -57,8 +57,12 @@ export class ElectronService {
     this.ipcRenderer.send('change-tray', cards)
   }
 
-  storageSave(key: StorageKey, value: string): Promise<void> {
-    return this.ipcRenderer.invoke('cards-save', key, value)
+  storageSave(
+    key: StorageKey,
+    value: string,
+    needRecordVersions: boolean = false,
+  ): Promise<void> {
+    return this.ipcRenderer.invoke('cards-save', key, value, needRecordVersions)
   }
 
   storageGet(key: StorageKey): Promise<string> {

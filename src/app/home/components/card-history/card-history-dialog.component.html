@@ -1,10 +1,11 @@
-<ly-accordion [withClass]="classes.expansion" [hasToggle]="false">
+<ly-accordion [withClass]="classes.expansion" [hasToggle]="false" *ngIf="versions">
   <ly-expansion-panel
     *ngFor="let panel of versions; index as i"
     [expanded]="panel.state"
     (opened)="panel.state = true"
     (closed)="panel.state = false"
     (afterExpand)="getContent(panel.version, i)"
+    (contextmenu)="panelViewMenu(panel)"
   >
     <ly-expansion-panel-header>
       <ly-panel-title> {{ panel.title }}</ly-panel-title>
@@ -22,7 +23,7 @@
     >
       <ng-container *ngFor="let column of columns" [lyColumnDef]="column.columnDef">
         <th ly-header-cell *lyHeaderCellDef> {{ column.header }} </th>
-        <td ly-cell *lyCellDef="let row">
+        <td ly-cell *lyCellDef="let row" (contextmenu)="viewMenu(panel, row)">
           {{ column.cell(row) }}
         </td>
       </ng-container>
@@ -34,6 +35,6 @@
     </ng-template>
   </ly-expansion-panel>
 </ly-accordion>
-<div *ngIf="!versions.length">
+<div *ngIf="versions && !versions.length">
   <h4 ly-dialog-title>No Data</h4>
 </div>

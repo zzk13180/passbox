@@ -3,19 +3,18 @@ import {
   OnInit,
   ChangeDetectorRef,
   ChangeDetectionStrategy,
-  ViewChild,
   HostListener,
   NgZone,
   OnDestroy,
 } from '@angular/core'
 import { StyleRenderer, LyTheme2, LyClasses } from '@alyle/ui'
 import { LyDialog } from '@alyle/ui/dialog'
-import { LySnackBar } from '@alyle/ui/snack-bar'
 import { Observable, filter, take, Subscription, firstValueFrom } from 'rxjs'
 import { Store } from '@ngrx/store'
 import { StorageKey } from 'src/app/enums'
 import {
   ElectronService,
+  addInitCards,
   add,
   sort,
   modify,
@@ -28,6 +27,7 @@ import {
   UserStateService,
   updateIsFirstTimeLogin,
   CryptoService,
+  MessageService,
 } from '../services'
 import { downloadByData } from '../utils/download.util'
 import { CardAddDialog } from './components/card-add/card-add-dialog.component'
@@ -57,7 +57,6 @@ import type { CdkDragMove } from '@angular/cdk/drag-drop'
   providers: [StyleRenderer, CardsImportService],
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  @ViewChild('messages') messages: LySnackBar
   classes: LyClasses<typeof STYLES>
   cards$: Observable<Array<Card>>
   deletedCards$: Observable<Array<Card>>
@@ -78,6 +77,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private stepService: StepsGuideService,
     private cardsImportService: CardsImportService,
     private cryptoService: CryptoService,
+    private messages: MessageService,
   ) {}
 
   async ngOnInit() {
@@ -136,7 +136,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           },
         ]
         this.showTutorialDialog(true)
-        this.store.dispatch(add({ cards }))
+        this.store.dispatch(addInitCards({ cards }))
         this.store.dispatch(updateIsFirstTimeLogin({ isFirstTimeLogin: false }))
       }
     })
@@ -192,7 +192,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       containerClass: this.classes.dialog,
       disableClose: true,
     })
-    dialogRef.afterClosed.subscribe((data?: { hasError: boolean; message: Error }) => {
+    dialogRef.afterClosed.subscribe((data?: { hasError: boolean; message: string }) => {
       if (!data) {
         return
       }
@@ -432,21 +432,27 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private dispatchAddCards(importedCards: Card[]): void {
-    this.cards$.pipe(take(1)).subscribe(cards => {
-      const cardsToImport = importedCards.filter(
-        card =>
-          ['title', 'description', 'secret', 'url'].some(key => card[key]) &&
-          !cards.some(
-            item =>
-              item.id === card.id ||
-              (item.url === card.url &&
-                item.title === card.title &&
-                item.secret === card.secret &&
-                item.description === card.description),
-          ),
-      )
-      this.store.dispatch(add({ cards: cardsToImport }))
-      this.messages.open({ msg: 'import success' })
+    this.cards$.pipe(take(1)).subscribe(existsCards => {
+      const keys = ['title', 'description', 'secret', 'url']
+      const cardsToImport = importedCards
+        .map((card: Card) => {
+          const tmp = { ...card }
+          keys.forEach(key => (tmp[key] = tmp[key] ?? ''))
+          return tmp
+        })
+        .filter(
+          (card: Card) =>
+            !existsCards.some(
+              (item: Card) =>
+                item.id === card.id || keys.every(key => item[key] === card[key]),
+            ),
+        )
+      if (!cardsToImport.length) {
+        this.messages.open({ msg: 'No data need to be imported' })
+      } else {
+        this.store.dispatch(add({ cards: cardsToImport }))
+        this.messages.open({ msg: `import ${cardsToImport.length} cards success` })
+      }
       this._cd.detectChanges()
     })
   }

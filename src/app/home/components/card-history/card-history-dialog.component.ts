@@ -5,17 +5,27 @@ import {
   Component,
   ChangeDetectionStrategy,
   OnInit,
+  NgZone,
   ChangeDetectorRef,
 } from '@angular/core'
 import { LyTheme2, LyClasses } from '@alyle/ui'
 import { LyDialog } from '@alyle/ui/dialog'
 import { filter, take } from 'rxjs'
-import { CardsDbService, CryptoService } from 'src/app/services'
+import { Store } from '@ngrx/store'
+import {
+  add,
+  CardsDbService,
+  CryptoService,
+  selectCards,
+  MessageService,
+} from 'src/app/services'
 import { fromB64ToStr } from 'src/app/utils/crypto.util'
 import { ImportPasswordDialog } from '../import/import-password-dialog.component'
 import { STYLES } from './STYLES.data'
 import type { UserState } from 'src/app/services'
 import type { CipherString, Card } from 'src/app/models'
+
+type Version = { version: string; state: boolean; title: string; content: string }
 
 @Component({
   selector: 'aui-custom-expansion-panel',
@@ -25,7 +35,7 @@ import type { CipherString, Card } from 'src/app/models'
 export class CardHistoryDialog implements OnInit {
   readonly classes: LyClasses<typeof STYLES>
   isArray = Array.isArray
-  versions: { version: string; state: boolean; title: string; content: string }[] = []
+  versions: Version[]
   columns = [
     {
       columnDef: 'title',
@@ -53,6 +63,9 @@ export class CardHistoryDialog implements OnInit {
     private db: CardsDbService,
     private cd: ChangeDetectorRef,
     private crypto: CryptoService,
+    private ngZone: NgZone,
+    private store: Store,
+    private messages: MessageService,
   ) {
     this.classes = this._theme.addStyleSheet(STYLES)
   }
@@ -68,16 +81,47 @@ export class CardHistoryDialog implements OnInit {
         title: this.parseVersion(version),
         content: '',
       }))
-      .reverse()
-    // remove the last two versions because they are initial data has no content
-    this.versions.pop()
-    this.versions.pop()
     this.cd.markForCheck()
   }
 
-  private parseVersion(version: string) {
-    const [year, month, day, hour, minute, second] = version.split('-')
-    return `${year}/${month}/${day} ${hour}:${minute}:${second}`
+  viewMenu(version: Version, card: Card) {
+    const menus = [
+      {
+        label: 'restore',
+        cb: () => {
+          this.restore([card])
+        },
+      },
+      {
+        label: 'restore all',
+        cb: () => {
+          // @ts-ignore
+          this.restore(version.content)
+        },
+      },
+    ]
+    const { menu } = window.electronAPI
+    menu.popupMenu(menus)
+  }
+
+  panelViewMenu(version: Version) {
+    const menus = [
+      {
+        label: 'view',
+        cb: () => {
+          version.state = true
+          this.cd.detectChanges()
+        },
+      },
+      {
+        label: 'delete',
+        cb: () => {
+          this.delVersion(version)
+        },
+      },
+    ]
+    const { menu } = window.electronAPI
+    menu.popupMenu(menus)
   }
 
   async getContent(version: string, index: number) {
@@ -135,11 +179,86 @@ export class CardHistoryDialog implements OnInit {
       userState,
       userPassword,
     )
+    // Do I need to show deleted cards? Do i need hide repeated cards?
     this.versions[index].content = JSON.parse(decryptStr).items.map((item: Card) => ({
       title: item.title,
       description: item.description,
       url: item.url,
     }))
     this.cd.markForCheck()
+  }
+
+  private parseVersion(version: string) {
+    const [year, month, day, hour, minute, second] = version.split('-')
+    return `${year}/${month}/${day} ${hour}:${minute}:${second}`
+  }
+
+  private restore(cards: Card[]) {
+    if (Array.isArray(cards) && !cards.length) {
+      this.openMessage('Data is Empty Or Not Available')
+      return
+    }
+    this.store
+      .select(selectCards)
+      .pipe(take(1))
+      .subscribe(existsCards => {
+        const keys = ['title', 'description', 'secret', 'url']
+        const addCards = cards
+          .map((card: Card) => {
+            const tmp = { ...card }
+            keys.forEach(key => (tmp[key] = tmp[key] ?? ''))
+            return tmp
+          })
+          .filter(
+            (card: Card) =>
+              !existsCards.some(
+                (item: Card) =>
+                  item.id === card.id || keys.every(key => item[key] === card[key]),
+              ),
+          )
+        if (!addCards.length) {
+          this.openMessage('No data need to be restored')
+        } else {
+          this.store.dispatch(add({ cards: addCards }))
+          this.openMessage(`Restore ${addCards.length} cards successfully`)
+        }
+      })
+  }
+
+  private delVersion(version: Version) {
+    const { dialog } = window.electronAPI
+    dialog.showMessageBox(
+      {
+        type: 'question',
+        message: 'Delete history version',
+        detail: 'Are you sure to delete this history version?',
+        buttons: ['Cancel', 'Yes'],
+        defaultId: 1,
+        cancelId: 0,
+        noLink: true,
+      },
+      result => {
+        result.response === 1 &&
+          this.ngZone.run(async () => {
+            this.versions = this.versions.filter(item => item.version !== version.version)
+            try {
+              const str = this.versions.map(item => item.version).join(',')
+              await this.db.setVersions(str)
+            } catch (error) {
+              this.openMessage('Delete failed')
+            }
+            this.openMessage(`Delete ${version.title} successfully`)
+            this.cd.markForCheck()
+          })
+      },
+    )
+  }
+
+  private openMessage(msg: string) {
+    this.ngZone.run(() => {
+      this.messages.open({
+        msg,
+      })
+    })
   }
 }

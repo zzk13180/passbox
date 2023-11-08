@@ -310,9 +310,12 @@ export class MainWindow {
       return this.cardStorage.get(key)
     })
 
-    ipcMain.handle('cards-save', (_, key: string, value: string) => {
-      this.cardStorage.set(key, value)
-    })
+    ipcMain.handle(
+      'cards-save',
+      (_, key: string, value: string, needRecordVersions: boolean = false) => {
+        this.cardStorage.set(key, value, needRecordVersions)
+      },
+    )
 
     ipcMain.handle('cards-clear', _ => {
       this.cardStorage.clear()

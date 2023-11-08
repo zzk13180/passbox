@@ -84,7 +84,15 @@ export class CardDeletedDialog {
     menu.popupMenu(menus)
   }
 
-  del(card: Card) {
+  private restoreCard(card: Card) {
+    this.ngZone.run(() => {
+      this.store.dispatch(restore({ card }))
+      this.cards = this.cards.filter(c => c.id !== card.id)
+      this._cd.detectChanges()
+    })
+  }
+
+  private del(card: Card) {
     const { dialog } = window.electronAPI
     dialog.showMessageBox(
       {
@@ -105,13 +113,5 @@ export class CardDeletedDialog {
           })
       },
     )
-  }
-
-  restoreCard(card: Card) {
-    this.ngZone.run(() => {
-      this.store.dispatch(restore({ card }))
-      this.cards = this.cards.filter(c => c.id !== card.id)
-      this._cd.detectChanges()
-    })
   }
 }

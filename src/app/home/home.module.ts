@@ -21,7 +21,6 @@ import { LyDialogModule } from '@alyle/ui/dialog'
 import { LyGridModule } from '@alyle/ui/grid'
 import { LyFieldModule } from '@alyle/ui/field'
 import { LyToolbarModule } from '@alyle/ui/toolbar'
-import { LySnackBarModule } from '@alyle/ui/snack-bar'
 import { LyMenuModule } from '@alyle/ui/menu'
 import { LyDividerModule } from '@alyle/ui/divider'
 import { LyListModule } from '@alyle/ui/list'
@@ -88,7 +87,6 @@ class GlobalVariables implements PartialThemeVariables {
     LyTypographyModule,
     LyFieldModule,
     LySelectModule,
-    LySnackBarModule,
     LyToolbarModule,
     LyMenuModule,
     LyDividerModule,

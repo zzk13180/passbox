@@ -39,9 +39,13 @@ export class Store {
     return this.data[key]
   }
 
-  set(key: string, value: string) {
+  set(key: string, value: string, needRecordVersions: boolean = false) {
     if (!(key in this.data) || this.data[key] !== value) {
       this.data[key] = value
+      if (!needRecordVersions) {
+        this.write(JSON.stringify(this.data))
+        return
+      }
       const version = Store.genTimestamp()
       const versions = this.data.versions.split(',').filter(Boolean)
       // Maximum storage of 100 versions
@@ -55,7 +59,7 @@ export class Store {
           console.error(error)
         }
       }
-      this.data.versions += `${version},`
+      this.data.versions = `${version},${this.data.versions}`
       const newVersionPath = join(this.versionDirectory, `${version}.json`)
       try {
         copyFile(this.path, newVersionPath)
