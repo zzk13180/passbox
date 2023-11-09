@@ -6,7 +6,8 @@ export interface KeyboardShortcutsBindingItem {
 }
 
 export interface SettingsState {
-  isFirstTimeLogin: boolean // keep the initial value as false
+  // keep the initial value as false
+  isFirstTimeLogin: boolean
   needRecordVersions: boolean
   currentLang: I18nLanguageEnum
   KeyboardShortcutsBindings: KeyboardShortcutsBindingItem[]

@@ -4,6 +4,7 @@ class EventRegistry {
   #eventMap = new Map()
 
   registry(handler) {
+    // https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID
     const uuid = crypto.randomUUID()
     this.#eventMap.set(uuid, handler)
     return uuid
@@ -52,9 +53,6 @@ const globals = {
   crypto: {
     pbkdf2Sync(...args) {
       return ipcRenderer.invoke('crypto-pbkdf2-sync', ...args)
-    },
-    randomBytes(...args) {
-      return ipcRenderer.invoke('crypto-random-bytes', ...args)
     },
     createDecipheriv(...args) {
       return ipcRenderer.invoke('crypto-create-decipheriv', ...args)

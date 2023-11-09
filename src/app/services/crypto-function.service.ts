@@ -93,11 +93,6 @@ export class CryptoFunctionService {
     return this.toArrayBuffer(decBuf)
   }
 
-  async randomBytes(length: number): Promise<ArrayBuffer> {
-    const bytes = await this.crypto.randomBytes(length)
-    return this.toArrayBuffer(bytes)
-  }
-
   private toNodeValue(value: string | ArrayBuffer): string | Uint8Array {
     let nodeValue: string | Uint8Array
     if (typeof value === 'string') {

@@ -1,5 +1,5 @@
 import path from 'node:path'
-import cypto from 'node:crypto'
+import crypto from 'node:crypto'
 import { parse, URL } from 'node:url'
 import { readFileSync, unlinkSync, existsSync, mkdirSync } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
@@ -333,17 +333,13 @@ export class MainWindow {
       clipboard.writeText(text)
     })
 
-    ipcMain.handle('cypto-random-bytes', (_, length: number): Buffer => {
-      return cypto.randomBytes(length)
-    })
-
     ipcMain.handle(
       'crypto-pbkdf2-sync',
       // eslint-disable-next-line max-params
       (_, password, salt, iterations, keylen, digest): Buffer => {
         const nodePassword = Buffer.from(password)
         const nodeSalt = Buffer.from(salt)
-        return cypto.pbkdf2Sync(nodePassword, nodeSalt, iterations, keylen, digest)
+        return crypto.pbkdf2Sync(nodePassword, nodeSalt, iterations, keylen, digest)
       },
     )
 
@@ -354,7 +350,7 @@ export class MainWindow {
         const nodeKey = Buffer.from(key)
         const nodeIv = Buffer.from(iv)
         const nodeData = Buffer.from(data)
-        const decipher = cypto.createDecipheriv(algorithm, nodeKey, nodeIv)
+        const decipher = crypto.createDecipheriv(algorithm, nodeKey, nodeIv)
         const decBuf = Buffer.concat([decipher.update(nodeData), decipher.final()])
         return decBuf
       },
@@ -365,13 +361,9 @@ export class MainWindow {
       const nodeKey = Buffer.from(key)
       const nodeIv = Buffer.from(iv)
       const nodeData = Buffer.from(data)
-      const cipher = cypto.createCipheriv(algorithm, nodeKey, nodeIv)
+      const cipher = crypto.createCipheriv(algorithm, nodeKey, nodeIv)
       const encBuf = Buffer.concat([cipher.update(nodeData), cipher.final()])
       return encBuf
-    })
-
-    ipcMain.handle('crypto-random-bytes', (_, length: number): Buffer => {
-      return cypto.randomBytes(length)
     })
 
     ipcMain.on('popup-menu', (event, menus: { label: string; eventId: string }[]) => {

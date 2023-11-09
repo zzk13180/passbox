@@ -1,14 +1,8 @@
 import { Injectable } from '@angular/core'
 import { StorageKey } from 'src/app/enums'
-import { fromStrToB64, fromB64ToStr } from '../utils/crypto.util'
+import { fromStrToB64, fromB64ToStr, randomBytes } from '../utils/crypto.util'
 import { ElectronService } from './electron.service'
-import { CryptoFunctionService } from './crypto-function.service'
-
-export interface UserState {
-  isRequiredLogin: boolean
-  password: string
-  salt: string
-}
+import type { UserState } from '../models'
 
 @Injectable({
   providedIn: 'root',
@@ -16,10 +10,8 @@ export interface UserState {
 export class UserStateService {
   private userState: UserState
   private userPassword: string
-  constructor(
-    private cryptoFunctionService: CryptoFunctionService,
-    private electronService: ElectronService,
-  ) {}
+  private isInitUserState: boolean = false
+  constructor(private electronService: ElectronService) {}
 
   async getUserState(): Promise<UserState> {
     const str: string = await this.electronService.storageGet(StorageKey.userState)
@@ -27,29 +19,16 @@ export class UserStateService {
     try {
       userState = JSON.parse(fromB64ToStr(str))
     } catch (_) {
-      userState = await this.initUserState()
+      userState = this.initUserState()
     }
     if (!userState || !userState.password || !userState.salt) {
-      userState = await this.initUserState()
+      userState = this.initUserState()
     }
-    await this.setUserState(userState)
+    if (this.isInitUserState) {
+      await this.setUserState(userState)
+      this.isInitUserState = false
+    }
     return this.userState
-  }
-
-  private async initUserState(): Promise<UserState> {
-    const { password, salt } = await this.generatePassworAndSalt()
-    return {
-      isRequiredLogin: false,
-      password,
-      salt,
-    }
-  }
-
-  private async setUserState(userState: UserState): Promise<void> {
-    const str = JSON.stringify(userState)
-    const base64 = fromStrToB64(str)
-    await this.electronService.storageSave(StorageKey.userState, base64)
-    this.userState = userState
   }
 
   getUserPassword(): string {
@@ -64,10 +43,43 @@ export class UserStateService {
     this.userPassword = userPassword
   }
 
-  private async generatePassworAndSalt(): Promise<Omit<UserState, 'isRequiredLogin'>> {
-    const bytes = await this.cryptoFunctionService.randomBytes(87)
+  setPasswordEncryptionStrength(passwordEncryptionStrength: number) {
+    if (passwordEncryptionStrength < 5000) {
+      passwordEncryptionStrength = 5000
+    }
+    this.userState = {
+      ...this.userState,
+      passwordEncryptionStrength,
+    }
+    this.setUserState(this.userState)
+    // TODO re-encrypt all data
+  }
+
+  private async setUserState(userState: UserState): Promise<void> {
+    const str = JSON.stringify(userState)
+    const base64 = fromStrToB64(str)
+    await this.electronService.storageSave(StorageKey.userState, base64)
+    this.userState = userState
+  }
+
+  private initUserState(): UserState {
+    this.isInitUserState = true
+    const { password, salt } = this.generatePassworAndSalt()
+    return {
+      passwordEncryptionStrength: 5000,
+      isRequiredLogin: false,
+      password,
+      salt,
+    }
+  }
+
+  private generatePassworAndSalt(): {
+    password: string
+    salt: string
+  } {
     let password = ''
     let salt = ''
+    const bytes = randomBytes(87)
     const arr = new Uint8Array(bytes)
     for (let i = 0; i < arr.byteLength; i++) {
       if (i < 64) {

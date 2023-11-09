@@ -23,3 +23,10 @@ export const areArrayBuffersEqual = (a: ArrayBuffer, b: ArrayBuffer) => {
   }
   return true
 }
+
+export const randomBytes = (length: number): Uint8Array => {
+  const bytes = new Uint8Array(length)
+  // https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
+  crypto.getRandomValues(bytes)
+  return bytes
+}

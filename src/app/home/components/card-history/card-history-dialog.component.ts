@@ -22,8 +22,7 @@ import {
 import { fromB64ToStr } from 'src/app/utils/crypto.util'
 import { ImportPasswordDialog } from '../import/import-password-dialog.component'
 import { STYLES } from './STYLES.data'
-import type { UserState } from 'src/app/services'
-import type { CipherString, Card } from 'src/app/models'
+import type { CipherString, Card, UserState } from 'src/app/models'
 
 type Version = { version: string; state: boolean; title: string; content: string }
 

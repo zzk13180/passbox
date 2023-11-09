@@ -18,7 +18,6 @@ declare global {
           keylen: number,
           digest: string,
         ) => Promise<any>
-        randomBytes: (size: number) => Promise<any>
         createCipheriv: (algorithm: string, key: any, iv: any, data: any) => Promise<any>
         createDecipheriv: (
           algorithm: string,

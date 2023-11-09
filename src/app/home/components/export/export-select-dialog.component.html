@@ -42,8 +42,10 @@ select export type dialog 😄
       bg="primary"
       raised
       type="submit"
-      [disabled]="!exportForm.valid"
-      (click)="exportForm.valid && submit()"
+      [disabled]="!exportForm.valid && exportForm.get('option').value === 'encrypted'"
+      (click)="
+        (exportForm.valid || exportForm.get('option').value !== 'encrypted') && submit()
+      "
     >
       submit
     </button>

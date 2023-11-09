@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core'
 import { Subject } from 'rxjs'
 import { StorageKey } from 'src/app/enums'
-import { ElectronService, CryptoService, UserState } from '../services'
+import { ElectronService, CryptoService } from '../services'
 import { fromB64ToStr } from '../utils/crypto.util'
 import { html2cards } from './home.util'
-import type { Card, CipherString } from '../models'
+import type { Card, CipherString, UserState } from '../models'
 
 type DATA = {
   cards: CipherString
