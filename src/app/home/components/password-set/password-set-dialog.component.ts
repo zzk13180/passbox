@@ -5,10 +5,8 @@ import {
   AfterViewInit,
 } from '@angular/core'
 import { LyDialogRef } from '@alyle/ui/dialog'
-import { StorageKey } from 'src/app/enums'
-import { UserStateService, CardsDbService } from 'src/app/services'
+import { ReEncryptOnParameterChangeService } from 'src/app/services'
 import type { NgModel } from '@angular/forms'
-import type { CardState } from 'src/app/models'
 
 @Component({
   templateUrl: './password-set-dialog.component.html',
@@ -21,8 +19,7 @@ export class PasswordSetDialog implements AfterViewInit {
 
   constructor(
     public dialogRef: LyDialogRef,
-    private userStateService: UserStateService,
-    private cardsDbService: CardsDbService,
+    private reEncryptOnParameterChangeService: ReEncryptOnParameterChangeService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -43,11 +40,8 @@ export class PasswordSetDialog implements AfterViewInit {
   }
 
   private async changePassword() {
-    let theCards: CardState
     try {
-      theCards = await this.cardsDbService.getCards(StorageKey.cards)
-      await this.userStateService.setUserPassword(this._password)
-      this.cardsDbService.setCards(StorageKey.cards, theCards)
+      await this.reEncryptOnParameterChangeService.changeUserPassword(this._password)
     } catch (err) {
       this.dialogRef.close({
         hasError: true,

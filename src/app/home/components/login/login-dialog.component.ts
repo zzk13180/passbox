@@ -6,9 +6,9 @@ import {
   ViewChild,
   AfterViewInit,
 } from '@angular/core'
+import { Store } from '@ngrx/store'
 import { LyDialogRef } from '@alyle/ui/dialog'
-import { StorageKey } from 'src/app/enums'
-import { UserStateService, CardsDbService, ElectronService } from 'src/app/services'
+import { ReEncryptOnParameterChangeService, resetCards } from 'src/app/services'
 import type { NgModel } from '@angular/forms'
 
 @Component({
@@ -22,11 +22,10 @@ export class LoginDialog implements AfterViewInit {
   // eslint-disable-next-line max-params
   constructor(
     public dialogRef: LyDialogRef,
-    private userStateService: UserStateService,
-    private cardsDbService: CardsDbService,
+    private reEncryptOnParameterChangeService: ReEncryptOnParameterChangeService,
     private ngZone: NgZone,
+    private store: Store,
     private _cd: ChangeDetectorRef,
-    private electronService: ElectronService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -54,8 +53,8 @@ export class LoginDialog implements AfterViewInit {
       },
       result => {
         if (result.response === 1) {
-          this.ngZone.run(async () => {
-            await this.electronService.storageClear()
+          this.ngZone.run(() => {
+            this.store.dispatch(resetCards())
             this.dialogRef.close()
             this._cd.detectChanges()
           })
@@ -80,9 +79,8 @@ export class LoginDialog implements AfterViewInit {
   }
 
   private async login(): Promise<boolean> {
-    await this.userStateService.setUserPassword(this._password)
     try {
-      await this.cardsDbService.getCards(StorageKey.cards)
+      await this.reEncryptOnParameterChangeService.changeUserPassword(this._password)
     } catch (_) {
       return false
     }

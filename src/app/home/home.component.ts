@@ -390,18 +390,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private async exportDataEncrypted(password: string) {
-    if (!password) {
-      this.messages.open({ msg: 'Please set a password first' })
-      return
-    }
     const userPassword = this.userStateService.getUserPassword()
-    const userStateStr: string = await this.electronService.storageGet(
+    const userStateStr: string = await this.electronService.cardsStorageGet(
       StorageKey.userState,
     )
     let cards: string
     try {
       if (userPassword === password) {
-        cards = await this.electronService.storageGet(StorageKey.cards) // theCards
+        cards = await this.electronService.cardsStorageGet(StorageKey.cards)
       } else {
         cards = JSON.stringify(
           await this.cryptoService.encryptWithExternalUserPassword(

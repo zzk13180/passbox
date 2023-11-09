@@ -10,5 +10,5 @@ export enum DBError {
   decryptError = 'Error while decrypting data.',
   dataFormatError = 'Data format error.',
   errorWhileSettingData = 'Error while setting data to db.',
-  keyOrValueIsNotDefined = 'Key or value is not defined.',
+  EmptyValue = 'Data cannot be empty',
 }

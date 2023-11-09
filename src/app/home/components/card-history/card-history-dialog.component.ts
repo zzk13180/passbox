@@ -14,11 +14,12 @@ import { filter, take } from 'rxjs'
 import { Store } from '@ngrx/store'
 import {
   add,
-  CardsDbService,
+  ElectronService,
   CryptoService,
   selectCards,
   MessageService,
 } from 'src/app/services'
+import { StorageKey } from 'src/app/enums'
 import { fromB64ToStr } from 'src/app/utils/crypto.util'
 import { ImportPasswordDialog } from '../import/import-password-dialog.component'
 import { STYLES } from './STYLES.data'
@@ -59,7 +60,7 @@ export class CardHistoryDialog implements OnInit {
   constructor(
     private _theme: LyTheme2,
     private _dialog: LyDialog,
-    private db: CardsDbService,
+    private electronService: ElectronService,
     private cd: ChangeDetectorRef,
     private crypto: CryptoService,
     private ngZone: NgZone,
@@ -70,7 +71,7 @@ export class CardHistoryDialog implements OnInit {
   }
 
   async ngOnInit() {
-    const vserionsStr = await this.db.getVersions()
+    const vserionsStr = await this.electronService.cardsStorageGet(StorageKey.versions)
     this.versions = vserionsStr
       .split(',')
       .filter(Boolean)
@@ -127,7 +128,7 @@ export class CardHistoryDialog implements OnInit {
     if (this.versions[index].content) {
       return
     }
-    const str = await this.db.getHistoryItem(version)
+    const str = await this.getHistoryItem(version)
     if (!str) {
       this.versions[index].content = 'Data is Empty Or Not Available'
       this.cd.markForCheck()
@@ -241,8 +242,8 @@ export class CardHistoryDialog implements OnInit {
           this.ngZone.run(async () => {
             this.versions = this.versions.filter(item => item.version !== version.version)
             try {
-              const str = this.versions.map(item => item.version).join(',')
-              await this.db.setVersions(str)
+              const value = this.versions.map(item => item.version).join(',')
+              await this.electronService.cardsStorageSave(StorageKey.versions, value)
             } catch (error) {
               this.openMessage('Delete failed')
             }
@@ -251,6 +252,24 @@ export class CardHistoryDialog implements OnInit {
           })
       },
     )
+  }
+
+  private async getHistoryItem(version: string): Promise<string | null> {
+    let data = null
+    try {
+      data = await this.electronService.cardsStorageGetHistoryItem(version)
+    } catch (_) {
+      return null
+    }
+    try {
+      const value = JSON.parse(data)
+      if (!value || !value.cards || !value.userState) {
+        return null
+      }
+    } catch (_) {
+      return null
+    }
+    return data
   }
 
   private openMessage(msg: string) {

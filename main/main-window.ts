@@ -317,10 +317,6 @@ export class MainWindow {
       },
     )
 
-    ipcMain.handle('cards-clear', _ => {
-      this.cardStorage.clear()
-    })
-
     ipcMain.handle('cards-get-history', (_, version: string) => {
       return this.cardStorage.readHistory(version)
     })

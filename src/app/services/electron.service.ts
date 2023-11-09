@@ -57,7 +57,7 @@ export class ElectronService {
     this.ipcRenderer.send('change-tray', cards)
   }
 
-  storageSave(
+  cardsStorageSave(
     key: StorageKey,
     value: string,
     needRecordVersions: boolean = false,
@@ -65,15 +65,11 @@ export class ElectronService {
     return this.ipcRenderer.invoke('cards-save', key, value, needRecordVersions)
   }
 
-  storageGet(key: StorageKey): Promise<string> {
+  cardsStorageGet(key: StorageKey): Promise<string> {
     return this.ipcRenderer.invoke('cards-get', key)
   }
 
-  storageClear(): Promise<void> {
-    return this.ipcRenderer.invoke('cards-clear')
-  }
-
-  storageGetHistoryItem(version: string): Promise<string> {
+  cardsStorageGetHistoryItem(version: string): Promise<string> {
     return this.ipcRenderer.invoke('cards-get-history', version)
   }
 

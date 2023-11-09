@@ -11,12 +11,13 @@ import {
   EMPTY,
 } from 'rxjs'
 import { Store } from '@ngrx/store'
-import { StorageKey, DBError } from 'src/app/enums'
+import { DBError } from 'src/app/enums'
 import { CardState } from '../models'
 import {
   CardsDbService,
   ElectronService,
   getCards,
+  resetCards,
   addInitCards,
   add,
   sort,
@@ -44,7 +45,7 @@ export class CardEffects {
     this.actions$.pipe(
       ofType(getCards),
       exhaustMap(() =>
-        from(this.db.getCards(StorageKey.cards)).pipe(
+        from(this.db.getCards()).pipe(
           map(theCards => initCards({ theCards })),
           catchError(error => {
             if (error?.message === DBError.noData) {
@@ -64,6 +65,18 @@ export class CardEffects {
         ),
       ),
     ),
+  )
+
+  resetTheCards = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(resetCards),
+        tap(() => {
+          const theCards: CardState = { term: '', items: [], deletedItems: [] }
+          this.db.setCards(theCards, true)
+        }),
+      ),
+    { dispatch: false },
   )
 
   storeTheCards = createEffect(
@@ -90,13 +103,9 @@ export class CardEffects {
               action.type === restore.type) &&
             needRecordVersionsSettings
           ) {
-            console.log('action', action)
-            console.log('action', needRecordVersionsSettings)
-
             needRecordVersions = true
           }
-          console.log('needRecordVersions', needRecordVersions)
-          this.db.setCards(StorageKey.cards, theCards, needRecordVersions)
+          this.db.setCards(theCards, needRecordVersions)
         }),
       ),
     { dispatch: false },

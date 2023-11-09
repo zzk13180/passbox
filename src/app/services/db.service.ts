@@ -13,8 +13,8 @@ export class CardsDbService {
     private electronService: ElectronService,
   ) {}
 
-  async getCards(key: StorageKey.cards): Promise<CardState> {
-    const data = await this.electronService.storageGet(key)
+  async getCards(): Promise<CardState> {
+    const data = await this.electronService.cardsStorageGet(StorageKey.cards)
     if (!data) {
       throw new Error(DBError.noData)
     }
@@ -34,17 +34,16 @@ export class CardsDbService {
   }
 
   async setCards(
-    key: StorageKey.cards,
     value: CardState,
     needRecordVersions: boolean = false,
   ): Promise<boolean> {
-    if (!key || !value) {
-      throw new Error(DBError.keyOrValueIsNotDefined)
+    if (!value) {
+      throw new Error(DBError.EmptyValue)
     }
     try {
       const encryptValue = await this.cryptoService.encrypt(JSON.stringify(value))
-      await this.electronService.storageSave(
-        key,
+      await this.electronService.cardsStorageSave(
+        StorageKey.cards,
         JSON.stringify(encryptValue),
         needRecordVersions,
       )
@@ -52,36 +51,5 @@ export class CardsDbService {
       throw new Error(DBError.errorWhileSettingData)
     }
     return Promise.resolve(true)
-  }
-
-  async getVersions(): Promise<string> {
-    const data = await this.electronService.storageGet(StorageKey.versions)
-    return data
-  }
-
-  async setVersions(value: string): Promise<boolean> {
-    if (!value) {
-      throw new Error(DBError.keyOrValueIsNotDefined)
-    }
-    await this.electronService.storageSave(StorageKey.versions, value)
-    return Promise.resolve(true)
-  }
-
-  async getHistoryItem(version: string): Promise<string | null> {
-    let data = null
-    try {
-      data = await this.electronService.storageGetHistoryItem(version)
-    } catch (_) {
-      return null
-    }
-    try {
-      const value = JSON.parse(data)
-      if (!value || !value.cards || !value.userState) {
-        return null
-      }
-    } catch (_) {
-      return null
-    }
-    return data
   }
 }

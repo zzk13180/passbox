@@ -2,13 +2,13 @@ import { Injectable, Inject } from '@angular/core'
 import { createEffect, Actions, ofType } from '@ngrx/effects'
 import { tap, withLatestFrom, debounceTime } from 'rxjs'
 import { Store } from '@ngrx/store'
-import { StorageKey, I18nLanguageEnum } from 'src/app/enums'
+import { StorageKey } from 'src/app/enums'
 import {
   LocalStorage,
   updateLanguage,
   getSettings,
-  initSettings,
-  resetSettings,
+  // initSettings,
+  // resetSettings,
 } from 'src/app/services'
 import type { SettingsState } from '../models'
 

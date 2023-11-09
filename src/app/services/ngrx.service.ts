@@ -29,6 +29,7 @@ export const updateLanguage = createAction(
 )
 
 export const getCards = createAction('[Card List] Get The Cards From DB')
+export const resetCards = createAction('[Card List] Reset The Cards')
 export const initCards = createAction(
   '[Card List] Init The Cards',
   props<{ theCards: CardState }>(),
