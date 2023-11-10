@@ -30,15 +30,18 @@ import {
   selectCards,
   selectNeedRecordVersions,
   updateIsFirstTimeLogin,
+  ReEncryptOnParameterChangeService,
 } from '../services'
 
 @Injectable()
 export class CardEffects {
+  // eslint-disable-next-line max-params
   constructor(
     private actions$: Actions,
     private electronService: ElectronService,
     private store: Store<{ theCards: CardState }>,
     private db: CardsDbService,
+    private reEncryptOnParameterChangeService: ReEncryptOnParameterChangeService,
   ) {}
 
   getCardsFromDB = createEffect(() =>
@@ -72,8 +75,7 @@ export class CardEffects {
       this.actions$.pipe(
         ofType(resetCards),
         tap(() => {
-          const theCards: CardState = { term: '', items: [], deletedItems: [] }
-          this.db.setCards(theCards, true)
+          this.reEncryptOnParameterChangeService.clearCardsAndSetLoginNoRequired()
         }),
       ),
     { dispatch: false },

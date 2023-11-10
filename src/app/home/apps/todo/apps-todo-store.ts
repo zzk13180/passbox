@@ -88,6 +88,10 @@ export class TodoStore {
     this.updateStore()
   }
 
+  edit() {
+    this.updateStore()
+  }
+
   private async ensurePath(): Promise<void> {
     this.path ??= await this.getPath()
   }

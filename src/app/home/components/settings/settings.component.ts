@@ -53,9 +53,9 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
     this.swiper = new Swiper(this.swiperContainer.nativeElement, {
       modules: [EffectCube, EffectCoverflow],
       effect: 'coverflow',
-      createElements: true,
       coverflowEffect: {
         slideShadows: false,
+        stretch: -300,
       },
     })
     this.swiper.slideTo(0)

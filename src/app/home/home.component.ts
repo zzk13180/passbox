@@ -228,7 +228,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
-  // TODO: settings shortcut key
+  // TODO: user settings
   @HostListener('window:keydown.meta.d')
   @HostListener('window:keydown.control.d')
   add() {
@@ -509,7 +509,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._dialog.open<CardHistoryDialog>(CardHistoryDialog, {})
   }
 
-  // TODO: settings shortcut key
+  // TODO: user settings
   @HostListener('window:keydown.meta.g')
   @HostListener('window:keydown.control.g')
   showPasswordGeneratorDialog() {
@@ -525,6 +525,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
+  // TODO: user settings
+  @HostListener('window:keydown.meta.t')
+  @HostListener('window:keydown.control.t')
   showTutorialDialog(showGuide?: boolean) {
     const dialogRef = this._dialog.open<TutorialDialog>(TutorialDialog, {
       width: null,

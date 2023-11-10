@@ -25,7 +25,6 @@ export class Settingsffects {
       this.actions$.pipe(
         ofType(getSettings),
         tap(() => {
-          console.log('Settingsffects getSettingsFromDB')
           // try {
           //   const settings = JSON.parse(this.storage.getItem(StorageKey.userSettings))
           //   console.log('Settingsffects getSettingsFromDB settings', settings)

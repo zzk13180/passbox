@@ -10,6 +10,7 @@
       [type]="!see ? 'password' : 'text'"
       placeholder="Enter your password"
       (keydown.shift.enter)="ok()"
+      (keypress)="handleKeyPress($event)"
       #passwordModel="ngModel"
       [lyTyp]="'subheading'"
     />

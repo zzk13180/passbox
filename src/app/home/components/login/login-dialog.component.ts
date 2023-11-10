@@ -86,4 +86,10 @@ export class LoginDialog implements AfterViewInit {
     }
     return true
   }
+
+  handleKeyPress(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.ok()
+    }
+  }
 }

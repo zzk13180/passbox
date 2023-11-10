@@ -22,15 +22,18 @@ export class CardAddDialog {
   }
 
   showPasswordGeneratorDialog() {
-    // TODO
-    // this.notificationService.sendNotification('showPasswordGeneratorDialog')
+    // TODO: user settings
+    const event = new KeyboardEvent('keydown', {
+      key: 'g',
+      ctrlKey: true,
+    })
+    window.dispatchEvent(event)
   }
 
-  private keyCodes: string[] = ['Enter'] // TODO
   @HostListener('keypress', ['$event'])
   onkeyPress(event: KeyboardEvent) {
-    console.log('card-add-dialog.component.ts: onkeyPress: event: ', event)
-    if (this.keyCodes.includes(event.code)) {
+    // TODO: user settings
+    if (['Enter'].includes(event.key)) {
       this.dialogRef.close(this.data)
     }
   }

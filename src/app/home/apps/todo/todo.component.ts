@@ -33,11 +33,13 @@ export class TodoComponent implements OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     this.todoStore.load()
     this.renderer.selectRootElement(this.newTodoInputElement.nativeElement).focus()
-    fromEvent(this.newTodoInputElement.nativeElement, 'keydown')
+    fromEvent(this.newTodoInputElement.nativeElement, 'keypress')
       .pipe(
         takeUntil(this.destroy$),
         filter((keyEvent: KeyboardEvent) => {
-          return keyEvent.shiftKey && keyEvent.key === 'Enter'
+          return (
+            (keyEvent.shiftKey && keyEvent.key === 'Enter') || keyEvent.key === 'Enter'
+          )
         }),
         debounceTime(this.delay),
       )
@@ -52,11 +54,6 @@ export class TodoComponent implements OnDestroy, AfterViewInit {
     this._dialog.open<AppsDialog>(AppsDialog, {})
   }
 
-  stopEditing(todo: Todo, editedTitle: string) {
-    todo.title = editedTitle
-    todo.editing = false
-  }
-
   cancelEditingTodo(todo: Todo) {
     todo.editing = false
   }
@@ -69,6 +66,13 @@ export class TodoComponent implements OnDestroy, AfterViewInit {
       this.todoStore.remove(todo)
     } else {
       todo.title = editedTitle
+      this.todoStore.edit()
+    }
+  }
+
+  handleKeyPress(event: KeyboardEvent, todo: Todo, editedTitle: string) {
+    if (event.key === 'Enter') {
+      this.updateEditingTodo(todo, editedTitle)
     }
   }
 

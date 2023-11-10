@@ -53,4 +53,10 @@ export class PasswordSetDialog implements AfterViewInit {
       message: 'Password set successfully',
     })
   }
+
+  handleKeyPress(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.ok()
+    }
+  }
 }

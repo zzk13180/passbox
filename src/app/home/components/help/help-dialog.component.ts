@@ -50,8 +50,12 @@ export class HelpDialog implements OnInit, OnDestroy {
   }
 
   showTutorialDialog() {
-    // TODO
-    // this.notificationService.sendNotification('showTutorialDialog')
+    // TODO: user settings
+    const event = new KeyboardEvent('keydown', {
+      key: 't',
+      ctrlKey: true,
+    })
+    window.dispatchEvent(event)
   }
 
   openDevTools() {

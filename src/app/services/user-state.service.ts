@@ -21,6 +21,7 @@ export class UserStateService {
     ) {
       return this.userState
     }
+
     let userState: UserState = null
     try {
       const str: string = await this.electronService.cardsStorageGet(StorageKey.userState)
@@ -31,7 +32,11 @@ export class UserStateService {
     if (!userState || !userState.password || !userState.salt) {
       userState = this.initUserState()
     }
-    await this.setUserState(userState) // save user state in storage and this class
+    if (!userState.passwordEncryptionStrength) {
+      userState.passwordEncryptionStrength = 5000
+    }
+    // save user state in storage and memory
+    await this.setUserState(userState)
     return this.userState
   }
 

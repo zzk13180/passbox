@@ -39,6 +39,16 @@ export class ReEncryptOnParameterChangeService {
     })
   }
 
+  async clearCardsAndSetLoginNoRequired(): Promise<void> {
+    const theCards: CardState = { term: '', items: [], deletedItems: [] }
+    const userState = await this.userStateService.getUserState()
+    await this.userStateService.setUserState({
+      ...userState,
+      isRequiredLogin: false,
+    })
+    await this.db.setCards(theCards, true)
+  }
+
   private async verifyCardsPermissionsAndExecuteOperation(
     operation: () => Promise<void>,
   ) {

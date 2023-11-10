@@ -73,7 +73,7 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
         },
       },
       theme: 'snow',
-      placeholder: 'Write something...',
+      placeholder: 'write something...',
     })
     // register text-change event
     this.subscription = fromEvent(this.quill, 'text-change')

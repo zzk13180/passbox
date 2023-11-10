@@ -29,7 +29,7 @@ const STYLES = {
 })
 export class EmojiComponent implements OnInit {
   readonly classes: LyClasses<typeof STYLES>
-  fontSize = 22
+  fontSize = 26
   emojis: Emoji[] = []
   private emojisOriginal: Emoji[] = []
   private loading = true
@@ -90,7 +90,7 @@ export class EmojiComponent implements OnInit {
     this.emojiService.getEmojis().then(emojis => {
       setTimeout(() => {
         this.initEmojis(emojis)
-      }, 500)
+      }, 300)
     })
     const iterator = this.displayEmojiOneByOne(emojisTmpData)
     while (true) {
@@ -118,7 +118,7 @@ export class EmojiComponent implements OnInit {
       arrs.push(emojis.slice(i, i + chunk))
     }
     for (const emojis of arrs) {
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise(resolve => setTimeout(resolve, 100))
       yield emojis
     }
   }
