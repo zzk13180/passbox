@@ -65,10 +65,11 @@ export const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
         }
       }`
     },
-    dialog: lyl`{
+    fullScreenDialog: lyl`{
       width: 100vw
       height: 100vh
       border-radius: 0
+      overflow: hidden
     }`,
     settingsDialog: lyl`{
       z-index: 2

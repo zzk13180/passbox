@@ -174,7 +174,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       height: null,
       maxWidth: null,
       maxHeight: null,
-      containerClass: this.classes.dialog,
+      containerClass: this.classes.fullScreenDialog,
       disableClose: true,
     })
     dialogRef.afterClosed.subscribe(() => {
@@ -188,8 +188,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       height: null,
       maxWidth: null,
       maxHeight: null,
-      containerClass: this.classes.dialog,
-      disableClose: true,
+      containerClass: this.classes.fullScreenDialog,
     })
     dialogRef.afterClosed.subscribe((data?: { hasError: boolean; message: string }) => {
       if (!data) {
@@ -529,8 +528,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       height: null,
       maxWidth: null,
       maxHeight: null,
-      containerClass: this.classes.dialog,
-      disableClose: true,
+      containerClass: this.classes.fullScreenDialog,
     })
     dialogRef.afterClosed.subscribe(() => {
       if (showGuide) {

@@ -25,7 +25,6 @@ import { debounceTime, filter, map, takeUntil } from 'rxjs/operators'
   selector: 'search-card',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
-  exportAs: 'search',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {

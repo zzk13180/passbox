@@ -13,7 +13,7 @@ import type { NgModel } from '@angular/forms'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PasswordSetDialog implements AfterViewInit {
-  see = true
+  see: boolean = false
   _password: string
   @ViewChild('passwordModel') passwordModel: NgModel
 

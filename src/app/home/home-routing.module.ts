@@ -12,6 +12,10 @@ const routes: Routes = [
     loadChildren: () => import('./apps/note/note.module').then(m => m.NoteModule),
   },
   {
+    path: 'apps/editor',
+    loadChildren: () => import('./apps/editor/editor.module').then(m => m.EditorModule),
+  },
+  {
     path: 'apps/todo',
     loadChildren: () => import('./apps/todo/todo.module').then(m => m.TodoModule),
   },

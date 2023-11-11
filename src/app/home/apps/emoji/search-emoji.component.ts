@@ -21,13 +21,12 @@ import { debounceTime, filter, map, takeUntil } from 'rxjs/operators'
     [placeholder]="placeholder"
     type="text"
   />`,
-  exportAs: 'search',
   styleUrls: ['./emoji.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchEmojiComponent implements OnDestroy, AfterViewInit {
   @Input() cssClass: string
-  @Input() placeholder = 'Search'
+  @Input() placeholder = 'search'
   @Input() isKeyupSearch = true
   @Input() delay = 300
   @Input() disabled = false

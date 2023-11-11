@@ -23,6 +23,13 @@
       </ly-grid>
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
+          <button ly-button (click)="navigateToPath('/apps/editor')">
+            <img src="assets/svg/apps/editor.svg" alt="editor" />
+          </button>
+        </div>
+      </ly-grid>
+      <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
+        <div [className]="classes.box">
           <button ly-button (click)="navigateToPath('/apps/todo')">
             <img src="assets/svg/apps/todo.svg" alt="todo" />
           </button>

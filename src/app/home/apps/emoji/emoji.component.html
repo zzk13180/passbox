@@ -1,26 +1,24 @@
 <div class="apps-emoji">
-  <section class="apps-emoji-box">
-    <header class="apps-emoji-header">
-      <apps-nav />
-      <search-emoji cssClass="apps-emoji-search" (searchFn)="onSearch($event)" />
-      <ly-slider
-        [ngClass]="classes.slider"
-        (change)="sliderChange($event)"
-        [min]="10"
-        [max]="110"
-        [value]="26"
-      />
-    </header>
-    <main class="apps-emoji-list">
-      <span
-        class="emojis"
-        *ngFor="let emoji of emojis; trackBy: trackByFn"
-        [ngStyle]="{
-          fontSize: fontSize + 'px'
-        }"
-      >
-        {{ emoji.symbol }}
-      </span>
-    </main>
-  </section>
+  <header class="apps-emoji-header">
+    <apps-nav />
+    <search-emoji cssClass="apps-emoji-search" (searchFn)="onSearch($event)" />
+    <ly-slider
+      [ngClass]="classes.slider"
+      (change)="sliderChange($event)"
+      [min]="10"
+      [max]="110"
+      [value]="26"
+    />
+  </header>
+  <main class="apps-emoji-list">
+    <span
+      class="emojis"
+      *ngFor="let emoji of emojis; trackBy: trackByFn"
+      [ngStyle]="{
+        fontSize: fontSize + 'px'
+      }"
+    >
+      {{ emoji.symbol }}
+    </span>
+  </main>
 </div>
