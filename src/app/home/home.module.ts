@@ -4,16 +4,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { ScrollingModule } from '@angular/cdk/scrolling'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import {
-  LyTheme2,
-  StyleRenderer,
-  LY_THEME,
-  LY_THEME_NAME,
   LyOverlayModule,
   LyExpansionIconModule,
-  LY_THEME_GLOBAL_VARIABLES,
-  PartialThemeVariables,
+  StyleRenderer,
+  LyTheme2,
 } from '@alyle/ui'
-import { MinimaLight } from '@alyle/ui/themes/minima'
 import { LyTabsModule } from '@alyle/ui/tabs'
 import { LyExpansionModule } from '@alyle/ui/expansion'
 import { LyTypographyModule } from '@alyle/ui/typography'
@@ -40,7 +35,6 @@ import { ExportSelectDialog } from './components/export/export-select-dialog.com
 import { ImportPasswordDialog } from './components/import/import-password-dialog.component'
 import { PasswordSetDialog } from './components/password-set/password-set-dialog.component'
 import { LoginDialog } from './components/login/login-dialog.component'
-import { AppsDialog } from './components/apps-dialog/apps-dialog.component'
 import { HelpDialog } from './components/help/help-dialog.component'
 import { PasswordGeneratorDialog } from './components/password-generator/password-generator-dialog.component'
 import { SearchComponent } from './components/search/search.component'
@@ -49,17 +43,9 @@ import { StepsGuideModule } from './steps-guide'
 import { TutorialDialog } from './components/tutorial/tutorial.component'
 import { SettingsDialog } from './components/settings/settings.component'
 
-class GlobalVariables implements PartialThemeVariables {
-  typography = {
-    fontFamily:
-      "'Noto Sans Arabic', 'Noto Sans', 'Noto Sans JP', 'Noto Sans SC', sans-serif",
-  }
-}
-
 @NgModule({
   declarations: [
     HelpDialog,
-    AppsDialog,
     CardAddDialog,
     HomeComponent,
     SearchComponent,
@@ -101,13 +87,6 @@ class GlobalVariables implements PartialThemeVariables {
     SharedModule,
     StepsGuideModule,
   ],
-  providers: [
-    LyTheme2,
-    StyleRenderer,
-    { provide: LY_THEME_NAME, useValue: 'minima-light' },
-    { provide: LY_THEME, useClass: MinimaLight, multi: true },
-    { provide: LY_THEME_GLOBAL_VARIABLES, useClass: GlobalVariables },
-  ],
-  exports: [HomeComponent],
+  providers: [StyleRenderer, LyTheme2],
 })
 export class HomeModule {}

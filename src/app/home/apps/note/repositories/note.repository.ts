@@ -2,9 +2,7 @@ import { Inject, Injectable } from '@angular/core'
 import { LocalStorage, ElectronService } from 'src/app/services'
 import { Note } from '../models'
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class NoteRepository {
   readonly KEY = 'notes'
   private dirPath: string

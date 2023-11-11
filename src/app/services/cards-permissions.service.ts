@@ -6,11 +6,24 @@ import type { CardState } from '../models'
 @Injectable({
   providedIn: 'root',
 })
-export class ReEncryptOnParameterChangeService {
+export class CardsPermissionsService {
   constructor(
     private db: CardsDbService,
     private userStateService: UserStateService,
   ) {}
+
+  // just use for login
+  async verifyUserPassword(userPassword: string): Promise<void> {
+    if (!userPassword) {
+      throw new Error('Password cannot be empty')
+    }
+    try {
+      this.userStateService.setUserPassword(userPassword)
+      await this.db.getCards()
+    } catch (error) {
+      throw new Error('Wrong password')
+    }
+  }
 
   async changeUserPassword(userPassword: string): Promise<void> {
     if (!userPassword) {

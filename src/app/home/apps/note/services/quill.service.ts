@@ -4,9 +4,7 @@ import hljs from 'highlight.js'
 import ImageResize from 'quill-image-resize-module'
 import type Quill from 'quill'
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class QuillService {
   private Quill: typeof Quill
 

@@ -13,10 +13,10 @@ export class CryptoService {
   private password: ArrayBuffer | null = null
   private salt: ArrayBuffer | null = null
   private key: ArrayBuffer | null = null
-  constructor(
-    private cryptoFunctionService: CryptoFunctionService,
-    private userStateService: UserStateService,
-  ) {}
+  private cryptoFunctionService: CryptoFunctionService
+  constructor(private userStateService: UserStateService) {
+    this.cryptoFunctionService = new CryptoFunctionService()
+  }
 
   async encrypt(plainValue: string | ArrayBuffer): Promise<CipherString> {
     const userstate: UserState = await this.userStateService.getUserState()

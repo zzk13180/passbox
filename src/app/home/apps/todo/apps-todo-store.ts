@@ -21,9 +21,7 @@ export class Todo {
   }
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class TodoStore {
   readonly KEY = 'todolist'
   private path: string

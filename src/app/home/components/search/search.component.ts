@@ -22,7 +22,7 @@ import { fromEvent, Subject } from 'rxjs'
 import { debounceTime, filter, map, takeUntil } from 'rxjs/operators'
 
 @Component({
-  selector: 'search',
+  selector: 'search-card',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
   exportAs: 'search',

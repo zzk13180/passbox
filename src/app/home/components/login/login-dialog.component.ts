@@ -8,7 +8,7 @@ import {
 } from '@angular/core'
 import { Store } from '@ngrx/store'
 import { LyDialogRef } from '@alyle/ui/dialog'
-import { ReEncryptOnParameterChangeService, resetCards } from 'src/app/services'
+import { CardsPermissionsService, resetCards } from 'src/app/services'
 import type { NgModel } from '@angular/forms'
 
 @Component({
@@ -22,7 +22,7 @@ export class LoginDialog implements AfterViewInit {
   // eslint-disable-next-line max-params
   constructor(
     public dialogRef: LyDialogRef,
-    private reEncryptOnParameterChangeService: ReEncryptOnParameterChangeService,
+    private cardsPermissionsService: CardsPermissionsService,
     private ngZone: NgZone,
     private store: Store,
     private _cd: ChangeDetectorRef,
@@ -80,7 +80,7 @@ export class LoginDialog implements AfterViewInit {
 
   private async login(): Promise<boolean> {
     try {
-      await this.reEncryptOnParameterChangeService.changeUserPassword(this._password)
+      await this.cardsPermissionsService.verifyUserPassword(this._password)
     } catch (_) {
       return false
     }

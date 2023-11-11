@@ -16,7 +16,6 @@ import type { Card } from 'src/app/models'
 
 @Component({
   templateUrl: './card-deleted-dialog.component.html',
-  providers: [StyleRenderer],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardDeletedDialog {

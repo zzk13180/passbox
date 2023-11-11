@@ -5,7 +5,7 @@ import {
   AfterViewInit,
 } from '@angular/core'
 import { LyDialogRef } from '@alyle/ui/dialog'
-import { ReEncryptOnParameterChangeService } from 'src/app/services'
+import { UserStateService, CardsPermissionsService } from 'src/app/services'
 import type { NgModel } from '@angular/forms'
 
 @Component({
@@ -14,13 +14,16 @@ import type { NgModel } from '@angular/forms'
 })
 export class PasswordSetDialog implements AfterViewInit {
   see = true
-  _password = ''
+  _password: string
   @ViewChild('passwordModel') passwordModel: NgModel
 
   constructor(
     public dialogRef: LyDialogRef,
-    private reEncryptOnParameterChangeService: ReEncryptOnParameterChangeService,
-  ) {}
+    private userStateService: UserStateService,
+    private cardsPermissionsService: CardsPermissionsService,
+  ) {
+    this._password = this.userStateService.getUserPassword() || ''
+  }
 
   ngAfterViewInit(): void {
     const encoder = new TextEncoder()
@@ -41,7 +44,7 @@ export class PasswordSetDialog implements AfterViewInit {
 
   private async changePassword() {
     try {
-      await this.reEncryptOnParameterChangeService.changeUserPassword(this._password)
+      await this.cardsPermissionsService.changeUserPassword(this._password)
     } catch (err) {
       this.dialogRef.close({
         hasError: true,

@@ -6,8 +6,6 @@ import {
 } from '@angular/core'
 import Fuse from 'fuse.js'
 import { LyClasses, LyTheme2 } from '@alyle/ui'
-import { LyDialog } from '@alyle/ui/dialog'
-import { AppsDialog } from 'src/app/home/components/apps-dialog/apps-dialog.component'
 import { EmojiService } from './emoji.service'
 import { emojisTmpData } from './emoji.data'
 import type { Emoji } from './emoji.data'
@@ -73,7 +71,6 @@ export class EmojiComponent implements OnInit {
   })
 
   constructor(
-    private _dialog: LyDialog,
     private theme: LyTheme2,
     private _cd: ChangeDetectorRef,
     private emojiService: EmojiService,
@@ -135,10 +132,6 @@ export class EmojiComponent implements OnInit {
   sliderChange(event: any) {
     const { value } = event
     this.fontSize = value
-  }
-
-  openAppsDialog() {
-    this._dialog.open<AppsDialog>(AppsDialog, {})
   }
 
   trackByFn(index: number, item: Emoji) {

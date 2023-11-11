@@ -30,7 +30,7 @@ import {
   selectCards,
   selectNeedRecordVersions,
   updateIsFirstTimeLogin,
-  ReEncryptOnParameterChangeService,
+  CardsPermissionsService,
 } from '../services'
 
 @Injectable()
@@ -41,7 +41,7 @@ export class CardEffects {
     private electronService: ElectronService,
     private store: Store<{ theCards: CardState }>,
     private db: CardsDbService,
-    private reEncryptOnParameterChangeService: ReEncryptOnParameterChangeService,
+    private cardsPermissionsService: CardsPermissionsService,
   ) {}
 
   getCardsFromDB = createEffect(() =>
@@ -75,7 +75,7 @@ export class CardEffects {
       this.actions$.pipe(
         ofType(resetCards),
         tap(() => {
-          this.reEncryptOnParameterChangeService.clearCardsAndSetLoginNoRequired()
+          this.cardsPermissionsService.clearCardsAndSetLoginNoRequired()
         }),
       ),
     { dispatch: false },

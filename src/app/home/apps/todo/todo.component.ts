@@ -9,8 +9,6 @@ import {
 } from '@angular/core'
 import { fromEvent, Subject } from 'rxjs'
 import { debounceTime, filter, takeUntil } from 'rxjs/operators'
-import { LyDialog } from '@alyle/ui/dialog'
-import { AppsDialog } from 'src/app/home/components/apps-dialog/apps-dialog.component'
 import { TodoStore } from './apps-todo-store'
 import type { Todo } from './apps-todo-store'
 
@@ -27,7 +25,6 @@ export class TodoComponent implements OnDestroy, AfterViewInit {
   constructor(
     public todoStore: TodoStore,
     private renderer: Renderer2,
-    private _dialog: LyDialog,
   ) {}
 
   ngAfterViewInit() {
@@ -48,10 +45,6 @@ export class TodoComponent implements OnDestroy, AfterViewInit {
         newTodo && this.todoStore.add(newTodo)
         this.renderer.setProperty(this.newTodoInputElement.nativeElement, 'value', '')
       })
-  }
-
-  openAppsDialog() {
-    this._dialog.open<AppsDialog>(AppsDialog, {})
   }
 
   cancelEditingTodo(todo: Todo) {

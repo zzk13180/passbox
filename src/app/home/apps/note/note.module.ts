@@ -11,6 +11,10 @@ import { NoteRootComponent } from './note.component'
 import { HomeComponent } from './pages/home/home.component'
 import { ListComponent } from './pages/list/list.component'
 
+import { NoteStoreService } from './store/note-store.service'
+import { NoteRepository } from './repositories/note.repository'
+import { QuillService } from './services/quill.service'
+
 @NgModule({
   declarations: [
     NoteEditorComponent,
@@ -20,5 +24,6 @@ import { ListComponent } from './pages/list/list.component'
     ListComponent,
   ],
   imports: [SharedModule, NoteRoutingModule, MatTabsModule, MatDialogModule],
+  providers: [NoteStoreService, NoteRepository, QuillService],
 })
 export class NoteModule {}

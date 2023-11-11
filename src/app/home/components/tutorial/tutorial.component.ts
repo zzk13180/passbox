@@ -26,7 +26,7 @@ import { STYLES } from './STYLES.data'
   styleUrls: ['./tutorial.component.scss'],
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [StyleRenderer],
+  providers: [I18nText],
 })
 export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
   readonly classes: LyClasses<typeof STYLES>

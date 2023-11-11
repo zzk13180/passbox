@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core'
 import { Note } from '../models'
 import { NoteRepository } from '../repositories'
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class NoteStoreService {
   private noteTabs: Note[]
 

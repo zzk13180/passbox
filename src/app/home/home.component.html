@@ -32,8 +32,8 @@ Oh hi there! 😄
     ></div>
   </div>
   <ly-toolbar position="static" bg="primary" style="padding: 0">
-    <ly-icon class="menu-btn-left" (click)="openAppsDialog()">apps</ly-icon>
-    <search class="home-search" (searchFn)="onSearch($event)" style="padding: 0" />
+    <apps-nav />
+    <search-card class="home-search" (searchFn)="onSearch($event)" style="padding: 0" />
     <button
       class="menu-btn-right"
       color="primary:contrast"

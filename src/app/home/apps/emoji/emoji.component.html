@@ -1,10 +1,8 @@
 <div class="apps-emoji">
   <section class="apps-emoji-box">
     <header class="apps-emoji-header">
-      <button class="go-passbox" ly-button appearance="icon" (click)="openAppsDialog()">
-        <ly-icon>apps</ly-icon>
-      </button>
-      <search cssClass="apps-emoji-search" (searchFn)="onSearch($event)" />
+      <apps-nav />
+      <search-emoji cssClass="apps-emoji-search" (searchFn)="onSearch($event)" />
       <ly-slider
         [ngClass]="classes.slider"
         (change)="sliderChange($event)"

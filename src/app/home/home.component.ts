@@ -37,7 +37,6 @@ import { ExportSelectDialog } from './components/export/export-select-dialog.com
 import { ImportPasswordDialog } from './components/import/import-password-dialog.component'
 import { PasswordSetDialog } from './components/password-set/password-set-dialog.component'
 import { LoginDialog } from './components/login/login-dialog.component'
-import { AppsDialog } from './components/apps-dialog/apps-dialog.component'
 import { HelpDialog } from './components/help/help-dialog.component'
 import { PasswordGeneratorDialog } from './components/password-generator/password-generator-dialog.component'
 import { TutorialDialog } from './components/tutorial/tutorial.component'
@@ -54,7 +53,7 @@ import type { CdkDragMove } from '@angular/cdk/drag-drop'
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [StyleRenderer, CardsImportService],
+  providers: [CardsImportService],
 })
 export class HomeComponent implements OnInit, OnDestroy {
   classes: LyClasses<typeof STYLES>
@@ -495,10 +494,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   trackByFn(_index: number, item: Card): string {
     return item.id
-  }
-
-  openAppsDialog() {
-    this._dialog.open<AppsDialog>(AppsDialog, {})
   }
 
   showHelpDialog() {

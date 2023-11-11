@@ -14,7 +14,7 @@ import { fromEvent, Subject } from 'rxjs'
 import { debounceTime, filter, map, takeUntil } from 'rxjs/operators'
 
 @Component({
-  selector: 'search',
+  selector: 'search-emoji',
   template: `<input
     #filterInput
     class=" {{ cssClass }}"

@@ -19,6 +19,7 @@ import { STYLES } from './STYLES.data'
   selector: 'app-help-dialog',
   templateUrl: './help-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [I18nText],
 })
 export class HelpDialog implements OnInit, OnDestroy {
   readonly classes: LyClasses<typeof STYLES>

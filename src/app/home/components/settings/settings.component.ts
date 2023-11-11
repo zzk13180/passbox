@@ -23,7 +23,7 @@ import { I18nText } from './settings.i18n'
   styleUrls: ['./settings.component.scss'],
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [StyleRenderer],
+  providers: [I18nText],
 })
 export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
   readonly labels = ['Settings', 'Keyboard shortcuts']

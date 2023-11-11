@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import type { I18nLanguageEnum } from 'src/app/enums'
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class I18nText {
   currentLanguage: I18nLanguageEnum
   constructor() {}

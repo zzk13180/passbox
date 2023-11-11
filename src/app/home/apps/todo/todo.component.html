@@ -1,9 +1,7 @@
 <div class="apps-todo mat-typography">
   <section class="todoapp">
     <header class="header">
-      <button class="go-home" ly-button appearance="icon" (click)="openAppsDialog()">
-        <ly-icon>apps</ly-icon>
-      </button>
+      <apps-nav />
       <input #newTodoInput class="new-todo" placeholder="write and press enter" />
     </header>
     <section class="main" *ngIf="todoStore.todos.length > 0">

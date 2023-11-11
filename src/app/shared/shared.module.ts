@@ -4,10 +4,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { LyButtonModule } from '@alyle/ui/button'
 import { LyIconModule } from './icon'
 import { SafePipeModule } from './safe-pipe'
+import { AppsNavModule } from './apps-nav/apps-nav.module'
 
 @NgModule({
   declarations: [],
-  providers: [],
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -15,6 +15,7 @@ import { SafePipeModule } from './safe-pipe'
     LyButtonModule,
     LyIconModule,
     SafePipeModule,
+    AppsNavModule,
   ],
   exports: [
     FormsModule,
@@ -23,6 +24,7 @@ import { SafePipeModule } from './safe-pipe'
     LyButtonModule,
     LyIconModule,
     SafePipeModule,
+    AppsNavModule,
   ],
 })
 export class SharedModule {

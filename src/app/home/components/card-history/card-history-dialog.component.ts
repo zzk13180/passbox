@@ -28,7 +28,7 @@ import type { CipherString, Card, UserState } from 'src/app/models'
 type Version = { version: string; state: boolean; title: string; content: string }
 
 @Component({
-  selector: 'aui-custom-expansion-panel',
+  selector: 'card-history-dialog',
   templateUrl: './card-history-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

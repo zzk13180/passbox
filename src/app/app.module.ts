@@ -2,6 +2,13 @@ import 'reflect-metadata'
 import { NgModule } from '@angular/core'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import {
+  LY_THEME,
+  LY_THEME_NAME,
+  LY_THEME_GLOBAL_VARIABLES,
+  PartialThemeVariables,
+} from '@alyle/ui'
+import { MinimaLight } from '@alyle/ui/themes/minima'
 import { LySnackBarModule } from '@alyle/ui/snack-bar'
 import { EffectsModule } from '@ngrx/effects'
 import { StoreModule } from '@ngrx/store'
@@ -10,13 +17,14 @@ import { AppComponent } from './app.component'
 import { AppRoutingModule } from './app-routing.module'
 import { HomeModule } from './home/home.module'
 import { CardEffects, Settingsffects } from './effects'
-import {
-  STORAGE_PROVIDERS,
-  cardReducer,
-  settingsReducer,
-  MessageService,
-  KeyboardShortcutsService,
-} from './services'
+import { STORAGE_PROVIDERS, cardReducer, settingsReducer } from './services'
+
+class GlobalVariables implements PartialThemeVariables {
+  typography = {
+    fontFamily:
+      "'Noto Sans Arabic', 'Noto Sans', 'Noto Sans JP', 'Noto Sans SC', sans-serif",
+  }
+}
 
 @NgModule({
   declarations: [AppComponent],
@@ -30,8 +38,9 @@ import {
     EffectsModule.forRoot([CardEffects, Settingsffects]),
   ],
   providers: [
-    MessageService,
-    KeyboardShortcutsService,
+    { provide: LY_THEME_NAME, useValue: 'minima-light' },
+    { provide: LY_THEME, useClass: MinimaLight, multi: true },
+    { provide: LY_THEME_GLOBAL_VARIABLES, useClass: GlobalVariables },
     STORAGE_PROVIDERS,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
   ],

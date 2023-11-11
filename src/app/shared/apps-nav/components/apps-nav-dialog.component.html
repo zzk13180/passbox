@@ -1,7 +1,7 @@
 <div class="apps-dialog">
   <ly-toolbar position="static" bg="primary" [elevation]="3">
     <ly-grid container justify="between" ly-dialog-actions>
-      <p lyTyp="caption">Apps</p>
+      <p lyTyp="caption">&nbsp;Apps</p>
       <ly-icon cdkFocusRegionStart (click)="dialogRef.close()">close</ly-icon>
     </ly-grid>
   </ly-toolbar>
@@ -9,28 +9,28 @@
     <ly-grid container spacing="16 8@XSmall">
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
-          <button ly-button routerLink="/home">
+          <button ly-button (click)="navigateToPath('home')">
             <img src="assets/svg/apps/passbox.svg" alt="passbox" />
           </button>
         </div>
       </ly-grid>
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
-          <button ly-button routerLink="/apps/note/home">
+          <button ly-button (click)="navigateToPath('/apps/note/home')">
             <img src="assets/svg/apps/note.svg" alt="note" />
           </button>
         </div>
       </ly-grid>
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
-          <button ly-button routerLink="/apps/todo">
+          <button ly-button (click)="navigateToPath('/apps/todo')">
             <img src="assets/svg/apps/todo.svg" alt="todo" />
           </button>
         </div>
       </ly-grid>
       <ly-grid item col="3 2@Small@Medium 1.2@Large 1@XLarge">
         <div [className]="classes.box">
-          <button ly-button routerLink="/apps/emoji">
+          <button ly-button (click)="navigateToPath('/apps/emoji')">
             <img src="assets/svg/apps/emoji.svg" alt="emoji" />
           </button>
         </div>
