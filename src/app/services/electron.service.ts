@@ -73,7 +73,11 @@ export class ElectronService {
     return this.ipcRenderer.invoke('cards-get-history', version)
   }
 
-  setAlwaysOnTop(flag: boolean) {
-    this.ipcRenderer.send('set-always-on-top', flag)
+  setMainWinAlwaysOnTop(flag: boolean) {
+    this.ipcRenderer.send('set-main-win-always-on-top', flag)
+  }
+
+  setBrowserWinAlwaysOnTop(flag: boolean) {
+    this.ipcRenderer.send('set-browser-win-always-on-top', flag)
   }
 }

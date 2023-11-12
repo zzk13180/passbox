@@ -3,28 +3,28 @@ import { I18nLanguageEnum } from 'src/app/enums'
 
 @Injectable()
 export class I18nText {
-  currentLanguage: I18nLanguageEnum
+  currentLanguage: I18nLanguageEnum = I18nLanguageEnum.English
   constructor() {}
 
-  #welcome: { [key in I18nLanguageEnum]: string } = {
-    English: 'Welcome',
-    Chinese: '欢迎',
-    Japanese: 'ようこそ',
-    Spanish: '¡Bienvenido',
-    German: 'Willkommen',
-    Russian: 'Добро пожаловать',
-    French: 'Bienvenue',
-    Italian: 'Benvenuto',
-    Portuguese: 'Bem-vindo',
-    Polish: 'Witaj',
-    Arabic: 'مرحبا',
-    Persian: 'خوش آمدید',
-    Indonesian: 'Selamat datang',
-    Dutch: 'Welkom',
+  #mainWinAlwaysOnTopLabel: { [key in I18nLanguageEnum]: string } = {
+    English: 'Main window always on top',
+    Chinese: '主窗口始终置顶',
+    Japanese: 'メインウィンドウを常に最前面に表示',
+    Spanish: 'Ventana principal siempre visible',
+    German: 'Hauptfenster immer im Vordergrund',
+    Russian: 'Главное окно всегда сверху',
+    French: 'Fenêtre principale toujours visible',
+    Italian: 'Finestra principale sempre in primo piano',
+    Portuguese: 'Janela principal sempre visível',
+    Polish: 'Główne okno zawsze na wierzchu',
+    Arabic: 'النافذة الرئيسية دائما مرئية',
+    Persian: 'پنجره اصلی همیشه قابل مشاهده است',
+    Indonesian: 'Jendela utama selalu terlihat',
+    Dutch: 'Hoofdvenster altijd zichtbaar',
   }
 
-  get welcome(): string {
-    return this.#welcome[this.currentLanguage]
+  get mainWinAlwaysOnTopLabel(): string {
+    return this.#mainWinAlwaysOnTopLabel[this.currentLanguage]
   }
 
   #please: { [key in I18nLanguageEnum]: string } = {

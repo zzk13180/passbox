@@ -179,7 +179,6 @@ export class CardHistoryDialog implements OnInit {
       userState,
       userPassword,
     )
-    // Do I need to show deleted cards? Do i need hide repeated cards?
     this.versions[index].content = JSON.parse(decryptStr).items.map((item: Card) => ({
       title: item.title,
       description: item.description,

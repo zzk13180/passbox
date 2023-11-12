@@ -13,7 +13,7 @@ import { debounceTime } from 'rxjs/operators'
 import { QuillService } from '../../services/quill.service'
 import { NoteStoreService } from '../../store/note-store.service'
 import { Note } from '../../models'
-import type { Quill, DeltaStatic } from 'quill'
+import type { Quill } from 'quill'
 
 @Component({
   selector: 'note-editor',
@@ -93,7 +93,7 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
     try {
       const value = await this.noteStoreService.getNoteContentById(this.note.id)
       if (value) {
-        const content: DeltaStatic = JSON.parse(value)
+        const content = JSON.parse(value)
         this.quill.setContents(content, 'silent')
         this.quill.getModule('history').clear()
       }

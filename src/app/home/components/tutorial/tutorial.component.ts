@@ -8,6 +8,7 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  ChangeDetectorRef,
 } from '@angular/core'
 import { LyClasses, LyTheme2, StyleRenderer } from '@alyle/ui'
 import { LyDialogRef } from '@alyle/ui/dialog'
@@ -15,7 +16,7 @@ import Swiper from 'swiper'
 import { EffectCube, EffectCoverflow } from 'swiper/modules'
 import { createNoise3D } from 'simplex-noise'
 import { Store } from '@ngrx/store'
-import { updateLanguage, selectLanguage } from 'src/app/services/ngrx.service'
+import { updateCurrentLang, selectLanguage } from 'src/app/services/ngrx.service'
 import { I18nLanguageEnum } from 'src/app/enums'
 import { I18nText } from './tutorial.i18n'
 import { STYLES } from './STYLES.data'
@@ -32,6 +33,7 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
   readonly classes: LyClasses<typeof STYLES>
   i18nEnum = I18nLanguageEnum
   intra: Intra
+  @ViewChild('languageBtns') languageBtns: ElementRef
   @ViewChild('swiperContainer') swiperContainer: ElementRef
   swiper: Swiper
   // eslint-disable-next-line max-params
@@ -42,6 +44,7 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
     private theme: LyTheme2,
     private ngZone: NgZone,
     private store: Store,
+    private _cd: ChangeDetectorRef,
   ) {
     this.classes = this.sRenderer.renderSheet(STYLES, 'root')
   }
@@ -49,6 +52,7 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     this.store.select(selectLanguage).subscribe(language => {
       this.i18nText.currentLanguage = language
+      this._cd.markForCheck()
     })
   }
 
@@ -73,12 +77,24 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
       this.intra = new Intra('#1a0e2d', 700, 17, 3000, 0.000009, 9000) // #030722
       this.intra.start()
     })
+    try {
+      const userLangs = [
+        ...new Set(navigator.languages.map(l => l.toLowerCase().split('-')[0])),
+      ]
+      const btns = this.languageBtns.nativeElement as HTMLDivElement
+      const { firstChild } = btns
+      userLangs.forEach(lang => {
+        const child = btns.querySelector(`#${lang}`)
+        child && btns.insertBefore(child, firstChild)
+      })
+    } catch (_) {}
   }
 
   ngOnDestroy() {
     if (this.intra) {
       this.intra.stop()
     }
+    this.swiper.destroy()
   }
 
   next(step: number) {
@@ -86,7 +102,7 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setLanguage(lang: I18nLanguageEnum) {
-    this.store.dispatch(updateLanguage({ language: lang }))
+    this.store.dispatch(updateCurrentLang({ language: lang }))
   }
 
   @HostListener('window:resize') _resize$() {

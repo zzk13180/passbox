@@ -1,5 +1,5 @@
 <div class="settings">
-  <ly-tabs position="fixed">
+  <ly-tabs>
     <ly-tab *ngFor="let label of labels; let i = index">
       <button ly-tab-label [active]="activeIndex === i" (click)="next(i)">
         {{ label }}
@@ -8,59 +8,71 @@
   </ly-tabs>
   <div class="swiper swiper-container" #swiperContainer>
     <div class="swiper-wrapper">
-      <div class="swiper-slide"> 11111111 </div>
       <div class="swiper-slide">
-        <ly-grid container>
-          <ly-grid item [col]="6">
-            <ly-field appearance="filled" [lyMaxWidth]="140">
-              <ly-label>Clearablesdsdsdsdsdsdsdsd</ly-label>
-              <input #_input0 lyNativeControl type="text" />
-              <button
-                ly-button
-                *ngIf="_input0.value"
-                appearance="icon"
-                lySuffix
-                (click)="_input0.value = ''"
-              >
-                <ly-icon>close</ly-icon>
-              </button>
-            </ly-field>
-          </ly-grid>
-          <ly-grid item [col]="6">
-            <ly-field appearance="filled" [lyMaxWidth]="140">
-              <ly-label>Clearablesdsdsdsdsdsdsdsd</ly-label>
-              <input #_input1 lyNativeControl type="text" />
-              <button
-                ly-button
-                *ngIf="_input1.value"
-                appearance="icon"
-                lySuffix
-                (click)="_input1.value = ''"
-              >
-                <ly-icon>close</ly-icon>
-              </button>
-            </ly-field>
-          </ly-grid>
-          <ly-grid item [col]="6">
-            <ly-field
-              appearance="filled"
-              [lyMaxWidth]="140"
-              [matTooltip]="'Clearablesdsdsdsdsdsdsdsd'"
+        <div [lyMe]="1">
+          <ly-checkbox
+            color="primary"
+            *ngFor="let item of checkboxTasks"
+            [(ngModel)]="item.completed"
+            (ngModelChange)="item.onChange(item.completed)"
+          >
+            <!-- TODO -->
+            {{ item.label() }}
+          </ly-checkbox>
+          <br />
+          <div
+            class="slider-container swiper-no-swiping"
+            *ngFor="let item of sliderTasks"
+          >
+            <ly-slider
+              [(ngModel)]="item.value"
+              (ngModelChange)="item.onChange(item.value)"
+              (click)="$event.preventDefault()"
+              [min]="item.min"
+              [max]="item.max"
+              [step]="item.step"
+              [marks]="false"
+              [ticks]="false"
+              [thumbVisible]="null"
+              size="medium"
+              color="primary"
+              [appearance]="'standard'"
             >
-              <ly-label> Clearablesdsdsdsdsdsdsdsd </ly-label>
-              <input #_input2 lyNativeControl type="text" />
+              <ly-mark *ngFor="let mark of item.marks" [value]="mark.value">
+                {{ mark.label }}
+              </ly-mark>
+            </ly-slider>
+            <p>{{ item.name }}</p>
+          </div>
+          <br />
+          <button ly-button raised (click)="showTutorialDialog()">
+            <span [lyPf]="1" ly-line>Languages</span>
+            <ly-icon color="primary">translate</ly-icon>
+          </button>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <form [formGroup]="form">
+          <div formArrayName="keyboardShortcuts">
+            <ly-field
+              [lyWidth]="1"
+              appearance="filled"
+              *ngFor="let kbs of kbsFormArray.controls; index as i"
+            >
+              <input lyNativeControl type="text" [formControlName]="i" />
+              <ly-label>TODO</ly-label>
               <button
                 ly-button
-                *ngIf="_input2.value"
+                *ngIf="kbs.value"
                 appearance="icon"
                 lySuffix
-                (click)="_input2.value = ''"
+                (click)="kbs.setValue('')"
               >
                 <ly-icon>close</ly-icon>
               </button>
             </ly-field>
-          </ly-grid>
-        </ly-grid>
+          </div>
+        </form>
       </div>
     </div>
   </div>

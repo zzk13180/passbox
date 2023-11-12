@@ -47,40 +47,40 @@ Oh hi there! 😄
 
   <ng-template #clipboard let-M>
     <ly-menu [ref]="M" [lyWidth]="180">
-      <button ly-button ly-menu-item (click)="openDialog('add')">
-        <ly-icon>note_add</ly-icon>
-        <span class="spacer"></span>
-        <span>Add「Ctrl + D」</span>
-      </button>
-      <button ly-button ly-menu-item (click)="showSetPasswordDialog()">
-        <ly-icon>lock</ly-icon>
-        <span class="spacer"></span>
-        <span>Set password</span>
-      </button>
-      <button ly-button ly-menu-item (click)="showDeletedCards()">
-        <ly-icon>delete</ly-icon>
-        <span class="spacer"></span>
-        <span>Show deleted</span>
-      </button>
-      <button ly-button ly-menu-item (click)="showHistoryCards()">
-        <ly-icon>history</ly-icon>
-        <span class="spacer"></span>
-        <span>Show history</span>
-      </button>
       <button ly-button ly-menu-item (click)="openSettingsDialog()">
         <ly-icon>settings</ly-icon>
         <span class="spacer"></span>
         <span>Settings</span>
       </button>
-      <button ly-button ly-menu-item (click)="exportData($event)">
-        <ly-icon>file_upload</ly-icon>
+      <button ly-button ly-menu-item (click)="openDialog('add')">
+        <ly-icon>note_add</ly-icon>
         <span class="spacer"></span>
-        <span>Export</span>
+        <span>Add Card</span>
+      </button>
+      <button ly-button ly-menu-item (click)="showSetPasswordDialog()">
+        <ly-icon>lock</ly-icon>
+        <span class="spacer"></span>
+        <span>Set Password</span>
+      </button>
+      <button ly-button ly-menu-item (click)="showDeletedCards()">
+        <ly-icon>delete</ly-icon>
+        <span class="spacer"></span>
+        <span>Show Deleted</span>
+      </button>
+      <button ly-button ly-menu-item (click)="showHistoryCards()">
+        <ly-icon>history</ly-icon>
+        <span class="spacer"></span>
+        <span>Show History</span>
       </button>
       <button ly-button ly-menu-item (click)="importData($event)">
         <ly-icon>file_download</ly-icon>
         <span class="spacer"></span>
         <span>Import</span>
+      </button>
+      <button ly-button ly-menu-item (click)="exportData($event)">
+        <ly-icon>file_upload</ly-icon>
+        <span class="spacer"></span>
+        <span>Export</span>
       </button>
       <button ly-button ly-menu-item (click)="showHelpDialog()">
         <ly-icon>help</ly-icon>

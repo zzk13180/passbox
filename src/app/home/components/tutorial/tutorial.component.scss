@@ -53,9 +53,15 @@
   }
 }
 
-.statement {
-  width: 80%;
-  margin: 80px auto;
-  height: 55vh;
+.statement-box {
   cursor: grab;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 50px);
+  justify-content: center;
+  align-items: center;
+}
+
+.statement-box-text {
+  text-align: center;
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import pako from 'pako'
 import { fromBufferToB64, areArrayBuffersEqual, randomBytes } from '../utils/crypto.util'
-import { CryptoFunctionService } from './crypto-function.service'
+import { CryptoFunction } from './crypto-function'
 import { UserStateService } from './user-state.service'
 import type { CipherString, EncryptedObject, UserState } from '../models'
 
@@ -13,9 +13,9 @@ export class CryptoService {
   private password: ArrayBuffer | null = null
   private salt: ArrayBuffer | null = null
   private key: ArrayBuffer | null = null
-  private cryptoFunctionService: CryptoFunctionService
+  private cryptoFunction: CryptoFunction
   constructor(private userStateService: UserStateService) {
-    this.cryptoFunctionService = new CryptoFunctionService()
+    this.cryptoFunction = new CryptoFunction()
   }
 
   async encrypt(plainValue: string | ArrayBuffer): Promise<CipherString> {
@@ -121,7 +121,7 @@ export class CryptoService {
     salt: ArrayBuffer,
     iterations: number,
   ): Promise<ArrayBuffer> {
-    const key: ArrayBuffer = await this.cryptoFunctionService.pbkdf2(
+    const key: ArrayBuffer = await this.cryptoFunction.pbkdf2(
       password,
       salt,
       'sha256',
@@ -135,13 +135,13 @@ export class CryptoService {
     key: ArrayBuffer,
   ): Promise<EncryptedObject> {
     const iv = randomBytes(16)
-    const data = await this.cryptoFunctionService.aesEncrypt(arrayBuffer, iv, key)
+    const data = await this.cryptoFunction.aesEncrypt(arrayBuffer, iv, key)
     return { iv, data, key }
   }
 
   private aesDecryptToUtf8(data: string, iv: string, key: ArrayBuffer): Promise<string> {
-    const fastParams = this.cryptoFunctionService.aesDecryptFastParameters(data, iv, key)
-    return this.cryptoFunctionService.aesDecryptFast(fastParams)
+    const fastParams = this.cryptoFunction.aesDecryptFastParameters(data, iv, key)
+    return this.cryptoFunction.aesDecryptFast(fastParams)
   }
 
   private getPasswordAndSaltAndIterations(

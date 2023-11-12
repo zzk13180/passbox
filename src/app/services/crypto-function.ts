@@ -2,7 +2,7 @@ import pako from 'pako'
 import { fromB64ToArray, fromUtf8ToArray } from '../utils/crypto.util'
 import { DecryptParameters } from '../models'
 
-export class CryptoFunctionService {
+export class CryptoFunction {
   private crypto = window.electronAPI.crypto
 
   constructor() {}

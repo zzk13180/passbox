@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { ScrollingModule } from '@angular/cdk/scrolling'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import {
+  LyCommonModule,
   LyOverlayModule,
   LyExpansionIconModule,
   StyleRenderer,
@@ -24,6 +25,8 @@ import { LyTableModule } from '@alyle/ui/table'
 import { LyDrawerModule } from '@alyle/ui/drawer'
 import { LyCardModule } from '@alyle/ui/card'
 import { LyRadioModule } from '@alyle/ui/radio'
+import { LyCheckboxModule } from '@alyle/ui/checkbox'
+import { LySliderModule } from '@alyle/ui/slider'
 import { SharedModule } from 'src/app/shared/shared.module'
 import { HomeRoutingModule } from './home-routing.module'
 import { FileDropDirective } from './file-drop.directive'
@@ -78,10 +81,13 @@ import { SettingsDialog } from './components/settings/settings.component'
     LyDividerModule,
     LyListModule,
     LyTableModule,
+    LyCommonModule,
     LyOverlayModule,
     LyDrawerModule,
     LyCardModule,
     LyRadioModule,
+    LyCheckboxModule,
+    LySliderModule,
     ScrollingModule,
     DragDropModule,
     SharedModule,

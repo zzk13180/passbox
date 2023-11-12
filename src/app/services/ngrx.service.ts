@@ -23,8 +23,20 @@ export const updateIsFirstTimeLogin = createAction(
   '[Settings] Update Is First Time Login',
   props<{ isFirstTimeLogin: boolean }>(),
 )
-export const updateLanguage = createAction(
-  '[Settings] Update Language',
+export const updateMainWinAlwaysOnTop = createAction(
+  '[Settings] Update Main Window Always On Top',
+  props<{ mainWinAlwaysOnTop: boolean }>(),
+)
+export const updateBrowserWinAlwaysOnTop = createAction(
+  '[Settings] Update Browser Window Always On Top',
+  props<{ browserWinAlwaysOnTop: boolean }>(),
+)
+export const updateNeedRecordVersions = createAction(
+  '[Settings] Update Need Record Versions',
+  props<{ needRecordVersions: boolean }>(),
+)
+export const updateCurrentLang = createAction(
+  '[Settings] Update Current Language',
   props<{ language: I18nLanguageEnum }>(),
 )
 
@@ -57,6 +69,8 @@ export const restore = createAction('[Card List] Restore', props<{ card: Card }>
 
 const initialSettingsState: SettingsState = {
   isFirstTimeLogin: false,
+  mainWinAlwaysOnTop: false,
+  browserWinAlwaysOnTop: false,
   needRecordVersions: true,
   currentLang: I18nLanguageEnum.English,
   KeyboardShortcutsBindings: [],
@@ -65,16 +79,34 @@ export function settingsReducer(state: SettingsState, action: Action) {
   const _reducer = createReducer(
     initialSettingsState,
     on(initSettings, (_state, { settings }) => settings),
+    on(resetSettings, () => initialSettingsState),
     on(updateIsFirstTimeLogin, (state, { isFirstTimeLogin }) => ({
       ...state,
       isFirstTimeLogin,
     })),
-    on(updateLanguage, (state, { language }) => ({ ...state, currentLang: language })),
+    on(updateMainWinAlwaysOnTop, (state, { mainWinAlwaysOnTop }) => ({
+      ...state,
+      mainWinAlwaysOnTop,
+    })),
+    on(updateBrowserWinAlwaysOnTop, (state, { browserWinAlwaysOnTop }) => ({
+      ...state,
+      browserWinAlwaysOnTop,
+    })),
+    on(updateNeedRecordVersions, (state, { needRecordVersions }) => ({
+      ...state,
+      needRecordVersions,
+    })),
+    on(updateCurrentLang, (state, { language }) => ({ ...state, currentLang: language })),
   )
   return _reducer(state, action)
 }
 
 const settingsSelector = createFeatureSelector<SettingsState>('theSettings')
+
+export const selectTheSettings = createSelector(
+  settingsSelector,
+  (state: SettingsState) => state,
+)
 
 export const selectIsFirstTimeLogin = createSelector(
   settingsSelector,

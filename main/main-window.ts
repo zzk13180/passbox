@@ -413,15 +413,17 @@ export class MainWindow {
       this.customLocalStorage.clear()
     })
 
-    ipcMain.on('set-always-on-top', (event, flag: boolean) => {
+    ipcMain.on('set-main-win-always-on-top', (event, flag: boolean) => {
       this.browserWindow.setAlwaysOnTop(flag)
     })
 
-    ipcMain.on('set-always-on-top-open', (event, flag: boolean) => {
+    ipcMain.on('set-browser-win-always-on-top', (event, flag: boolean) => {
       this.openBrowserWindowAlwaysOnTop = flag
-      this.openBrowserWindows.forEach(window => {
-        window.setAlwaysOnTop(flag)
-      })
+      try {
+        this.openBrowserWindows?.forEach(window => {
+          window?.setAlwaysOnTop(flag)
+        })
+      } catch (_) {}
     })
   }
 }

@@ -10,8 +10,9 @@
           <div [className]="classes.intraContent">
             <h2 [lyTyp]="'display2'">{{ i18nText.welcome }}</h2>
             <p [lyTyp]="'title'">{{ i18nText.please }}</p>
-            <div [className]="classes.buttons">
+            <div [className]="classes.buttons" #languageBtns>
               <button
+                id="en"
                 ly-button
                 raised
                 color="primary"
@@ -23,6 +24,7 @@
                 English
               </button>
               <button
+                id="zh"
                 ly-button
                 raised
                 color="primary"
@@ -34,6 +36,7 @@
                 中文
               </button>
               <button
+                id="ja"
                 ly-button
                 raised
                 color="primary"
@@ -45,6 +48,7 @@
                 日本語
               </button>
               <button
+                id="es"
                 ly-button
                 raised
                 color="primary"
@@ -56,6 +60,7 @@
                 Español
               </button>
               <button
+                id="de"
                 ly-button
                 raised
                 color="primary"
@@ -67,6 +72,7 @@
                 Deutsch
               </button>
               <button
+                id="ru"
                 ly-button
                 raised
                 color="primary"
@@ -78,6 +84,7 @@
                 Русский
               </button>
               <button
+                id="fr"
                 ly-button
                 raised
                 color="primary"
@@ -89,6 +96,7 @@
                 Français
               </button>
               <button
+                id="it"
                 ly-button
                 raised
                 color="primary"
@@ -100,6 +108,7 @@
                 Italiano
               </button>
               <button
+                id="pt"
                 ly-button
                 raised
                 color="primary"
@@ -111,6 +120,7 @@
                 Português
               </button>
               <button
+                id="pl"
                 ly-button
                 raised
                 color="primary"
@@ -122,6 +132,7 @@
                 Polski
               </button>
               <button
+                id="ar"
                 ly-button
                 raised
                 color="primary"
@@ -133,6 +144,7 @@
                 العربية
               </button>
               <button
+                id="fa"
                 ly-button
                 raised
                 color="primary"
@@ -144,6 +156,7 @@
                 زبان فارسی
               </button>
               <button
+                id="id"
                 ly-button
                 raised
                 color="primary"
@@ -155,6 +168,7 @@
                 Bahasa Indonesia
               </button>
               <button
+                id="nl"
                 ly-button
                 raised
                 color="primary"
@@ -178,7 +192,14 @@
       <div class="swiper-slide">
         <div [className]="classes.intraContainer">
           <div [className]="classes.intraContent">
-            <p class="slide-ready statement"> TODO: {{ i18nText.statement }} </p>
+            <div class="statement-box">
+              <div class="statement-box-text">
+                TODO: {{ i18nText.statement }}
+                <br />
+                I used AI to translate. Please let me know if you find any errors.
+              </div>
+            </div>
+
             <ly-grid container justify="between" ly-dialog-actions style="width: 100vw">
               <button ly-button class="tutorial-language-next" (click)="next(0)">
                 <ly-icon>arrow_back</ly-icon>

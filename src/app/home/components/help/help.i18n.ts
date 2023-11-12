@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core'
-import type { I18nLanguageEnum } from 'src/app/enums'
+import { I18nLanguageEnum } from 'src/app/enums'
 
 @Injectable()
 export class I18nText {
-  currentLanguage: I18nLanguageEnum
+  currentLanguage: I18nLanguageEnum = I18nLanguageEnum.English
   constructor() {}
 
   #thanks: { [key in I18nLanguageEnum]: string } = {
