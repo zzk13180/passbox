@@ -23,6 +23,7 @@ import {
   CardsPermissionsService,
   MessageService,
   UserStateService,
+  KeyboardShortcutsService,
 } from 'src/app/services'
 import { I18nText } from './settings.i18n'
 import type { SettingsState } from 'src/app/models'
@@ -240,7 +241,7 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
 
   form = new FormGroup({
     keyboardShortcuts: new FormArray(
-      this.keyboardShortcuts.map(item => new FormControl(item.key)),
+      this.keyboardShortcuts.map(item => new FormControl(item.key.toUpperCase())),
     ),
   })
 
@@ -260,6 +261,7 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
     private cardsPermissionsService: CardsPermissionsService,
     private messages: MessageService,
     private userStateService: UserStateService,
+    private keyboardShortcutsService: KeyboardShortcutsService,
   ) {}
 
   async ngOnInit() {
@@ -319,5 +321,13 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
       ctrlKey: true,
     })
     window.dispatchEvent(event)
+  }
+
+  keyInput(index: number, event: KeyboardEvent) {
+    const key = this.keyboardShortcutsService.parseHotkey(event)
+    if (key) {
+      this.keyboardShortcuts[index].key = key
+      this.kbsFormArray.controls[index].setValue(key.toUpperCase())
+    }
   }
 }

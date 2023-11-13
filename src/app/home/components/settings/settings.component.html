@@ -65,11 +65,13 @@
                 appearance="outlined"
                 *ngFor="let kbs of kbsFormArray.controls; index as i"
               >
-                <div class="swiper-no-swiping key-input-box">
-                  test
-                  <input lyNativeControl type="text" [formControlName]="i" />
-                </div>
-                <ly-label>TODO</ly-label>
+                <input
+                  lyNativeControl
+                  type="text"
+                  (keydown)="keyInput(i, $event)"
+                  [formControlName]="i"
+                />
+                <ly-label>{{ keyboardShortcuts[i].name }}</ly-label>
                 <button
                   ly-button
                   *ngIf="kbs.value"
