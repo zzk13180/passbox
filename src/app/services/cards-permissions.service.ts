@@ -45,6 +45,14 @@ export class CardsPermissionsService {
     if (passwordEncryptionStrength < 5000) {
       passwordEncryptionStrength = 5000
     }
+
+    const { passwordEncryptionStrength: existStrength } =
+      await this.userStateService.getUserState()
+
+    if (passwordEncryptionStrength === existStrength) {
+      return
+    }
+
     await this.verifyCardsPermissionsAndExecuteOperation(async () => {
       await this.userStateService.setPasswordEncryptionStrength(
         passwordEncryptionStrength,

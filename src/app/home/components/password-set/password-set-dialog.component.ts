@@ -53,7 +53,7 @@ export class PasswordSetDialog implements AfterViewInit {
     }
     this.dialogRef.close({
       hasError: false,
-      message: 'Password set successfully',
+      message: 'Password set success',
     })
   }
 

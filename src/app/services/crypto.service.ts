@@ -29,6 +29,7 @@ export class CryptoService {
       !this.iterations ||
       !this.password ||
       !this.salt ||
+      this.iterations !== iterations ||
       !areArrayBuffersEqual(this.password, password) ||
       !areArrayBuffersEqual(this.salt, salt)
     ) {
@@ -86,6 +87,7 @@ export class CryptoService {
       !this.iterations ||
       !this.password ||
       !this.salt ||
+      this.iterations !== iterations ||
       !areArrayBuffersEqual(this.password, password) ||
       !areArrayBuffersEqual(this.salt, salt)
     ) {

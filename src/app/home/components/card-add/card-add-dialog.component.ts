@@ -32,7 +32,6 @@ export class CardAddDialog {
 
   @HostListener('keypress', ['$event'])
   onkeyPress(event: KeyboardEvent) {
-    // TODO: user settings
     if (['Enter'].includes(event.key)) {
       this.dialogRef.close(this.data)
     }

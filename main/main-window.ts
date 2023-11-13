@@ -41,7 +41,7 @@ export class MainWindow {
   private cardStorage: StoreType
   private customLocalStorage: StoreType
 
-  constructor(private isServe = false) {
+  constructor(private isDev = false) {
     const userDataPath = app.getPath('userData')
     const cardStoragePath = path.join(userDataPath, `${app.name}.json`)
     const customLocalStoragePath = path.join(userDataPath, 'custom-local-storage.json')
@@ -64,7 +64,7 @@ export class MainWindow {
       icon: path.join(
         __dirname,
         '../',
-        `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
+        `${this.isDev ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
       ),
       alwaysOnTop: false,
       webPreferences: {
@@ -75,7 +75,7 @@ export class MainWindow {
         preload: path.join(
           __dirname,
           '../',
-          `${this.isServe ? 'src' : 'dist'}/preload/preload.js`,
+          `${this.isDev ? 'src' : 'dist'}/preload/preload.js`,
         ),
       },
     })
@@ -101,7 +101,7 @@ export class MainWindow {
     })
   }
 
-  private openBrowser(card: Card): Promise<boolean> {
+  private openBrowser(card: Card): boolean {
     const { href, protocol, pathname } = parse(card.url)
     let url = ''
     if (protocol) {
@@ -125,7 +125,7 @@ export class MainWindow {
         title: 'failed to open the link',
         message: `invalid url: ${card.url}`,
       })
-      return Promise.resolve(false)
+      return false
     }
     const openBrowserWindow = new BrowserWindow({
       width: card.width,
@@ -134,7 +134,7 @@ export class MainWindow {
       icon: path.join(
         __dirname,
         '../',
-        `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
+        `${this.isDev ? 'src' : 'dist'}/assets/icons/favicon.64x64.png`,
       ),
       alwaysOnTop: this.openBrowserWindowAlwaysOnTop,
     })
@@ -150,7 +150,7 @@ export class MainWindow {
     openBrowserWindow.on('closed', () => openBrowserWindow.destroy())
     openBrowserWindow.loadURL(url)
     this.openBrowserWindows.push(openBrowserWindow)
-    return Promise.resolve(true)
+    return true
   }
 
   private enableTray(): void {
@@ -162,14 +162,14 @@ export class MainWindow {
         path.join(
           __dirname,
           '../',
-          `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
+          `${this.isDev ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
         ),
       )
       this.tray.setPressedImage(
         path.join(
           __dirname,
           '../',
-          `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
+          `${this.isDev ? 'src' : 'dist'}/assets/icons/favicon.24x24.png`,
         ),
       )
     } else {
@@ -177,7 +177,7 @@ export class MainWindow {
         path.join(
           __dirname,
           '../',
-          `${this.isServe ? 'src' : 'dist'}/assets/icons/favicon.png`,
+          `${this.isDev ? 'src' : 'dist'}/assets/icons/favicon.png`,
         ),
       )
     }

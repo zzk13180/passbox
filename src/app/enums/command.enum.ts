@@ -1,5 +1,17 @@
 export enum CommandEnum {
   OpenMainWindow = 'OpenMainWindow', // 'Ctrl + Alt + A',
+  QuitMainWindow = 'QuitMainWindow', // 'Ctrl + Q',
+  CloseMainWindow = 'CloseMainWindow', // 'Ctrl + W',
+  MinimizeMainWindow = 'MinimizeMainWindow', // 'Ctrl + M',
+  MaximizeMainWindow = 'MaximizeMainWindow', // 'Ctrl + X',
+  OpenAppsNavDialog = 'OpenAppsNavDialog', // 'Ctrl + A',
   OpenSettingsDialog = 'OpenSettingsDialog', // 'Ctrl + S',
   OpenCardAddDialog = 'OpenCardAddDialog', // 'Ctrl + D',
+  OpenPasswordGeneratorDialog = 'OpenPasswordGeneratorDialog', // 'Ctrl + G',
+  OpenPasswordSetDialog = 'OpenPasswordSetDialog', // '',
+  OpenDeletedCardsDialog = 'OpenDeletedCardsDialog', // '',
+  OpenHistoryDialog = 'OpenHistoryDialog', // '',
+  OpenImportDialog = 'OpenImportDialog', // '',
+  OpenExportDialog = 'OpenExportDialog', // '',
+  OpenHelpDialog = 'OpenHelpDialog', // '',
 }

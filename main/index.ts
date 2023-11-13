@@ -2,37 +2,51 @@ import path from 'node:path'
 import { app, Menu } from 'electron'
 import { MainWindow } from './main-window'
 
+const SERVE_FLAG = '--serve'
+const DEV_URL = 'http://localhost:4200'
+const PROD_URL = `file://${path.join(__dirname, '../', 'dist/index.html')}`
+
 class Main {
   mainWindow: MainWindow
 
+  get isDev(): boolean {
+    const args = process.argv.slice(1)
+    return args.some(val => val === SERVE_FLAG)
+  }
+
   constructor() {
-    if (this.isServer) {
+    this.setupPaths()
+    this.setupMenu()
+    this.mainWindow = new MainWindow(this.isDev)
+  }
+
+  bootstrap() {
+    this.mainWindow.init()
+    this.loadURL()
+  }
+
+  private setupPaths() {
+    if (this.isDev) {
       const appDataPath = app.getAppPath()
       app.setPath('userData', `${appDataPath}/${app.name}-user-data`)
       app.setPath('logs', path.join(app.getPath('userData'), 'logs'))
     }
     // does not rely on browser storage
     app.setPath('sessionData', app.getPath('temp'))
+  }
+
+  private setupMenu() {
     if (process.platform !== 'darwin') {
       Menu.setApplicationMenu(null)
     }
-    this.mainWindow = new MainWindow(this.isServer)
   }
 
-  get isServer(): boolean {
-    const args = process.argv.slice(1)
-    return args.some(val => val === '--serve')
-  }
-
-  bootstrap() {
-    this.mainWindow.init()
-    if (this.isServer) {
+  private loadURL() {
+    if (this.isDev) {
+      this.mainWindow.browserWindow.loadURL(DEV_URL)
       this.mainWindow.browserWindow.webContents.openDevTools()
-      this.mainWindow.browserWindow.loadURL('http://localhost:4200')
     } else {
-      this.mainWindow.browserWindow.loadURL(
-        `file://${path.join(__dirname, '../', 'dist/index.html')}`,
-      )
+      this.mainWindow.browserWindow.loadURL(PROD_URL)
     }
   }
 }

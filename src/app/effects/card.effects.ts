@@ -59,7 +59,7 @@ export class CardEffects {
               {
                 type: 'error',
                 title: 'Error',
-                message: `Get Data Error. ${error.message} Please Feedback or Go back to the previous data version.`,
+                message: `Get Data Error: ${error.message} Please Feedback.`,
               },
               () => {},
             )

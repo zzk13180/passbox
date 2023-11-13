@@ -40,11 +40,10 @@ export class Settingsffects {
       exhaustMap(() =>
         from([JSON.parse(this.storage.getItem(StorageKey.userSettings) || 'null')]).pipe(
           map(settings => {
-            console.log('settings', settings)
             if (!settings) {
               return resetSettings()
             }
-            // if the settings is from db, then we need to update the main process settings
+            // if the settings is from db, need to update the main process settings
             this.electronService.setMainWinAlwaysOnTop(settings.mainWinAlwaysOnTop)
             this.electronService.setBrowserWinAlwaysOnTop(settings.browserWinAlwaysOnTop)
             return initSettings({ settings })

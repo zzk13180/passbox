@@ -219,7 +219,7 @@ export class CardHistoryDialog implements OnInit {
           this.openMessage('No data need to be restored')
         } else {
           this.store.dispatch(add({ cards: addCards }))
-          this.openMessage(`Restore ${addCards.length} cards successfully`)
+          this.openMessage(`Restore ${addCards.length} cards success`)
         }
       })
   }
@@ -246,7 +246,7 @@ export class CardHistoryDialog implements OnInit {
             } catch (error) {
               this.openMessage('Delete failed')
             }
-            this.openMessage(`Delete ${version.title} successfully`)
+            this.openMessage(`Delete ${version.title} success`)
             this.cd.markForCheck()
           })
       },

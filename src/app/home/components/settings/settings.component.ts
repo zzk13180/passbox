@@ -20,6 +20,9 @@ import {
   updateMainWinAlwaysOnTop,
   updateBrowserWinAlwaysOnTop,
   updateNeedRecordVersions,
+  CardsPermissionsService,
+  MessageService,
+  UserStateService,
 } from 'src/app/services'
 import { I18nText } from './settings.i18n'
 import type { SettingsState } from 'src/app/models'
@@ -57,7 +60,8 @@ interface KeyboardShortcut {
 })
 export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
   readonly labels = ['Settings', 'Keyboard shortcuts']
-  activeIndex: number
+  activeIndex: number = 0
+  tabsContentOverflowStyle = 'hidden'
   swiper: Swiper
 
   checkboxTasks: CheckboxTask[] = [
@@ -65,7 +69,6 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
       label: () => this.i18nText.mainWinAlwaysOnTopLabel,
       completed: false,
       onChange: completed => {
-        console.log('Main window always on top')
         this.store.dispatch(updateMainWinAlwaysOnTop({ mainWinAlwaysOnTop: completed }))
       },
     },
@@ -93,20 +96,71 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
       value: 1,
       min: 1,
       max: 10,
-      step: 2,
+      step: 1,
       marks: [],
-      onChange: value => {
-        console.log(value)
+      onChange: async value => {
+        const strength = value === 1 ? 5000 : value * 10_000
+        try {
+          await this.cardsPermissionsService.changePasswordEncryptionStrength(strength)
+        } catch (error) {
+          this.messages.open({
+            msg: error.message,
+          })
+          return
+        }
+        this.messages.open({
+          msg: 'success',
+        })
       },
     },
   ]
 
-  KeyboardShortcuts: KeyboardShortcut[] = [
+  keyboardShortcuts: KeyboardShortcut[] = [
     {
       name: 'Open main window',
       key: 'Ctrl + Alt + A',
       command: CommandEnum.OpenMainWindow,
-      onChange: item => {
+      onChange: (item: KeyboardShortcut) => {
+        console.log(item)
+      },
+    },
+    {
+      name: 'Quit main window',
+      key: 'Ctrl + Q',
+      command: CommandEnum.QuitMainWindow,
+      onChange: (item: KeyboardShortcut) => {
+        console.log(item)
+      },
+    },
+    {
+      name: 'Close main window',
+      key: 'Ctrl + W',
+      command: CommandEnum.CloseMainWindow,
+      onChange: (item: KeyboardShortcut) => {
+        console.log(item)
+      },
+    },
+    {
+      name: 'Minimize main window',
+      key: 'Ctrl + M',
+      command: CommandEnum.MinimizeMainWindow,
+      onChange: (item: KeyboardShortcut) => {
+        console.log(item)
+      },
+    },
+    {
+      name: 'Maximize main window',
+      key: 'Ctrl + X',
+      command: CommandEnum.MaximizeMainWindow,
+      onChange: (item: KeyboardShortcut) => {
+        console.log(item)
+      },
+    },
+    {
+      name: 'Open apps nav dialog',
+      key: 'Ctrl + A',
+      command: CommandEnum.OpenAppsNavDialog,
+      onChange: (item: KeyboardShortcut) => {
         console.log(item)
       },
     },
@@ -114,22 +168,80 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
       name: 'Open settings dialog',
       key: 'Ctrl + S',
       command: CommandEnum.OpenSettingsDialog,
-      onChange: item => {
+      onChange: (item: KeyboardShortcut) => {
         console.log(item)
       },
     },
     {
-      name: 'Open add dialog',
+      name: 'Open add card dialog',
       key: 'Ctrl + D',
       command: CommandEnum.OpenCardAddDialog,
-      onChange: item => {
+      onChange: (item: KeyboardShortcut) => {
+        console.log(item)
+      },
+    },
+    {
+      name: 'Open password generator dialog',
+      key: 'Ctrl + G',
+      command: CommandEnum.OpenPasswordGeneratorDialog,
+      onChange: (item: KeyboardShortcut) => {
+        console.log(item)
+      },
+    },
+    {
+      name: 'Open password set dialog',
+      key: '',
+      command: CommandEnum.OpenPasswordSetDialog,
+      onChange: (item: KeyboardShortcut) => {
+        console.log(item)
+      },
+    },
+    {
+      name: 'Open deleted cards dialog',
+      key: '',
+      command: CommandEnum.OpenDeletedCardsDialog,
+      onChange: (item: KeyboardShortcut) => {
+        console.log(item)
+      },
+    },
+    {
+      name: 'Open history dialog',
+      key: '',
+      command: CommandEnum.OpenHistoryDialog,
+      onChange: (item: KeyboardShortcut) => {
+        console.log(item)
+      },
+    },
+    {
+      name: 'Open import dialog',
+      key: '',
+      command: CommandEnum.OpenImportDialog,
+      onChange: (item: KeyboardShortcut) => {
+        console.log(item)
+      },
+    },
+    {
+      name: 'Open export dialog',
+      key: '',
+      command: CommandEnum.OpenExportDialog,
+      onChange: (item: KeyboardShortcut) => {
+        console.log(item)
+      },
+    },
+    {
+      name: 'Open help dialog',
+      key: '',
+      command: CommandEnum.OpenHelpDialog,
+      onChange: (item: KeyboardShortcut) => {
         console.log(item)
       },
     },
   ]
 
   form = new FormGroup({
-    keyboardShortcuts: new FormArray([new FormControl(''), new FormControl('')]),
+    keyboardShortcuts: new FormArray(
+      this.keyboardShortcuts.map(item => new FormControl(item.key)),
+    ),
   })
 
   get kbsFormArray(): FormArray {
@@ -145,11 +257,19 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
     readonly sRenderer: StyleRenderer,
     private _cd: ChangeDetectorRef,
     private store: Store,
+    private cardsPermissionsService: CardsPermissionsService,
+    private messages: MessageService,
+    private userStateService: UserStateService,
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.activeIndex = 1
     Promise.resolve(true).then(() => (this.activeIndex = 0))
+    const { passwordEncryptionStrength: existStrength } =
+      await this.userStateService.getUserState()
+
+    this.sliderTasks[0].value = Math.ceil(existStrength / 10_000)
+
     this.store.select(selectTheSettings).subscribe((settings: SettingsState) => {
       const {
         mainWinAlwaysOnTop,
@@ -160,7 +280,6 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
       this.checkboxTasks[0].completed = mainWinAlwaysOnTop
       this.checkboxTasks[1].completed = browserWinAlwaysOnTop
       this.checkboxTasks[2].completed = !needRecordVersions
-      console.log(currentLang)
       this.i18nText.currentLanguage = currentLang
       this._cd.markForCheck()
     })
@@ -180,6 +299,7 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
     this.swiper.slideTo(0)
     this.swiper.on('slideChange', () => {
       this.activeIndex = this.swiper.activeIndex
+      this.tabsContentOverflowStyle = this.activeIndex === 0 ? 'hidden' : 'auto'
       this._cd.markForCheck()
     })
   }
