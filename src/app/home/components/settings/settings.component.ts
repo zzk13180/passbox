@@ -14,7 +14,7 @@ import { LyDialogRef } from '@alyle/ui/dialog'
 import Swiper from 'swiper'
 import { EffectCube, EffectCoverflow } from 'swiper/modules'
 import { Store } from '@ngrx/store'
-import { CommandEnum } from 'src/app/enums'
+import { take } from 'rxjs'
 import {
   selectTheSettings,
   updateMainWinAlwaysOnTop,
@@ -24,31 +24,27 @@ import {
   MessageService,
   UserStateService,
   KeyboardShortcutsService,
+  selectInitialSettings,
+  updateKeyboardShortcutsBindings,
+  selectCurrentLanguage,
 } from 'src/app/services'
 import { I18nText } from './settings.i18n'
-import type { SettingsState } from 'src/app/models'
+import type { SettingsState, KeyboardShortcutsBindingItem } from 'src/app/models'
 
 interface CheckboxTask {
-  label: () => string // TODO
+  label: keyof I18nText
   completed: boolean
   onChange: (completed: boolean) => void
 }
 
 interface SliderTask {
-  name: string
+  name: keyof I18nText
   value: number
   min: number
   max: number
   step: number
   marks: { value: number; label: string }[]
   onChange: (value: number) => void
-}
-
-interface KeyboardShortcut {
-  name: string
-  key: string
-  command: CommandEnum
-  onChange: (item: KeyboardShortcut) => void
 }
 
 @Component({
@@ -64,17 +60,25 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
   activeIndex: number = 0
   tabsContentOverflowStyle = 'hidden'
   swiper: Swiper
+  initialKbs: KeyboardShortcutsBindingItem[]
+  form: FormGroup = new FormGroup({
+    keyboardShortcuts: new FormArray([]),
+  })
+
+  get kbsFormArray(): FormArray {
+    return this.form.get('keyboardShortcuts') as FormArray
+  }
 
   checkboxTasks: CheckboxTask[] = [
     {
-      label: () => this.i18nText.mainWinAlwaysOnTopLabel,
+      label: 'mainWinAlwaysOnTopLabel',
       completed: false,
       onChange: completed => {
         this.store.dispatch(updateMainWinAlwaysOnTop({ mainWinAlwaysOnTop: completed }))
       },
     },
     {
-      label: () => 'Open browser window always on top',
+      label: 'openBrowserWinAlwaysOnTopLabel',
       completed: false,
       onChange: completed => {
         this.store.dispatch(
@@ -83,7 +87,7 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
       },
     },
     {
-      label: () => 'Do not record historical versions',
+      label: 'doNotRecordHistoricalVersionsLabel',
       completed: false,
       onChange: completed => {
         this.store.dispatch(updateNeedRecordVersions({ needRecordVersions: !completed }))
@@ -93,7 +97,7 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
 
   sliderTasks: SliderTask[] = [
     {
-      name: 'Password encryption strength',
+      name: 'passwordEncryptionStrengthLabel',
       value: 1,
       min: 1,
       max: 10,
@@ -115,139 +119,6 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
       },
     },
   ]
-
-  keyboardShortcuts: KeyboardShortcut[] = [
-    {
-      name: 'Open main window',
-      key: 'Ctrl + Alt + A',
-      command: CommandEnum.OpenMainWindow,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Quit main window',
-      key: 'Ctrl + Q',
-      command: CommandEnum.QuitMainWindow,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Close main window',
-      key: 'Ctrl + W',
-      command: CommandEnum.CloseMainWindow,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Minimize main window',
-      key: 'Ctrl + M',
-      command: CommandEnum.MinimizeMainWindow,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Maximize main window',
-      key: 'Ctrl + X',
-      command: CommandEnum.MaximizeMainWindow,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Open apps nav dialog',
-      key: 'Ctrl + A',
-      command: CommandEnum.OpenAppsNavDialog,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Open settings dialog',
-      key: 'Ctrl + S',
-      command: CommandEnum.OpenSettingsDialog,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Open add card dialog',
-      key: 'Ctrl + D',
-      command: CommandEnum.OpenCardAddDialog,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Open password generator dialog',
-      key: 'Ctrl + G',
-      command: CommandEnum.OpenPasswordGeneratorDialog,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Open password set dialog',
-      key: '',
-      command: CommandEnum.OpenPasswordSetDialog,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Open deleted cards dialog',
-      key: '',
-      command: CommandEnum.OpenDeletedCardsDialog,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Open history dialog',
-      key: '',
-      command: CommandEnum.OpenHistoryDialog,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Open import dialog',
-      key: '',
-      command: CommandEnum.OpenImportDialog,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Open export dialog',
-      key: '',
-      command: CommandEnum.OpenExportDialog,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-    {
-      name: 'Open help dialog',
-      key: '',
-      command: CommandEnum.OpenHelpDialog,
-      onChange: (item: KeyboardShortcut) => {
-        console.log(item)
-      },
-    },
-  ]
-
-  form = new FormGroup({
-    keyboardShortcuts: new FormArray(
-      this.keyboardShortcuts.map(item => new FormControl(item.key.toUpperCase())),
-    ),
-  })
-
-  get kbsFormArray(): FormArray {
-    return this.form.get('keyboardShortcuts') as FormArray
-  }
 
   @ViewChild('swiperContainer') swiperContainer: ElementRef<HTMLDivElement>
 
@@ -272,19 +143,46 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
 
     this.sliderTasks[0].value = Math.ceil(existStrength / 10_000)
 
-    this.store.select(selectTheSettings).subscribe((settings: SettingsState) => {
-      const {
-        mainWinAlwaysOnTop,
-        browserWinAlwaysOnTop,
-        needRecordVersions,
-        currentLang,
-      } = settings
-      this.checkboxTasks[0].completed = mainWinAlwaysOnTop
-      this.checkboxTasks[1].completed = browserWinAlwaysOnTop
-      this.checkboxTasks[2].completed = !needRecordVersions
-      this.i18nText.currentLanguage = currentLang
+    this.store.select(selectCurrentLanguage).subscribe(language => {
+      console.log('selectCurrentLanguage', language)
+      this.i18nText.currentLanguage = language
       this._cd.markForCheck()
     })
+
+    this.store
+      .select(selectTheSettings)
+      .pipe(take(1))
+      .subscribe((settings: SettingsState) => {
+        const {
+          mainWinAlwaysOnTop,
+          browserWinAlwaysOnTop,
+          needRecordVersions,
+          keyboardShortcutsBindings,
+        } = settings
+        this.checkboxTasks[0].completed = mainWinAlwaysOnTop
+        this.checkboxTasks[1].completed = browserWinAlwaysOnTop
+        this.checkboxTasks[2].completed = !needRecordVersions
+        this.kbsFormArray.clear()
+        keyboardShortcutsBindings.forEach(item => {
+          const formControl = new FormControl(item.key)
+          formControl.valueChanges.subscribe((key: string) => {
+            this.store.dispatch(
+              updateKeyboardShortcutsBindings({ command: item.command, key }),
+            )
+          })
+          this.kbsFormArray.push(formControl)
+        })
+        this._cd.markForCheck()
+      })
+
+    this.store
+      .select(selectInitialSettings)
+      .pipe(take(1))
+      .subscribe((settings: SettingsState) => {
+        const { keyboardShortcutsBindings } = settings
+        this.initialKbs = keyboardShortcutsBindings
+        this._cd.markForCheck()
+      })
   }
 
   ngAfterViewInit() {
@@ -303,6 +201,10 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
       this.activeIndex = this.swiper.activeIndex
       this.tabsContentOverflowStyle = this.activeIndex === 0 ? 'hidden' : 'auto'
       this._cd.markForCheck()
+      try {
+        const container = this.swiperContainer.nativeElement.parentNode as HTMLElement
+        container.scrollTop = 0
+      } catch (_) {}
     })
   }
 
@@ -324,10 +226,20 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
   }
 
   keyInput(index: number, event: KeyboardEvent) {
+    event.preventDefault()
+    event.stopPropagation()
     const key = this.keyboardShortcutsService.parseHotkey(event)
     if (key) {
-      this.keyboardShortcuts[index].key = key
-      this.kbsFormArray.controls[index].setValue(key.toUpperCase())
+      this.kbsFormArray.controls[index].setValue(key)
     }
+  }
+
+  stopScroll(event: Event) {
+    event.preventDefault()
+    event.stopPropagation()
+    try {
+      const targetElement = event.target as Element
+      targetElement.scrollTop = 0
+    } catch (_) {}
   }
 }

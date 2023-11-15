@@ -16,7 +16,10 @@ import Swiper from 'swiper'
 import { EffectCube, EffectCoverflow } from 'swiper/modules'
 import { createNoise3D } from 'simplex-noise'
 import { Store } from '@ngrx/store'
-import { updateCurrentLang, selectLanguage } from 'src/app/services/ngrx.service'
+import {
+  updateCurrentLanguage,
+  selectCurrentLanguage,
+} from 'src/app/services/ngrx.service'
 import { I18nLanguageEnum } from 'src/app/enums'
 import { I18nText } from './tutorial.i18n'
 import { STYLES } from './STYLES.data'
@@ -50,7 +53,7 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.store.select(selectLanguage).subscribe(language => {
+    this.store.select(selectCurrentLanguage).subscribe(language => {
       this.i18nText.currentLanguage = language
       this._cd.markForCheck()
     })
@@ -102,7 +105,7 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setLanguage(lang: I18nLanguageEnum) {
-    this.store.dispatch(updateCurrentLang({ language: lang }))
+    this.store.dispatch(updateCurrentLanguage({ language: lang }))
   }
 
   @HostListener('window:resize') _resize$() {

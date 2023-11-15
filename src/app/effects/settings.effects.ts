@@ -10,7 +10,7 @@ import {
   map,
 } from 'rxjs'
 import { Store } from '@ngrx/store'
-import { StorageKey } from 'src/app/enums'
+import { StorageKey, I18nLanguageEnum } from 'src/app/enums'
 import {
   LocalStorage,
   ElectronService,
@@ -21,7 +21,8 @@ import {
   updateMainWinAlwaysOnTop,
   updateBrowserWinAlwaysOnTop,
   updateNeedRecordVersions,
-  updateCurrentLang,
+  updateCurrentLanguage,
+  updateKeyboardShortcutsBindings,
 } from 'src/app/services'
 import type { SettingsState } from '../models'
 
@@ -39,13 +40,23 @@ export class Settingsffects {
       ofType(getSettings),
       exhaustMap(() =>
         from([JSON.parse(this.storage.getItem(StorageKey.userSettings) || 'null')]).pipe(
-          map(settings => {
-            if (!settings) {
+          map((settings: Partial<SettingsState>) => {
+            if (!settings || !settings.keyboardShortcutsBindings?.length) {
               return resetSettings()
             }
-            // if the settings is from db, need to update the main process settings
-            this.electronService.setMainWinAlwaysOnTop(settings.mainWinAlwaysOnTop)
-            this.electronService.setBrowserWinAlwaysOnTop(settings.browserWinAlwaysOnTop)
+            if (!settings.currentLanguage) {
+              settings.currentLanguage = I18nLanguageEnum.English
+            }
+            try {
+              // if the settings is from db, need to update the main process settings
+              this.electronService.setMainWinAlwaysOnTop(!!settings.mainWinAlwaysOnTop)
+              this.electronService.setBrowserWinAlwaysOnTop(
+                !!settings.browserWinAlwaysOnTop,
+              )
+            } catch (error) {
+              console.error(error)
+            }
+            // @ts-ignore
             return initSettings({ settings })
           }),
           catchError(error => {
@@ -66,7 +77,8 @@ export class Settingsffects {
           updateMainWinAlwaysOnTop,
           updateBrowserWinAlwaysOnTop,
           updateNeedRecordVersions,
-          updateCurrentLang,
+          updateCurrentLanguage,
+          updateKeyboardShortcutsBindings,
         ),
         debounceTime(300),
         withLatestFrom(this.store.select('theSettings')),

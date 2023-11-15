@@ -1,8 +1,9 @@
 import { I18nLanguageEnum, CommandEnum } from '../enums'
 
 export interface KeyboardShortcutsBindingItem {
-  cmd: CommandEnum
-  key?: string
+  label: string
+  key: string
+  command: CommandEnum
 }
 
 export interface SettingsState {
@@ -12,6 +13,6 @@ export interface SettingsState {
   mainWinAlwaysOnTop: boolean
   browserWinAlwaysOnTop: boolean
   needRecordVersions: boolean
-  currentLang: I18nLanguageEnum
-  KeyboardShortcutsBindings: KeyboardShortcutsBindingItem[]
+  currentLanguage: I18nLanguageEnum
+  keyboardShortcutsBindings: KeyboardShortcutsBindingItem[]
 }

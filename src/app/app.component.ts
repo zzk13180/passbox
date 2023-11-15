@@ -1,7 +1,6 @@
-import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core'
+import { Component, ViewChild, OnInit } from '@angular/core'
 import { LyClasses, StyleRenderer, ThemeVariables, WithStyles, lyl } from '@alyle/ui'
 import { LySnackBar } from '@alyle/ui/snack-bar'
-import { Subject, takeUntil } from 'rxjs'
 import { Store } from '@ngrx/store'
 import { MessageService, getSettings } from './services'
 
@@ -25,10 +24,9 @@ const STYLES = (theme: ThemeVariables) => ({
   styleUrls: ['./app.component.scss'],
   providers: [StyleRenderer],
 })
-export class AppComponent implements WithStyles, OnInit, OnDestroy {
+export class AppComponent implements WithStyles, OnInit {
   @ViewChild('messages') messages: LySnackBar
   readonly classes: LyClasses<typeof STYLES>
-  private destroy$ = new Subject()
   private queue = []
   private executing = false
   constructor(
@@ -40,18 +38,14 @@ export class AppComponent implements WithStyles, OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.messageService.messagesObs.pipe(takeUntil(this.destroy$)).subscribe(message => {
+    // appcomponent is never destroyed don not need to unsubscribe
+    this.messageService.messagesObs.subscribe(message => {
       this.queue.push(message)
       if (!this.executing) {
         this.executeQueue()
       }
     })
     this.store.dispatch(getSettings())
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(true)
-    this.destroy$.complete()
   }
 
   private async executeQueue() {

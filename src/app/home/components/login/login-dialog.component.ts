@@ -5,8 +5,10 @@ import {
   ChangeDetectionStrategy,
   ViewChild,
   AfterViewInit,
+  OnDestroy,
 } from '@angular/core'
 import { Store } from '@ngrx/store'
+import { Subscription } from 'rxjs'
 import { LyDialogRef } from '@alyle/ui/dialog'
 import { CardsPermissionsService, resetCards } from 'src/app/services'
 import type { NgModel } from '@angular/forms'
@@ -15,10 +17,11 @@ import type { NgModel } from '@angular/forms'
   templateUrl: './login-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginDialog implements AfterViewInit {
+export class LoginDialog implements AfterViewInit, OnDestroy {
   see = true
   _password = ''
   @ViewChild('passwordModel') passwordModel: NgModel
+  private readonly subscription = new Subscription()
   // eslint-disable-next-line max-params
   constructor(
     public dialogRef: LyDialogRef,
@@ -30,12 +33,14 @@ export class LoginDialog implements AfterViewInit {
 
   ngAfterViewInit(): void {
     const encoder = new TextEncoder()
-    this.passwordModel.valueChanges.subscribe((password: string) => {
-      const { byteLength } = encoder.encode(password)
-      if (byteLength > 64) {
-        this.passwordModel.control.setErrors({ maxbyte: true })
-      }
-    })
+    this.subscription.add(
+      this.passwordModel.valueChanges.subscribe((password: string) => {
+        const { byteLength } = encoder.encode(password)
+        if (byteLength > 64) {
+          this.passwordModel.control.setErrors({ maxbyte: true })
+        }
+      }),
+    )
   }
 
   reset() {
@@ -91,5 +96,9 @@ export class LoginDialog implements AfterViewInit {
     if (event.key === 'Enter') {
       this.ok()
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe()
   }
 }

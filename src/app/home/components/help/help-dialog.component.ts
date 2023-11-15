@@ -10,7 +10,7 @@ import {
 } from '@angular/core'
 import { LyClasses, LyTheme2 } from '@alyle/ui'
 import { Store } from '@ngrx/store'
-import { ElectronService, selectLanguage } from 'src/app/services'
+import { ElectronService, selectCurrentLanguage } from 'src/app/services'
 import { Card } from 'src/app/models'
 import { I18nText } from './help.i18n'
 import { STYLES } from './STYLES.data'
@@ -44,7 +44,7 @@ export class HelpDialog implements OnInit, OnDestroy {
       this.appInfo = appInfo
       this._cd.markForCheck()
     })
-    this.store.select(selectLanguage).subscribe(language => {
+    this.store.select(selectCurrentLanguage).subscribe(language => {
       this.i18nText.currentLanguage = language
       this._cd.markForCheck()
     })

@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import { Injectable, Inject } from '@angular/core'
 import { DOCUMENT } from '@angular/common'
+// import { Store } from '@ngrx/store'
 import {
   KeyCode,
   KeyCodeUtils,
@@ -11,6 +12,7 @@ import {
 } from './keyboard-codes'
 import { IKeyboardEvent, StandardKeyboardEvent } from './keyboard-event'
 import { ScanCodeChord, KeyCodeChord, Chord } from './keyboard-bindings'
+// import { KeybindingParser } from './keybindingParser'
 
 @Injectable({
   providedIn: 'root',
@@ -69,10 +71,11 @@ export class KeyboardShortcutsService {
   }
 
   parseHotkey(event: KeyboardEvent): string | null {
-    event.preventDefault()
-    event.stopPropagation()
     const keyboardEvent = new StandardKeyboardEvent(event)
     if (keyboardEvent.equals(KeyCode.Escape)) {
+      return null
+    }
+    if (keyboardEvent.equals(KeyCode.KEY_IN_COMPOSITION)) {
       return null
     }
     const chord = this.resolveKeyboardEvent(keyboardEvent)
@@ -96,20 +99,20 @@ export class KeyboardShortcutsService {
     let result = ''
 
     if (chord.ctrlKey) {
-      result += 'ctrl+'
+      result += 'ctrl + '
     }
     if (chord.shiftKey) {
-      result += 'shift+'
+      result += 'shift + '
     }
     if (chord.altKey) {
-      result += 'alt+'
+      result += 'alt + '
     }
     if (chord.metaKey) {
-      result += 'meta+'
+      result += 'meta + '
     }
     result += KeyCodeUtils.toString(chord.keyCode)
 
-    return result
+    return result.toUpperCase()
   }
 
   private getChordDispatchMac(chord: ScanCodeChord): string | null {
@@ -120,20 +123,20 @@ export class KeyboardShortcutsService {
     let result = ''
 
     if (chord.ctrlKey) {
-      result += 'ctrl+'
+      result += 'ctrl + '
     }
     if (chord.shiftKey) {
-      result += 'shift+'
+      result += 'shift + '
     }
     if (chord.altKey) {
-      result += 'alt+'
+      result += 'alt + '
     }
     if (chord.metaKey) {
-      result += 'meta+'
+      result += 'meta + '
     }
     result += codeDispatch
 
-    return result
+    return result.toUpperCase()
   }
 
   private resolveKeyboardEvent(keyboardEvent: IKeyboardEvent): Chord {

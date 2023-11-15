@@ -22,8 +22,7 @@
               [(ngModel)]="item.completed"
               (ngModelChange)="item.onChange(item.completed)"
             >
-              <!-- TODO -->
-              {{ item.label() }}
+              {{ i18nText[item.label] }}
             </ly-checkbox>
             <br />
             <div
@@ -48,7 +47,7 @@
                   {{ mark.label }}
                 </ly-mark>
               </ly-slider>
-              <p>{{ item.name }}</p>
+              <p>{{ i18nText[item.name] }}</p>
             </div>
             <br />
             <button ly-button raised (click)="showTutorialDialog()">
@@ -61,25 +60,38 @@
           <form [formGroup]="form">
             <div formArrayName="keyboardShortcuts">
               <ly-field
+                class="swiper-no-swiping"
                 [lyWidth]="1"
                 appearance="outlined"
-                *ngFor="let kbs of kbsFormArray.controls; index as i"
+                *ngFor="let item of kbsFormArray.controls; index as i"
               >
                 <input
+                  (scroll)="stopScroll($event)"
                   lyNativeControl
+                  readonly
                   type="text"
                   (keydown)="keyInput(i, $event)"
                   [formControlName]="i"
                 />
-                <ly-label>{{ keyboardShortcuts[i].name }}</ly-label>
+                <ly-label>{{ initialKbs[i].label }}</ly-label>
                 <button
                   ly-button
-                  *ngIf="kbs.value"
+                  *ngIf="item.value"
                   appearance="icon"
                   lySuffix
-                  (click)="kbs.setValue('')"
+                  (click)="item.setValue('')"
+                  title="Clear"
                 >
                   <ly-icon>close</ly-icon>
+                </button>
+                <button
+                  ly-button
+                  appearance="icon"
+                  lySuffix
+                  (click)="item.setValue(initialKbs[i].key)"
+                  title="Reset"
+                >
+                  <ly-icon>restart_alt</ly-icon>
                 </button>
               </ly-field>
             </div>

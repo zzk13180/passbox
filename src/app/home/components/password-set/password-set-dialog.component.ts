@@ -3,18 +3,21 @@ import {
   ChangeDetectionStrategy,
   ViewChild,
   AfterViewInit,
+  OnDestroy,
 } from '@angular/core'
 import { LyDialogRef } from '@alyle/ui/dialog'
 import { UserStateService, CardsPermissionsService } from 'src/app/services'
 import type { NgModel } from '@angular/forms'
+import type { Unsubscribable } from 'rxjs'
 
 @Component({
   templateUrl: './password-set-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PasswordSetDialog implements AfterViewInit {
+export class PasswordSetDialog implements AfterViewInit, OnDestroy {
   see: boolean = false
   _password: string
+  private subscription: Unsubscribable
   @ViewChild('passwordModel') passwordModel: NgModel
 
   constructor(
@@ -27,7 +30,7 @@ export class PasswordSetDialog implements AfterViewInit {
 
   ngAfterViewInit(): void {
     const encoder = new TextEncoder()
-    this.passwordModel.valueChanges.subscribe((password: string) => {
+    this.subscription = this.passwordModel.valueChanges.subscribe((password: string) => {
       const { byteLength } = encoder.encode(password)
       if (byteLength > 64) {
         this.passwordModel.control.setErrors({ maxbyte: true })
@@ -61,5 +64,9 @@ export class PasswordSetDialog implements AfterViewInit {
     if (event.key === 'Enter') {
       this.ok()
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe()
   }
 }

@@ -10,8 +10,14 @@ import {
 import Fuse from 'fuse.js'
 import { v4 as uuid } from 'uuid'
 import { moveItemInArray } from '../utils/array.util'
-import { I18nLanguageEnum } from '../enums'
-import type { Card, CardState, SettingsState } from '../models'
+import { I18nLanguageEnum, CommandEnum } from '../enums'
+import { keyboardShortcutsBindings } from './keyboard-shortcuts.data'
+import type {
+  Card,
+  CardState,
+  SettingsState,
+  KeyboardShortcutsBindingItem,
+} from '../models'
 
 export const getSettings = createAction('[Settings] Get The Settings From DB')
 export const resetSettings = createAction('[Settings] Reset The Settings')
@@ -35,9 +41,13 @@ export const updateNeedRecordVersions = createAction(
   '[Settings] Update Need Record Versions',
   props<{ needRecordVersions: boolean }>(),
 )
-export const updateCurrentLang = createAction(
+export const updateCurrentLanguage = createAction(
   '[Settings] Update Current Language',
   props<{ language: I18nLanguageEnum }>(),
+)
+export const updateKeyboardShortcutsBindings = createAction(
+  '[Settings] Update Keyboard Shortcuts Bindings',
+  props<{ command: CommandEnum; key: string }>(),
 )
 
 export const getCards = createAction('[Card List] Get The Cards From DB')
@@ -72,8 +82,8 @@ const initialSettingsState: SettingsState = {
   mainWinAlwaysOnTop: false,
   browserWinAlwaysOnTop: false,
   needRecordVersions: true,
-  currentLang: I18nLanguageEnum.English,
-  KeyboardShortcutsBindings: [],
+  currentLanguage: I18nLanguageEnum.English,
+  keyboardShortcutsBindings,
 }
 export function settingsReducer(state: SettingsState, action: Action) {
   const _reducer = createReducer(
@@ -96,7 +106,17 @@ export function settingsReducer(state: SettingsState, action: Action) {
       ...state,
       needRecordVersions,
     })),
-    on(updateCurrentLang, (state, { language }) => ({ ...state, currentLang: language })),
+    on(updateCurrentLanguage, (state, { language }) => ({
+      ...state,
+      currentLanguage: language,
+    })),
+    on(updateKeyboardShortcutsBindings, (state, { command, key }) => ({
+      ...state,
+      keyboardShortcutsBindings: state.keyboardShortcutsBindings.map(
+        (item: KeyboardShortcutsBindingItem) =>
+          item.command === command ? { ...item, key } : item,
+      ),
+    })),
   )
   return _reducer(state, action)
 }
@@ -106,6 +126,11 @@ const settingsSelector = createFeatureSelector<SettingsState>('theSettings')
 export const selectTheSettings = createSelector(
   settingsSelector,
   (state: SettingsState) => state,
+)
+
+export const selectInitialSettings = createSelector(
+  settingsSelector,
+  _ => initialSettingsState,
 )
 
 export const selectIsFirstTimeLogin = createSelector(
@@ -118,9 +143,14 @@ export const selectNeedRecordVersions = createSelector(
   (state: SettingsState) => state.needRecordVersions,
 )
 
-export const selectLanguage = createSelector(
+export const selectCurrentLanguage = createSelector(
   settingsSelector,
-  (state: SettingsState) => state.currentLang,
+  (state: SettingsState) => state.currentLanguage,
+)
+
+export const selectKeyboardShortcutsBindings = createSelector(
+  settingsSelector,
+  (state: SettingsState) => state.keyboardShortcutsBindings,
 )
 
 const initialCardState: CardState = {
