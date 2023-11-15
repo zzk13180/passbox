@@ -144,7 +144,6 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
     this.sliderTasks[0].value = Math.ceil(existStrength / 10_000)
 
     this.store.select(selectCurrentLanguage).subscribe(language => {
-      console.log('selectCurrentLanguage', language)
       this.i18nText.currentLanguage = language
       this._cd.markForCheck()
     })

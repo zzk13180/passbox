@@ -58,7 +58,7 @@ export class StepsGuideDirective implements OnInit, OnDestroy {
   // 可选，用于修正引导位置
   @Input() leftFix = 0
   @Input() topFix = 0
-  @Input() zIndex = 1100
+  @Input() zIndex = 1200
   // 引导显示的目标dom,如果指定，不在使用指令所在的dom作为目标dom
   @Input() targetElement: any
   @Input() scrollElement: any

@@ -1,5 +1,5 @@
 .tutorial {
-  z-index: 1999;
+  z-index: 1200; // theme.zIndex.overlay
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -16,7 +16,7 @@
   top: 1px;
   border: 0;
   color: #fff;
-  z-index: 1000;
+  z-index: 1200; // theme.zIndex.overlay
 }
 
 .tutorial-active-btn {

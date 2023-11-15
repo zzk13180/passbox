@@ -49,7 +49,7 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
   position = 'top'
   leftFix: number
   topFix: number
-  zIndex = 1400
+  zIndex = 1200
   extraConfig: ExtraConfig
   dots: Array<undefined> = []
   subScriber: Subscription

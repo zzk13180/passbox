@@ -9,7 +9,7 @@ body {
 }
 
 .cdk-overlay-container {
-  z-index: 1500;
+  z-index: 1200; // theme.zIndex.overlay. the highest z-index value utilized in this app.
 }
 
 /* japanese */
