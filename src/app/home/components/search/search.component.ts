@@ -15,11 +15,12 @@ import {
   Output,
   Renderer2,
   ViewChild,
-  HostListener,
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { fromEvent, Subject } from 'rxjs'
 import { debounceTime, filter, map, takeUntil } from 'rxjs/operators'
+import { CommandListener } from 'src/app/decorator'
+import { CommandEnum } from 'src/app/enums'
 
 @Component({
   selector: 'search-card',
@@ -95,8 +96,7 @@ export class SearchComponent
     this.onTouch()
   }
 
-  @HostListener('window:keydown.meta.f')
-  @HostListener('window:keydown.control.f')
+  @CommandListener(CommandEnum.FocusSearchInput)
   inputfocus() {
     this.filterInputElement.nativeElement.focus()
   }

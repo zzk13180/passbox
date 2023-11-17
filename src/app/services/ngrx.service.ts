@@ -11,7 +11,7 @@ import Fuse from 'fuse.js'
 import { v4 as uuid } from 'uuid'
 import { moveItemInArray } from '../utils/array.util'
 import { I18nLanguageEnum, CommandEnum } from '../enums'
-import { keyboardShortcutsBindings } from './keyboard-shortcuts.data'
+import { keyboardShortcutsBindings } from './keyboard-shortcuts/keyboard-shortcuts.data'
 import type {
   Card,
   CardState,

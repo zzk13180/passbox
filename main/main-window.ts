@@ -14,6 +14,7 @@ import {
   clipboard,
   BrowserWindow,
   MenuItemConstructorOptions,
+  globalShortcut,
 } from 'electron'
 import { OpenBrowserMenu } from './open-browser-menu'
 import { Store } from './store'
@@ -425,5 +426,25 @@ export class MainWindow {
         })
       } catch (_) {}
     })
+
+    ipcMain.on(
+      'register-global-shortcut-open-main-window',
+      (event, accelerator: string) => {
+        const ret = globalShortcut.register(accelerator, () => {
+          // TODO: check accelerator is valid
+          console.log('pressed')
+          if (this.browserWindow) {
+            this.browserWindow.show()
+            this.browserWindow.focus()
+          }
+        })
+        if (!ret) {
+          event.reply(
+            'register-global-shortcut-open-main-window-failed',
+            `register ${accelerator} failed`,
+          )
+        }
+      },
+    )
   }
 }

@@ -59,6 +59,7 @@
         <div class="swiper-slide">
           <form [formGroup]="form">
             <div formArrayName="keyboardShortcuts">
+              <!-- [matTooltip]="origKbs[i].label" -->
               <ly-field
                 class="swiper-no-swiping"
                 [lyWidth]="1"
@@ -66,14 +67,14 @@
                 *ngFor="let item of kbsFormArray.controls; index as i"
               >
                 <input
-                  (scroll)="stopScroll($event)"
+                  [class]="classes.input"
                   lyNativeControl
                   readonly
                   type="text"
                   (keydown)="keyInput(i, $event)"
                   [formControlName]="i"
                 />
-                <ly-label>{{ initialKbs[i].label }}</ly-label>
+                <ly-label>{{ origKbs[i].label }}&nbsp;&nbsp;&nbsp;</ly-label>
                 <button
                   ly-button
                   *ngIf="item.value"
@@ -88,7 +89,7 @@
                   ly-button
                   appearance="icon"
                   lySuffix
-                  (click)="item.setValue(initialKbs[i].key)"
+                  (click)="item.setValue(origKbs[i].key)"
                   title="Reset"
                 >
                   <ly-icon>restart_alt</ly-icon>

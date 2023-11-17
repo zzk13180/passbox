@@ -49,20 +49,28 @@ export class I18nText {
   }
 
   #statement: { [key in I18nLanguageEnum]: string } = {
-    English: 'This is a statement.',
-    Chinese: '这是一个声明。',
-    Japanese: 'これは声明です。',
-    Spanish: 'Esta es una declaración.',
-    German: 'Dies ist eine Erklärung.',
-    Russian: 'Это заявление.',
-    French: 'Ceci est une déclaration.',
-    Italian: 'Questa è una dichiarazione.',
-    Portuguese: 'Esta é uma declaração.',
-    Polish: 'To jest oświadczenie.',
-    Arabic: 'هذا بيان.',
-    Persian: 'این یک بیانیه است.',
-    Indonesian: 'Ini adalah pernyataan.',
-    Dutch: 'Dit is een verklaring.',
+    English: 'I used AI to translate. Please let me know if you find any errors.',
+    Chinese: '我使用人工智能进行翻译。如果您发现任何错误，请告诉我。',
+    Japanese: '私はAIを使用して翻訳しました。エラーがあればお知らせください。',
+    Spanish:
+      'Usé inteligencia artificial para traducir. Por favor, avísame si encuentras algún error.',
+    German:
+      'Ich habe KI verwendet, um zu übersetzen. Lass es mich wissen, wenn du Fehler findest.',
+    Russian:
+      'Я использовал искусственный интеллект для перевода. Пожалуйста, сообщите мне, если вы найдете ошибки.',
+    French:
+      "J'ai utilisé l'IA pour traduire. Veuillez me faire savoir si vous trouvez des erreurs.",
+    Italian: "Ho usato l'IA per tradurre. Fammi sapere se trovi degli errori.",
+    Portuguese:
+      'Eu usei a IA para traduzir. Por favor, me avise se encontrar algum erro.',
+    Polish:
+      'Użyłem sztucznej inteligencji do tłumaczenia. Proszę daj mi znać, jeśli znajdziesz jakiekolwiek błędy.',
+    Arabic: 'لقد استخدمت الذكاء الاصطناعي للترجمة. يرجى إخباري إذا وجدت أي أخطاء.',
+    Persian:
+      'من از هوش مصنوعی برای ترجمه استفاده کردم. لطفاً به من اطلاع دهید اگر هر گونه اشتباهی پیدا کردید.',
+    Indonesian:
+      'Saya menggunakan kecerdasan buatan untuk menerjemahkan. Tolong beri tahu saya jika Anda menemukan kesalahan.',
+    Dutch: 'Ik heb AI gebruikt om te vertalen. Laat me weten als je fouten vindt.',
   }
 
   get statement(): string {

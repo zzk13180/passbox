@@ -8,10 +8,12 @@ import {
   OnDestroy,
   Output,
   ViewChild,
-  HostListener,
+  OnInit,
 } from '@angular/core'
 import { fromEvent, Subject } from 'rxjs'
 import { debounceTime, filter, map, takeUntil } from 'rxjs/operators'
+import { CommandListener } from 'src/app/decorator'
+import { CommandEnum } from 'src/app/enums'
 
 @Component({
   selector: 'search-emoji',
@@ -24,7 +26,7 @@ import { debounceTime, filter, map, takeUntil } from 'rxjs/operators'
   styleUrls: ['./emoji.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchEmojiComponent implements OnDestroy, AfterViewInit {
+export class SearchEmojiComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() cssClass: string
   @Input() placeholder = 'search'
   @Input() isKeyupSearch = true
@@ -36,8 +38,9 @@ export class SearchEmojiComponent implements OnDestroy, AfterViewInit {
 
   constructor() {}
 
-  @HostListener('window:keydown.meta.f')
-  @HostListener('window:keydown.control.f')
+  ngOnInit() {}
+
+  @CommandListener(CommandEnum.FocusSearchInput)
   inputfocus() {
     this.filterInputElement.nativeElement.focus()
   }

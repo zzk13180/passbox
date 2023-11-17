@@ -80,4 +80,8 @@ export class ElectronService {
   setBrowserWinAlwaysOnTop(flag: boolean) {
     this.ipcRenderer.send('set-browser-win-always-on-top', flag)
   }
+
+  registerGlobalShortcutOpenMainWindow(key: string) {
+    this.ipcRenderer.send('register-global-shortcut-open-main-window', key)
+  }
 }

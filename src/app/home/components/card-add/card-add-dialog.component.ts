@@ -3,6 +3,8 @@ card add form dialog 😄
 🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅*/
 import { Component, Inject, ChangeDetectionStrategy, HostListener } from '@angular/core'
 import { LyDialogRef, LY_DIALOG_DATA } from '@alyle/ui/dialog'
+import { CommandService } from 'src/app/services'
+import { CommandEnum } from 'src/app/enums'
 import type { Card } from 'src/app/models'
 
 @Component({
@@ -22,12 +24,7 @@ export class CardAddDialog {
   }
 
   showPasswordGeneratorDialog() {
-    // TODO: user settings
-    const event = new KeyboardEvent('keydown', {
-      key: 'g',
-      ctrlKey: true,
-    })
-    window.dispatchEvent(event)
+    CommandService.triggerCommand(CommandEnum.OpenPasswordGeneratorDialog)
   }
 
   @HostListener('keypress', ['$event'])

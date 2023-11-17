@@ -3,7 +3,6 @@ import {
   OnInit,
   ChangeDetectorRef,
   ChangeDetectionStrategy,
-  HostListener,
   NgZone,
   OnDestroy,
 } from '@angular/core'
@@ -11,7 +10,8 @@ import { StyleRenderer, LyTheme2, LyClasses } from '@alyle/ui'
 import { LyDialog } from '@alyle/ui/dialog'
 import { Observable, filter, take, Subscription, firstValueFrom } from 'rxjs'
 import { Store } from '@ngrx/store'
-import { StorageKey } from 'src/app/enums'
+import { StorageKey, CommandEnum } from 'src/app/enums'
+import { CommandListener } from 'src/app/decorator'
 import {
   ElectronService,
   addInitCards,
@@ -182,6 +182,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
+  @CommandListener(CommandEnum.OpenPasswordSetDialog)
   showSetPasswordDialog() {
     const dialogRef = this._dialog.open<PasswordSetDialog>(PasswordSetDialog, {
       width: null,
@@ -226,9 +227,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
-  // TODO: user settings
-  @HostListener('window:keydown.meta.d')
-  @HostListener('window:keydown.control.d')
+  @CommandListener(CommandEnum.OpenCardAddDialog)
   add() {
     this.ngZone.run(() => {
       this.openDialog('add')
@@ -312,6 +311,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       })
   }
 
+  @CommandListener(CommandEnum.OpenDeletedCardsDialog)
   showDeletedCards() {
     this.deletedCards$.pipe(take(1)).subscribe(data => {
       this._dialog.open<CardDeletedDialog, Card[]>(CardDeletedDialog, {
@@ -320,6 +320,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
+  @CommandListener(CommandEnum.OpenExportDialog)
   exportData(event: Event): void {
     event?.stopPropagation()
     const dialogRef = this._dialog.open<ExportSelectDialog>(ExportSelectDialog, {
@@ -414,6 +415,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
+  @CommandListener(CommandEnum.OpenImportDialog)
   async importData(event: Event) {
     event?.stopPropagation()
     let cards: Card[]
@@ -495,17 +497,17 @@ export class HomeComponent implements OnInit, OnDestroy {
     return item.id
   }
 
+  @CommandListener(CommandEnum.OpenHelpDialog)
   showHelpDialog() {
     this._dialog.open<HelpDialog>(HelpDialog, {})
   }
 
+  @CommandListener(CommandEnum.OpenHistoryDialog)
   showHistoryCards() {
     this._dialog.open<CardHistoryDialog>(CardHistoryDialog, {})
   }
 
-  // TODO: user settings
-  @HostListener('window:keydown.meta.g')
-  @HostListener('window:keydown.control.g')
+  @CommandListener(CommandEnum.OpenPasswordGeneratorDialog)
   showPasswordGeneratorDialog() {
     const dialogRef = this._dialog.open<PasswordGeneratorDialog>(
       PasswordGeneratorDialog,
@@ -519,9 +521,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
-  // TODO: user settings
-  @HostListener('window:keydown.meta.t')
-  @HostListener('window:keydown.control.t')
+  @CommandListener(CommandEnum.OpenTutorialDialog)
   showTutorialDialog(showGuide?: boolean) {
     const dialogRef = this._dialog.open<TutorialDialog>(TutorialDialog, {
       width: null,
@@ -545,6 +545,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
+  @CommandListener(CommandEnum.OpenSettingsDialog)
   openSettingsDialog() {
     const dialogRef = this._dialog.open<SettingsDialog>(SettingsDialog, {
       containerClass: this.classes.settingsDialog,

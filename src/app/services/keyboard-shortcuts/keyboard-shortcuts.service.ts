@@ -1,7 +1,6 @@
 /* eslint-disable complexity */
 import { Injectable, Inject } from '@angular/core'
 import { DOCUMENT } from '@angular/common'
-// import { Store } from '@ngrx/store'
 import {
   KeyCode,
   KeyCodeUtils,
@@ -12,19 +11,22 @@ import {
 } from './keyboard-codes'
 import { IKeyboardEvent, StandardKeyboardEvent } from './keyboard-event'
 import { ScanCodeChord, KeyCodeChord, Chord } from './keyboard-bindings'
-// import { KeybindingParser } from './keybindingParser'
+import { KeybindingParser } from './keybindingParser'
 
 @Injectable({
   providedIn: 'root',
 })
 export class KeyboardShortcutsService {
-  private isWindows: boolean
+  private readonly isWindows: boolean
   private readonly scanCodeToDispatch: Array<string | null> = []
+
   constructor(@Inject(DOCUMENT) private document: Document) {
     this.isWindows = window.electronAPI.process.platform === 'win32'
+
     for (let scanCode = ScanCode.None; scanCode < ScanCode.MAX_VALUE; scanCode++) {
       this.scanCodeToDispatch[scanCode] = null
     }
+
     for (let scanCode = ScanCode.None; scanCode < ScanCode.MAX_VALUE; scanCode++) {
       const keyCode = IMMUTABLE_CODE_TO_KEY_CODE[scanCode]
       if (keyCode !== KeyCode.DependsOnKbLayout) {
@@ -41,6 +43,7 @@ export class KeyboardShortcutsService {
         }
       }
     }
+
     try {
       // @ts-ignore
       this.document.defaultView.navigator.keyboard.getLayoutMap().then((e: any) => {
@@ -70,7 +73,11 @@ export class KeyboardShortcutsService {
     } catch (_) {}
   }
 
-  parseHotkey(event: KeyboardEvent): string | null {
+  key2chord(key: string): Chord | null {
+    return KeybindingParser.parse(key)
+  }
+
+  event2key(event: KeyboardEvent): string | null {
     const keyboardEvent = new StandardKeyboardEvent(event)
     if (keyboardEvent.equals(KeyCode.Escape)) {
       return null
@@ -80,6 +87,11 @@ export class KeyboardShortcutsService {
     }
     const chord = this.resolveKeyboardEvent(keyboardEvent)
     return this.getChordDispatch(chord)
+  }
+
+  event2chord(keyboardEvent: KeyboardEvent): Chord {
+    const standardKeyboardEvent = new StandardKeyboardEvent(keyboardEvent)
+    return this.resolveKeyboardEvent(standardKeyboardEvent)
   }
 
   private getChordDispatch(chord: Chord): string | null {

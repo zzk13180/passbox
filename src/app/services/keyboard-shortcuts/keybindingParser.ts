@@ -62,7 +62,7 @@ export class KeybindingParser {
     }
   }
 
-  static parseChord(input: string): Chord | null {
+  static parse(input: string): Chord | null {
     if (!input) {
       return null
     }

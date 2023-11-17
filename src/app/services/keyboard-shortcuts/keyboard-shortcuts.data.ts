@@ -1,7 +1,22 @@
 import { CommandEnum } from 'src/app/enums'
-import type { KeyboardShortcutsBindingItem } from '../models'
+import type { KeyboardShortcutsBindingItem } from 'src/app/models'
 
 export const keyboardShortcutsBindings: KeyboardShortcutsBindingItem[] = [
+  {
+    label: 'Open add card dialog',
+    key: 'Ctrl + D',
+    command: CommandEnum.OpenCardAddDialog,
+  },
+  {
+    label: 'Open password generator',
+    key: 'Ctrl + G',
+    command: CommandEnum.OpenPasswordGeneratorDialog,
+  },
+  {
+    label: 'Focus search input',
+    key: 'Ctrl + F',
+    command: CommandEnum.FocusSearchInput,
+  },
   {
     label: 'Open main window',
     key: 'Ctrl + Alt + A',
@@ -9,43 +24,33 @@ export const keyboardShortcutsBindings: KeyboardShortcutsBindingItem[] = [
   },
   {
     label: 'Quit main window',
-    key: 'Ctrl + Q',
+    key: '',
     command: CommandEnum.QuitMainWindow,
   },
   {
     label: 'Close main window',
-    key: 'Ctrl + W',
+    key: '',
     command: CommandEnum.CloseMainWindow,
   },
   {
     label: 'Minimize main window',
-    key: 'Ctrl + M',
+    key: '',
     command: CommandEnum.MinimizeMainWindow,
   },
   {
     label: 'Maximize main window',
-    key: 'Ctrl + X',
+    key: '',
     command: CommandEnum.MaximizeMainWindow,
   },
   {
     label: 'Open apps nav dialog',
-    key: 'Ctrl + A',
+    key: '',
     command: CommandEnum.OpenAppsNavDialog,
   },
   {
     label: 'Open settings dialog',
-    key: 'Ctrl + S',
+    key: '',
     command: CommandEnum.OpenSettingsDialog,
-  },
-  {
-    label: 'Open add card dialog',
-    key: 'Ctrl + D',
-    command: CommandEnum.OpenCardAddDialog,
-  },
-  {
-    label: 'Open password generator dialog',
-    key: 'Ctrl + G',
-    command: CommandEnum.OpenPasswordGeneratorDialog,
   },
   {
     label: 'Open password set dialog',
@@ -76,5 +81,10 @@ export const keyboardShortcutsBindings: KeyboardShortcutsBindingItem[] = [
     label: 'Open help dialog',
     key: '',
     command: CommandEnum.OpenHelpDialog,
+  },
+  {
+    label: 'Open tutorial dialog',
+    key: '',
+    command: CommandEnum.OpenTutorialDialog,
   },
 ]

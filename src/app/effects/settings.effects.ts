@@ -10,13 +10,14 @@ import {
   map,
 } from 'rxjs'
 import { Store } from '@ngrx/store'
-import { StorageKey, I18nLanguageEnum } from 'src/app/enums'
+import { StorageKey } from 'src/app/enums'
 import {
   LocalStorage,
   ElectronService,
   getSettings,
   initSettings,
   resetSettings,
+  selectInitialSettings,
   updateIsFirstTimeLogin,
   updateMainWinAlwaysOnTop,
   updateBrowserWinAlwaysOnTop,
@@ -40,15 +41,32 @@ export class Settingsffects {
       ofType(getSettings),
       exhaustMap(() =>
         from([JSON.parse(this.storage.getItem(StorageKey.userSettings) || 'null')]).pipe(
-          map((settings: Partial<SettingsState>) => {
-            if (!settings || !settings.keyboardShortcutsBindings?.length) {
+          withLatestFrom(this.store.select(selectInitialSettings)),
+          map(([settings, initialSettings]: [Partial<SettingsState>, SettingsState]) => {
+            if (!settings || !Object.keys(settings).length) {
               return resetSettings()
             }
-            if (!settings.currentLanguage) {
-              settings.currentLanguage = I18nLanguageEnum.English
+
+            if (!settings.keyboardShortcutsBindings?.length) {
+              settings.keyboardShortcutsBindings =
+                initialSettings.keyboardShortcutsBindings
+            } else {
+              const kbs = settings.keyboardShortcutsBindings
+              settings.keyboardShortcutsBindings =
+                initialSettings.keyboardShortcutsBindings.map(item => {
+                  const key = kbs.find(({ command }) => command === item.command)?.key
+                  return key ? { ...item, key } : item
+                })
             }
+
+            for (const [key, value] of Object.entries(initialSettings)) {
+              if (!Object.prototype.hasOwnProperty.call(settings, key)) {
+                settings[key] = value
+              }
+            }
+
             try {
-              // if the settings is from db, need to update the main process settings
+              // update main process settings
               this.electronService.setMainWinAlwaysOnTop(!!settings.mainWinAlwaysOnTop)
               this.electronService.setBrowserWinAlwaysOnTop(
                 !!settings.browserWinAlwaysOnTop,
@@ -56,6 +74,7 @@ export class Settingsffects {
             } catch (error) {
               console.error(error)
             }
+
             // @ts-ignore
             return initSettings({ settings })
           }),

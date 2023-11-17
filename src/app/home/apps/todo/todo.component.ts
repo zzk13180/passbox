@@ -3,12 +3,14 @@ import {
   ElementRef,
   ViewChild,
   Renderer2,
+  OnInit,
   OnDestroy,
   AfterViewInit,
-  HostListener,
 } from '@angular/core'
 import { fromEvent, Subject } from 'rxjs'
 import { debounceTime, filter, takeUntil } from 'rxjs/operators'
+import { CommandListener } from 'src/app/decorator'
+import { CommandEnum } from 'src/app/enums'
 import { TodoStore } from './apps-todo-store'
 import type { Todo } from './apps-todo-store'
 
@@ -17,7 +19,7 @@ import type { Todo } from './apps-todo-store'
   templateUrl: './todo.component.html',
   styleUrls: ['./todo.component.scss'],
 })
-export class TodoComponent implements OnDestroy, AfterViewInit {
+export class TodoComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly delay = 100
   @ViewChild('newTodoInput', { static: true }) newTodoInputElement: ElementRef
   destroy$ = new Subject()
@@ -26,6 +28,8 @@ export class TodoComponent implements OnDestroy, AfterViewInit {
     public todoStore: TodoStore,
     private renderer: Renderer2,
   ) {}
+
+  ngOnInit() {}
 
   ngAfterViewInit() {
     this.todoStore.load()
@@ -85,8 +89,7 @@ export class TodoComponent implements OnDestroy, AfterViewInit {
     this.todoStore.remove(todo)
   }
 
-  @HostListener('window:keydown.meta.d')
-  @HostListener('window:keydown.control.d')
+  @CommandListener(CommandEnum.FocusSearchInput)
   inputfocus() {
     this.newTodoInputElement.nativeElement.focus()
   }

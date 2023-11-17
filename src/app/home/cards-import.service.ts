@@ -14,7 +14,11 @@ type DATA = {
 
 @Injectable()
 export class CardsImportService {
-  private userPasswordInput$ = new Subject<any>()
+  private userPasswordInput$ = new Subject<{
+    cards: CipherString
+    userState: UserState
+  }>()
+
   constructor(
     private electronService: ElectronService,
     private cryptoService: CryptoService,

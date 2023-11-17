@@ -9,7 +9,7 @@ type Message = {
   providedIn: 'root',
 })
 export class MessageService {
-  private messages$ = new Subject<any>()
+  private messages$ = new Subject<Message>()
 
   get messagesObs() {
     return this.messages$.asObservable()

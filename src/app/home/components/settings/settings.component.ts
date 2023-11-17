@@ -9,12 +9,12 @@ import {
   ChangeDetectorRef,
 } from '@angular/core'
 import { FormGroup, FormArray, FormControl } from '@angular/forms'
-import { StyleRenderer } from '@alyle/ui'
+import { StyleRenderer, LyClasses } from '@alyle/ui'
 import { LyDialogRef } from '@alyle/ui/dialog'
 import Swiper from 'swiper'
 import { EffectCube, EffectCoverflow } from 'swiper/modules'
 import { Store } from '@ngrx/store'
-import { take } from 'rxjs'
+import { take, withLatestFrom } from 'rxjs'
 import {
   selectTheSettings,
   updateMainWinAlwaysOnTop,
@@ -27,8 +27,11 @@ import {
   selectInitialSettings,
   updateKeyboardShortcutsBindings,
   selectCurrentLanguage,
+  CommandService,
 } from 'src/app/services'
+import { CommandEnum } from 'src/app/enums'
 import { I18nText } from './settings.i18n'
+import { STYLES } from './STYLES.data'
 import type { SettingsState, KeyboardShortcutsBindingItem } from 'src/app/models'
 
 interface CheckboxTask {
@@ -56,11 +59,12 @@ interface SliderTask {
   providers: [I18nText],
 })
 export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
+  readonly classes: LyClasses<typeof STYLES>
   readonly labels = ['Settings', 'Keyboard shortcuts']
   activeIndex: number = 0
   tabsContentOverflowStyle = 'hidden'
   swiper: Swiper
-  initialKbs: KeyboardShortcutsBindingItem[]
+  origKbs: KeyboardShortcutsBindingItem[]
   form: FormGroup = new FormGroup({
     keyboardShortcuts: new FormArray([]),
   })
@@ -133,7 +137,9 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
     private messages: MessageService,
     private userStateService: UserStateService,
     private keyboardShortcutsService: KeyboardShortcutsService,
-  ) {}
+  ) {
+    this.classes = this.sRenderer.renderSheet(STYLES, true)
+  }
 
   async ngOnInit() {
     this.activeIndex = 1
@@ -150,17 +156,21 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
 
     this.store
       .select(selectTheSettings)
-      .pipe(take(1))
-      .subscribe((settings: SettingsState) => {
+      .pipe(take(1), withLatestFrom(this.store.select(selectInitialSettings)))
+      .subscribe(([settings, initSettings]: [SettingsState, SettingsState]) => {
+        const { keyboardShortcutsBindings: origKbs } = initSettings
+        this.origKbs = origKbs
         const {
           mainWinAlwaysOnTop,
           browserWinAlwaysOnTop,
           needRecordVersions,
           keyboardShortcutsBindings,
         } = settings
+
         this.checkboxTasks[0].completed = mainWinAlwaysOnTop
         this.checkboxTasks[1].completed = browserWinAlwaysOnTop
         this.checkboxTasks[2].completed = !needRecordVersions
+
         this.kbsFormArray.clear()
         keyboardShortcutsBindings.forEach(item => {
           const formControl = new FormControl(item.key)
@@ -171,15 +181,6 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
           })
           this.kbsFormArray.push(formControl)
         })
-        this._cd.markForCheck()
-      })
-
-    this.store
-      .select(selectInitialSettings)
-      .pipe(take(1))
-      .subscribe((settings: SettingsState) => {
-        const { keyboardShortcutsBindings } = settings
-        this.initialKbs = keyboardShortcutsBindings
         this._cd.markForCheck()
       })
   }
@@ -199,7 +200,6 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
     this.swiper.on('slideChange', () => {
       this.activeIndex = this.swiper.activeIndex
       this.tabsContentOverflowStyle = this.activeIndex === 0 ? 'hidden' : 'auto'
-      this._cd.markForCheck()
       try {
         const container = this.swiperContainer.nativeElement.parentNode as HTMLElement
         container.scrollTop = 0
@@ -216,29 +216,15 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
   }
 
   showTutorialDialog() {
-    // TODO: user settings
-    const event = new KeyboardEvent('keydown', {
-      key: 't',
-      ctrlKey: true,
-    })
-    window.dispatchEvent(event)
+    CommandService.triggerCommand(CommandEnum.OpenTutorialDialog)
   }
 
   keyInput(index: number, event: KeyboardEvent) {
     event.preventDefault()
     event.stopPropagation()
-    const key = this.keyboardShortcutsService.parseHotkey(event)
+    const key = this.keyboardShortcutsService.event2key(event)
     if (key) {
       this.kbsFormArray.controls[index].setValue(key)
     }
-  }
-
-  stopScroll(event: Event) {
-    event.preventDefault()
-    event.stopPropagation()
-    try {
-      const targetElement = event.target as Element
-      targetElement.scrollTop = 0
-    } catch (_) {}
   }
 }
