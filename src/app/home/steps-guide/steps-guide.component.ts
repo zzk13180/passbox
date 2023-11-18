@@ -119,8 +119,8 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
       this.position === 'left'
         ? 'left-top'
         : this.position === 'right'
-        ? 'right-top'
-        : this.position
+          ? 'right-top'
+          : this.position
     const rect = this.positionService.positionElements(
       this.triggerElement,
       this.elm.nativeElement,

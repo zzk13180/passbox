@@ -91,7 +91,7 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "passbox:build",
+            "buildTarget": "passbox:build",
             "headers": {
               "Cross-Origin-Opener-Policy": "same-origin",
               "Cross-Origin-Embedder-Policy": "require-corp"
@@ -99,10 +99,10 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "passbox:build:production"
+              "buildTarget": "passbox:build:production"
             },
             "development": {
-              "browserTarget": "passbox:build:development"
+              "buildTarget": "passbox:build:development"
             }
           },
           "defaultConfiguration": "development"
