@@ -2,7 +2,7 @@
   <section class="todoapp">
     <header class="header">
       <apps-nav />
-      <input #newTodoInput class="new-todo" placeholder="write and press enter" />
+      <input #newTodoElement class="new-todo" placeholder="write and press enter" />
     </header>
     <section class="main" *ngIf="todoStore.todos.length > 0">
       <input
@@ -27,17 +27,16 @@
               (click)="toggleCompletion(todo)"
               [checked]="todo.completed"
             />
-            <label (dblclick)="editTodo(todo)">{{ todo.title }}</label>
+            <label (click)="editTodo(todo)">{{ todo.title }}</label>
             <button class="destroy" (click)="remove(todo)"></button>
           </div>
           <input
             class="edit"
-            #editedtodo
+            #editedTodoElement
             *ngIf="todo.editing"
             [value]="todo.title"
-            (blur)="updateEditingTodo(todo, editedtodo.value)"
-            (keydown.shift.enter)="updateEditingTodo(todo, editedtodo.value)"
-            (keypress)="handleKeyPress($event, todo, editedtodo.value)"
+            (blur)="updateEditingTodo(todo, editedTodoElement.value)"
+            (keypress)="handleKeyPress($event, todo, editedTodoElement.value)"
             (keydown.escape)="cancelEditingTodo(todo)"
           />
         </li>

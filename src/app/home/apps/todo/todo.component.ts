@@ -6,9 +6,10 @@ import {
   OnInit,
   OnDestroy,
   AfterViewInit,
+  NgZone,
 } from '@angular/core'
 import { fromEvent, Subject } from 'rxjs'
-import { debounceTime, filter, takeUntil } from 'rxjs/operators'
+import { filter, takeUntil } from 'rxjs/operators'
 import { CommandListener } from 'src/app/decorator'
 import { CommandEnum } from 'src/app/enums'
 import { TodoStore } from './apps-todo-store'
@@ -20,35 +21,34 @@ import type { Todo } from './apps-todo-store'
   styleUrls: ['./todo.component.scss'],
 })
 export class TodoComponent implements OnInit, OnDestroy, AfterViewInit {
-  readonly delay = 100
-  @ViewChild('newTodoInput', { static: true }) newTodoInputElement: ElementRef
-  destroy$ = new Subject()
+  @ViewChild('newTodoElement', { static: true }) newTodoElement: ElementRef
+  @ViewChild('editedTodoElement', { static: false }) editedTodoElement: ElementRef
+  private destroy$ = new Subject()
 
   constructor(
     public todoStore: TodoStore,
     private renderer: Renderer2,
+    private ngZone: NgZone,
   ) {}
 
   ngOnInit() {}
 
   ngAfterViewInit() {
     this.todoStore.load()
-    this.renderer.selectRootElement(this.newTodoInputElement.nativeElement).focus()
-    fromEvent(this.newTodoInputElement.nativeElement, 'keypress')
+    this.newTodoElement.nativeElement?.focus()
+    fromEvent(this.newTodoElement.nativeElement, 'keypress')
       .pipe(
         takeUntil(this.destroy$),
-        filter((keyEvent: KeyboardEvent) => {
-          return (
-            (keyEvent.shiftKey && keyEvent.key === 'Enter') || keyEvent.key === 'Enter'
-          )
-        }),
-        debounceTime(this.delay),
+        filter((keyEvent: KeyboardEvent) => keyEvent.key === 'Enter'),
       )
       .subscribe(_keyEvent => {
-        const newTodo = this.newTodoInputElement.nativeElement.value.trim()
+        const newTodo = this.newTodoElement.nativeElement.value.trim()
         newTodo && this.todoStore.add(newTodo)
-        this.renderer.setProperty(this.newTodoInputElement.nativeElement, 'value', '')
+        this.renderer.setProperty(this.newTodoElement.nativeElement, 'value', '')
       })
+    this.ngZone.onStable.subscribe(() => {
+      this.editedTodoElement?.nativeElement?.focus()
+    })
   }
 
   cancelEditingTodo(todo: Todo) {
@@ -58,10 +58,9 @@ export class TodoComponent implements OnInit, OnDestroy, AfterViewInit {
   updateEditingTodo(todo: Todo, editedTitle: string) {
     editedTitle = editedTitle.trim()
     todo.editing = false
-
     if (editedTitle.length === 0) {
       this.todoStore.remove(todo)
-    } else {
+    } else if (editedTitle !== todo.title) {
       todo.title = editedTitle
       this.todoStore.edit()
     }
@@ -91,7 +90,7 @@ export class TodoComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @CommandListener(CommandEnum.FocusSearchInput)
   inputfocus() {
-    this.newTodoInputElement.nativeElement.focus()
+    this.newTodoElement.nativeElement.focus()
   }
 
   ngOnDestroy() {

@@ -1,0 +1,20 @@
+.editorjs-container {
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+}
+
+.editor-holder {
+  @media (max-width: 710px) {
+    padding: 0 20px;
+  }
+}
+
+.codex-editor--toolbox-opened
+  .ce-block:first-child
+  .ce-paragraph[data-placeholder]:empty::before,
+.codex-editor--empty
+  .ce-block:first-child
+  .ce-paragraph[data-placeholder]:empty:focus::before {
+  opacity: 0.8 !important;
+}

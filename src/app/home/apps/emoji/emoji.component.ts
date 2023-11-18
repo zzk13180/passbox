@@ -30,7 +30,6 @@ export class EmojiComponent implements OnInit {
   fontSize = 26
   emojis: Emoji[] = []
   private emojisOriginal: Emoji[] = []
-  private loading = true
   private fuse = new Fuse<Emoji>([], {
     keys: [
       'title',
@@ -78,46 +77,26 @@ export class EmojiComponent implements OnInit {
     this.classes = this.theme.addStyleSheet(STYLES)
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     const { emojis } = this.emojiService
     if (emojis) {
       this.initEmojis(emojis)
       return
     }
+    this.emojis = emojisTmpData
+    this._cd.markForCheck()
     this.emojiService.getEmojis().then(emojis => {
       setTimeout(() => {
         this.initEmojis(emojis)
       }, 300)
     })
-    const iterator = this.displayEmojiOneByOne(emojisTmpData)
-    while (true) {
-      const { value, done } = await iterator.next()
-      if (done || !this.loading) {
-        break
-      }
-      this.emojis.push(...value)
-      this._cd.markForCheck()
-    }
   }
 
   private initEmojis(emojis: Emoji[]) {
-    this.loading = false
     this.emojis = emojis
     this.emojisOriginal = emojis
     this.fuse.setCollection(emojis)
     this._cd.markForCheck()
-  }
-
-  private async *displayEmojiOneByOne(emojis: Emoji[]) {
-    const arrs = []
-    const chunk = 7
-    for (let i = 0; i < emojis.length; i += chunk) {
-      arrs.push(emojis.slice(i, i + chunk))
-    }
-    for (const emojis of arrs) {
-      await new Promise(resolve => setTimeout(resolve, 100))
-      yield emojis
-    }
   }
 
   onSearch(term: string) {

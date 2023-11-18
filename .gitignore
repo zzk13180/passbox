@@ -18,8 +18,6 @@ src/**/*.js
 *.js.map
 *.js
 !preload.js
-*.d.ts
-!preload.d.ts
 
 # dependencies
 /node_modules
