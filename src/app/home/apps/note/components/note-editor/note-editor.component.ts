@@ -7,6 +7,7 @@ import {
   ChangeDetectionStrategy,
   OnDestroy,
   NgZone,
+  ChangeDetectorRef,
 } from '@angular/core'
 import { fromEvent, Subscription } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
@@ -33,6 +34,7 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
     private noteStoreService: NoteStoreService,
     private quillService: QuillService,
     private ngZone: NgZone,
+    private _cd: ChangeDetectorRef,
   ) {}
 
   ngAfterViewInit() {
@@ -56,7 +58,12 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
         noLink: true,
       },
       result => {
-        result.response === 1 && this.noteStoreService.deleteNoteById(note.id)
+        if (result.response === 1) {
+          this.ngZone.run(() => {
+            this.noteStoreService.deleteNoteById(note.id)
+            this._cd.markForCheck()
+          })
+        }
       },
     )
   }

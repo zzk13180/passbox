@@ -34,6 +34,10 @@
   </ly-field>
 </div>
 <ly-grid container justify="between" ly-dialog-actions>
+  <button ly-button color="primary" (click)="dialogRef.close()">
+    <span [lyPf]="1">CLOSE</span>
+    <ly-icon>close</ly-icon>
+  </button>
   <button ly-button color="primary" (click)="reset()">
     <span [lyPf]="1">RESET</span>
     <ly-icon>warning</ly-icon>

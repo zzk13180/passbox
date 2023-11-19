@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core'
 import pako from 'pako'
-import { fromBufferToB64, areArrayBuffersEqual, randomBytes } from '../utils/crypto.util'
+import {
+  fromStrToB64,
+  fromBufferToB64,
+  areArrayBuffersEqual,
+  randomBytes,
+} from '../utils/crypto.util'
 import { CryptoFunction } from './crypto-function'
 import { UserStateService } from './user-state.service'
 import type { CipherString, EncryptedObject, UserState } from '../models'
@@ -19,10 +24,10 @@ export class CryptoService {
   }
 
   async encrypt(plainValue: string | ArrayBuffer): Promise<CipherString> {
-    const userstate: UserState = await this.userStateService.getUserState()
+    const userState: UserState = await this.userStateService.getUserState()
     const userPassword = this.userStateService.getUserPassword()
     const { password, salt, iterations } = this.getPasswordAndSaltAndIterations(
-      userstate,
+      userState,
       userPassword,
     )
     if (
@@ -52,13 +57,13 @@ export class CryptoService {
     return { data, iv }
   }
 
-  async encryptWithExternalUserPassword(
+  async encryptWithExternalUserPasswordAndUserState(
     plainValue: string | ArrayBuffer,
     userPassword: string,
-  ): Promise<CipherString> {
-    const userstate: UserState = await this.userStateService.getUserState()
+    userState: UserState,
+  ): Promise<{ userStateStr: string; data: CipherString }> {
     const { password, salt, iterations } = this.getPasswordAndSaltAndIterations(
-      userstate,
+      userState,
       userPassword,
     )
     const key = await this.makeKey(password, salt, iterations)
@@ -73,14 +78,18 @@ export class CryptoService {
     const encObj = await this.aesEncrypt(plainBuf, key)
     const iv = fromBufferToB64(encObj.iv)
     const data = fromBufferToB64(encObj.data)
-    return { data, iv }
+    const userStateStr = fromStrToB64(JSON.stringify(userState))
+    return {
+      userStateStr,
+      data: { data, iv },
+    }
   }
 
   async decryptToUtf8(cipherString: CipherString): Promise<string> {
-    const userstate: UserState = await this.userStateService.getUserState()
+    const userState: UserState = await this.userStateService.getUserState()
     const userPassword = this.userStateService.getUserPassword()
     const { password, salt, iterations } = this.getPasswordAndSaltAndIterations(
-      userstate,
+      userState,
       userPassword,
     )
     if (
@@ -147,7 +156,7 @@ export class CryptoService {
   }
 
   private getPasswordAndSaltAndIterations(
-    userstate: UserState,
+    userState: UserState,
     userPassword?: string,
   ): {
     password: ArrayBuffer
@@ -159,7 +168,7 @@ export class CryptoService {
       salt: saltStr,
       isRequiredLogin,
       passwordEncryptionStrength,
-    } = userstate
+    } = userState
 
     const salt = new ArrayBuffer(23)
     saltStr.split(',').map((item, i) => new DataView(salt).setUint8(i, Number(item)))

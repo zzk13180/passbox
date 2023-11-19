@@ -389,24 +389,30 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private async exportDataEncrypted(password: string) {
-    const userPassword = this.userStateService.getUserPassword()
-    const userStateStr: string = await this.electronService.cardsStorageGet(
-      StorageKey.userState,
-    )
-    let cards: string
     try {
+      let cardsStr: string
+      let userStateStr: string
+      const userPassword = this.userStateService.getUserPassword()
       if (userPassword === password) {
-        cards = await this.electronService.cardsStorageGet(StorageKey.cards)
+        userStateStr = await this.electronService.cardsStorageGet(StorageKey.userState)
+        cardsStr = await this.electronService.cardsStorageGet(StorageKey.cards)
       } else {
-        cards = JSON.stringify(
-          await this.cryptoService.encryptWithExternalUserPassword(
+        const userState = {
+          ...(await this.userStateService.getUserState()),
+        }
+        userState.isRequiredLogin = true
+        const result =
+          await this.cryptoService.encryptWithExternalUserPasswordAndUserState(
             JSON.stringify(await firstValueFrom(this.cards$)),
             password,
-          ),
-        )
+            userState,
+          )
+        cardsStr = JSON.stringify(result.data)
+        // eslint-disable-next-line prefer-destructuring
+        userStateStr = result.userStateStr
       }
       const data = {
-        cards,
+        cards: cardsStr,
         userState: userStateStr,
       }
       downloadByData(JSON.stringify(data), 'passbox-data.json')

@@ -31,11 +31,7 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
     private electronService: ElectronService,
   ) {}
 
-  ngOnInit() {
-    this.ngZone.onStable
-      .pipe(takeUntil(this.destroy$), debounceTime(this.SAVE_DELAY))
-      .subscribe(() => this.save())
-  }
+  ngOnInit() {}
 
   async ngAfterViewInit() {
     await this.ensurePath()
@@ -52,6 +48,9 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
     } catch (error) {
       console.error(error)
     }
+    this.ngZone.onStable
+      .pipe(takeUntil(this.destroy$), debounceTime(this.SAVE_DELAY))
+      .subscribe(() => this.save())
   }
 
   async save() {
@@ -71,10 +70,12 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  ngOnDestroy() {
+  async ngOnDestroy() {
     this.destroy$.next()
-    this.save()
-    this.editorService.editor?.destroy()
+    try {
+      await this.save()
+      this.editorService.editor?.destroy()
+    } catch (_) {}
   }
 
   private async ensurePath(): Promise<void> {

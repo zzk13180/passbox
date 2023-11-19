@@ -19,7 +19,7 @@ export class UserStateService {
       this.userState.salt &&
       this.userState.passwordEncryptionStrength
     ) {
-      return this.userState
+      return Object.freeze(this.userState)
     }
 
     let userState: UserState = null
@@ -37,7 +37,7 @@ export class UserStateService {
     }
     // save user state in storage and memory
     await this.setUserState(userState)
-    return this.userState
+    return Object.freeze(this.userState)
   }
 
   getUserPassword(): string {
