@@ -1,3 +1,4 @@
+/* Original code: ng-devui/steps-guide/steps-guide.service.ts */
 import { Injectable } from '@angular/core'
 import { BehaviorSubject, ReplaySubject } from 'rxjs'
 
@@ -8,11 +9,9 @@ export class StepsGuideService {
   showGuideObs = this.showGuideSource.asObservable()
   currentIndex = this.currentIndexSource.asObservable()
 
-  // 引导步骤
   private steps = []
   private currentStep = 0
 
-  // 切换向导的显示和销毁
   showGuide(visible: boolean) {
     this.showGuideSource.next(visible)
   }

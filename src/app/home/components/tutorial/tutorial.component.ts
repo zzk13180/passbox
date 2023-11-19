@@ -60,13 +60,15 @@ export class TutorialDialog implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.swiper = new Swiper(this.swiperContainer.nativeElement, {
-      modules: [EffectCube, EffectCoverflow],
-      effect: 'coverflow',
-      coverflowEffect: {
-        slideShadows: false,
-        stretch: -300,
-      },
+    this.ngZone.runOutsideAngular(() => {
+      this.swiper = new Swiper(this.swiperContainer.nativeElement, {
+        modules: [EffectCube, EffectCoverflow],
+        effect: 'coverflow',
+        coverflowEffect: {
+          slideShadows: false,
+          stretch: -300,
+        },
+      })
     })
     this.swiper.slideTo(0)
     this.swiper.on('slideChange', () => {

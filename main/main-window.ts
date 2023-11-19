@@ -427,24 +427,35 @@ export class MainWindow {
       } catch (_) {}
     })
 
-    ipcMain.on(
+    ipcMain.handle(
       'register-global-shortcut-open-main-window',
       (event, accelerator: string) => {
-        const ret = globalShortcut.register(accelerator, () => {
-          // TODO: check accelerator is valid
-          console.log('pressed')
-          if (this.browserWindow) {
-            this.browserWindow.show()
-            this.browserWindow.focus()
-          }
-        })
-        if (!ret) {
-          event.reply(
-            'register-global-shortcut-open-main-window-failed',
-            `register ${accelerator} failed`,
-          )
+        globalShortcut.unregisterAll()
+        if (!accelerator) {
+          return true // just to unregister
         }
+        const isRegisteredOK = globalShortcut.register(accelerator, () => {
+          this.browserWindow?.show()
+          this.browserWindow?.focus()
+        })
+        return isRegisteredOK
       },
     )
+
+    ipcMain.on('close-main-window', () => {
+      this.browserWindow?.hide()
+    })
+
+    ipcMain.on('minimize-main-window', () => {
+      this.browserWindow?.minimize()
+    })
+
+    ipcMain.on('maximize-main-window', () => {
+      if (this.browserWindow?.isMaximized()) {
+        this.browserWindow?.unmaximize()
+      } else {
+        this.browserWindow?.maximize()
+      }
+    })
   }
 }

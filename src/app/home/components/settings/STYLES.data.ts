@@ -1,8 +1,9 @@
 import { STYLES as FIELD_STYLE } from '@alyle/ui/field'
-import { lyl, ThemeVariables, ThemeRef } from '@alyle/ui'
+import { lyl, ThemeVariables } from '@alyle/ui'
+import type { SelectorsFn } from '@alyle/ui'
 
-export const STYLES = (theme: ThemeVariables, ref: ThemeRef) => {
-  const expansion = ref.selectorsOf(FIELD_STYLE)
+export const STYLES = (theme: ThemeVariables, selectors: SelectorsFn) => {
+  const expansion = selectors(FIELD_STYLE)
   return {
     $name: 'home-settings',
     root: lyl`{

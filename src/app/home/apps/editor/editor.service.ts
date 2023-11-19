@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, NgZone } from '@angular/core'
 import Editor from '@editorjs/editorjs'
 import Checklist from '@editorjs/checklist'
 import Code from '@editorjs/code'
@@ -16,88 +16,89 @@ import Warning from '@editorjs/warning'
 
 @Injectable()
 export class EditorService {
-  readonly editor: Editor
+  editor: Editor
 
-  constructor() {
-    this.editor = new Editor({
-      autofocus: true,
-      placeholder: 'Type text or paste a link',
-      tools: {
-        header: {
-          class: Header,
-          inlineToolbar: ['link', 'marker'],
-        },
-        image: {
-          class: ImageTool,
-          inlineToolbar: true,
-          config: {
-            types:
-              'image/jpeg, image/jpg, image/png, image/gif, video/mp4, video/quicktime',
-            field: 'media',
-            uploader: {
-              uploadByFile(file: File) {
-                return new Promise(resolve => {
-                  const reader = new FileReader()
-                  reader.readAsDataURL(file)
+  constructor(private ngZone: NgZone) {
+    this.ngZone.runOutsideAngular(() => {
+      this.editor = new Editor({
+        placeholder: 'Type text',
+        tools: {
+          header: {
+            class: Header,
+            inlineToolbar: ['marker'],
+          },
+          image: {
+            class: ImageTool,
+            inlineToolbar: true,
+            config: {
+              types:
+                'image/jpeg, image/jpg, image/png, image/gif, video/mp4, video/quicktime',
+              field: 'media',
+              uploader: {
+                uploadByFile(file: File) {
+                  return new Promise(resolve => {
+                    const reader = new FileReader()
+                    reader.readAsDataURL(file)
 
-                  reader.onload = () => {
+                    reader.onload = () => {
+                      resolve({
+                        success: 1,
+                        file: {
+                          url: reader.result,
+                        },
+                      })
+                    }
+                    reader.onerror = () => {
+                      resolve({
+                        success: 0,
+                      })
+                    }
+                  })
+                },
+                uploadByUrl(url: string) {
+                  return new Promise(resolve => {
                     resolve({
                       success: 1,
                       file: {
-                        url: reader.result,
+                        url,
                       },
                     })
-                  }
-                  reader.onerror = () => {
-                    resolve({
-                      success: 0,
-                    })
-                  }
-                })
-              },
-              uploadByUrl(url: string) {
-                return new Promise(resolve => {
-                  resolve({
-                    success: 1,
-                    file: {
-                      url,
-                    },
                   })
-                })
+                },
               },
             },
           },
+          list: {
+            class: NestedList,
+            inlineToolbar: true,
+          },
+          code: {
+            class: Code,
+            shortcut: 'CMD+SHIFT+D',
+          },
+          quote: {
+            class: Quote,
+            inlineToolbar: true,
+          },
+          delimiter: Delimiter,
+          embed: Embed,
+          table: {
+            class: Table,
+            inlineToolbar: true,
+          },
+          raw: Raw,
+          inlineCode: {
+            class: InlineCode,
+            shortcut: 'CMD+SHIFT+C',
+          },
+          marker: {
+            class: Marker,
+            shortcut: 'CMD+SHIFT+M',
+          },
+          warning: Warning,
+          checklist: Checklist,
         },
-        list: {
-          class: NestedList,
-          inlineToolbar: true,
-        },
-        code: {
-          class: Code,
-          shortcut: 'CMD+SHIFT+D',
-        },
-        quote: {
-          class: Quote,
-          inlineToolbar: true,
-        },
-        delimiter: Delimiter,
-        embed: Embed,
-        table: {
-          class: Table,
-          inlineToolbar: true,
-        },
-        raw: Raw,
-        inlineCode: {
-          class: InlineCode,
-          shortcut: 'CMD+SHIFT+C',
-        },
-        marker: {
-          class: Marker,
-          shortcut: 'CMD+SHIFT+M',
-        },
-        warning: Warning,
-        checklist: Checklist,
-      },
+      })
     })
   }
 }

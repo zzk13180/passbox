@@ -8,4 +8,7 @@
   let-msg="msg"
 >
   <p class="msg">{{ msg }}</p>
+  <button ly-button appearance="icon" color="accent" (click)="messages.dismiss()">
+    <ly-icon>close</ly-icon>
+  </button>
 </ng-template>

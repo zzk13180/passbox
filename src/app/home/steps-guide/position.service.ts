@@ -1,9 +1,10 @@
+/* Original code: ng-devui/postion/position.service.ts */
 import { Injectable, Inject } from '@angular/core'
 import { DOCUMENT } from '@angular/common'
 
 @Injectable()
 export class PositionService {
-  private windowRef: Window
+  private readonly windowRef: Window
   constructor(@Inject(DOCUMENT) private documentRef: Document) {
     this.windowRef = this.documentRef.defaultView!
   }
@@ -188,7 +189,6 @@ export class PositionService {
     return targetElPosition
   }
 
-  // 根据传入数组选取第一个合适的位置
   private getPlacement(
     hostElement: HTMLElement,
     targetElement: HTMLElement,

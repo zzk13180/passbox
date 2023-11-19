@@ -81,7 +81,19 @@ export class ElectronService {
     this.ipcRenderer.send('set-browser-win-always-on-top', flag)
   }
 
-  registerGlobalShortcutOpenMainWindow(key: string) {
-    this.ipcRenderer.send('register-global-shortcut-open-main-window', key)
+  registerGlobalShortcutOpenMainWindow(key: string): Promise<boolean> {
+    return this.ipcRenderer.invoke('register-global-shortcut-open-main-window', key)
+  }
+
+  closeMainWindow() {
+    this.ipcRenderer.send('close-main-window')
+  }
+
+  minimizeMainWindow() {
+    this.ipcRenderer.send('minimize-main-window')
+  }
+
+  maximizeMainWindow() {
+    this.ipcRenderer.send('maximize-main-window')
   }
 }

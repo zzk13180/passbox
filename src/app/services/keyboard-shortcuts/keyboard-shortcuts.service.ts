@@ -11,7 +11,7 @@ import {
 } from './keyboard-codes'
 import { IKeyboardEvent, StandardKeyboardEvent } from './keyboard-event'
 import { ScanCodeChord, KeyCodeChord, Chord } from './keyboard-bindings'
-import { KeybindingParser } from './keybindingParser'
+import { KeybindingParser } from './keyboard-parser'
 
 @Injectable({
   providedIn: 'root',

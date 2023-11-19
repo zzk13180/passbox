@@ -82,11 +82,29 @@ export class AppComponent implements WithStyles, OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.dispatch(getSettings())
+    let cache = null
     this.store.select(selectKeyboardShortcutsBindings).subscribe(bindings => {
       this.keyBindings = bindings
-      this.electronService.registerGlobalShortcutOpenMainWindow(
-        'CommandOrControl+Shift+A',
+      // register global shortcuts
+      const { key: openMainWindowCommandKey } = bindings.find(
+        item => item.command === CommandEnum.OpenMainWindow,
       )
+      // when openMainWindowCommandKey is empty, it means unregister
+      if (cache !== openMainWindowCommandKey) {
+        this.electronService
+          .registerGlobalShortcutOpenMainWindow(
+            openMainWindowCommandKey.trim().replace(/ /g, ''),
+          )
+          .then(isRegisteredOK => {
+            if (!isRegisteredOK && openMainWindowCommandKey) {
+              this.messageService.open({
+                msg: `registerGlobalShortcut ${openMainWindowCommandKey} failed`,
+              })
+            } else {
+              cache = openMainWindowCommandKey
+            }
+          })
+      }
     })
   }
 
@@ -102,24 +120,19 @@ export class AppComponent implements WithStyles, OnInit, OnDestroy {
     })
   }
 
-  @CommandListener(CommandEnum.QuitMainWindow)
-  quitMainWindow() {
-    // electronService
-  }
-
   @CommandListener(CommandEnum.CloseMainWindow)
   closeMainWindow() {
-    // electronService
+    this.electronService.closeMainWindow()
   }
 
   @CommandListener(CommandEnum.MinimizeMainWindow)
   minimizeMainWindow() {
-    // electronService
+    this.electronService.minimizeMainWindow()
   }
 
   @CommandListener(CommandEnum.MaximizeMainWindow)
   maximizeMainWindow() {
-    // electronService
+    this.electronService.maximizeMainWindow()
   }
 
   ngOnDestroy() {

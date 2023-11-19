@@ -28,7 +28,6 @@ export const CommandListener = (command: CommandEnum): MethodDecorator => {
           filter((c: CommandEnum) => c === command),
         )
         .subscribe(() => {
-          console.log('triggerCommand', key, command)
           descriptor.value.apply(this)
         })
       originalOnInit.apply(this)

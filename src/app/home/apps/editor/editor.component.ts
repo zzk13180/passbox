@@ -4,9 +4,12 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  NgZone,
 } from '@angular/core'
+import { Subject, takeUntil, debounceTime } from 'rxjs'
 import { ElectronService } from 'src/app/services'
 import { EditorService } from './editor.service'
+import type { OutputData } from '@editorjs/editorjs'
 
 @Component({
   selector: 'apps-editor',
@@ -17,20 +20,32 @@ import { EditorService } from './editor.service'
 })
 export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly KEY = 'editor'
+  private readonly SAVE_DELAY = 1000 * 1
+  private readonly destroy$ = new Subject<void>()
   private path: string
+  private cache: string
+
   constructor(
+    private ngZone: NgZone,
     private editorService: EditorService,
     private electronService: ElectronService,
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.ngZone.onStable
+      .pipe(takeUntil(this.destroy$), debounceTime(this.SAVE_DELAY))
+      .subscribe(() => this.save())
+  }
 
   async ngAfterViewInit() {
+    await this.ensurePath()
+    const data = await this.electronService.readFile(this.path)
+    if (!data) {
+      return
+    }
+    await this.editorService.editor.isReady
     try {
-      await this.ensurePath()
-      const data = await this.electronService.readFile(this.path)
-      await this.editorService.editor.isReady
-      const content = JSON.parse(data)
+      const content: OutputData = JSON.parse(data)
       if (content.blocks?.length) {
         this.editorService.editor.render(content)
       }
@@ -39,14 +54,27 @@ export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  async ngOnDestroy() {
+  async save() {
     try {
       await this.ensurePath()
-      const data = await this.editorService.editor.save()
-      this.electronService.writeFile(this.path, JSON.stringify(data))
+      const content: OutputData = await this.editorService.editor?.save()
+      if (content) {
+        const string = JSON.stringify(content)
+        if (string === this.cache) {
+          return
+        }
+        this.electronService.writeFile(this.path, string)
+        this.cache = string
+      }
     } catch (error) {
       console.error(error)
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next()
+    this.save()
+    this.editorService.editor?.destroy()
   }
 
   private async ensurePath(): Promise<void> {

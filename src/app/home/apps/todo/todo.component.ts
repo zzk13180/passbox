@@ -41,14 +41,16 @@ export class TodoComponent implements OnInit, OnDestroy, AfterViewInit {
         takeUntil(this.destroy$),
         filter((keyEvent: KeyboardEvent) => keyEvent.key === 'Enter'),
       )
-      .subscribe(_keyEvent => {
-        const newTodo = this.newTodoElement.nativeElement.value.trim()
-        newTodo && this.todoStore.add(newTodo)
-        this.renderer.setProperty(this.newTodoElement.nativeElement, 'value', '')
-      })
-    this.ngZone.onStable.subscribe(() => {
+      .subscribe(() => this.addTodo())
+    this.ngZone.onStable.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.editedTodoElement?.nativeElement?.focus()
     })
+  }
+
+  addTodo() {
+    const newTodo = this.newTodoElement.nativeElement.value.trim()
+    newTodo && this.todoStore.add(newTodo)
+    this.renderer.setProperty(this.newTodoElement.nativeElement, 'value', '')
   }
 
   cancelEditingTodo(todo: Todo) {

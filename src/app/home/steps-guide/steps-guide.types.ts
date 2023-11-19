@@ -1,3 +1,4 @@
+/* Original code: ng-devui/steps-guide/steps-guide.types.ts */
 export type StepsGuidePositionType =
   | 'top'
   | 'top-left'
@@ -9,17 +10,17 @@ export type StepsGuidePositionType =
   | 'right'
 
 export interface StepItem {
-  title: string // 引导标题
-  content: string // 引导介绍内容
+  title: string
+  content: string
 }
 
 export interface GuideOptions {
   triggerElement: HTMLElement
   pageName: string
-  title: string // 引导标题
-  content: string // 引导介绍内容
-  stepsCount: number // 总步骤数
-  stepIndex: number // 当前步骤序号
+  title: string
+  content: string
+  stepsCount: number
+  stepIndex: number
   position: StepsGuidePositionType
   leftFix: number
   topFix: number
@@ -28,11 +29,11 @@ export interface GuideOptions {
 }
 
 export interface ExtraConfig {
-  hidePreStep: boolean // 隐藏上一步
-  hideStepNav: boolean // 隐藏步骤显示
+  hidePreStep: boolean
+  hideStepNav: boolean
 }
 
 export interface OperateResponse {
-  currentIndex: number // 当前索引
+  currentIndex: number
   clickType: 'prev' | 'next' | 'close'
 }

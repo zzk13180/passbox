@@ -7,6 +7,7 @@ import {
   ElementRef,
   AfterViewInit,
   ChangeDetectorRef,
+  NgZone,
 } from '@angular/core'
 import { FormGroup, FormArray, FormControl } from '@angular/forms'
 import { StyleRenderer, LyClasses } from '@alyle/ui'
@@ -28,6 +29,7 @@ import {
   updateKeyboardShortcutsBindings,
   selectCurrentLanguage,
   CommandService,
+  ElectronService,
 } from 'src/app/services'
 import { CommandEnum } from 'src/app/enums'
 import { I18nText } from './settings.i18n'
@@ -137,6 +139,8 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
     private messages: MessageService,
     private userStateService: UserStateService,
     private keyboardShortcutsService: KeyboardShortcutsService,
+    private electronService: ElectronService,
+    private ngZone: NgZone,
   ) {
     this.classes = this.sRenderer.renderSheet(STYLES, true)
   }
@@ -186,15 +190,17 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.swiper = new Swiper(this.swiperContainer.nativeElement, {
-      modules: [EffectCube, EffectCoverflow],
-      effect: 'coverflow',
-      noSwiping: true,
-      noSwipingClass: 'swiper-no-swiping',
-      coverflowEffect: {
-        slideShadows: false,
-        stretch: -300,
-      },
+    this.ngZone.runOutsideAngular(() => {
+      this.swiper = new Swiper(this.swiperContainer.nativeElement, {
+        modules: [EffectCube, EffectCoverflow],
+        effect: 'coverflow',
+        noSwiping: true,
+        noSwipingClass: 'swiper-no-swiping',
+        coverflowEffect: {
+          slideShadows: false,
+          stretch: -300,
+        },
+      })
     })
     this.swiper.slideTo(0)
     this.swiper.on('slideChange', () => {
@@ -219,12 +225,25 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
     CommandService.triggerCommand(CommandEnum.OpenTutorialDialog)
   }
 
-  keyInput(index: number, event: KeyboardEvent) {
+  async keyInput(index: number, event: KeyboardEvent, command: CommandEnum) {
     event.preventDefault()
     event.stopPropagation()
     const key = this.keyboardShortcutsService.event2key(event)
     if (key) {
+      if (command === CommandEnum.OpenMainWindow) {
+        const isRegisteredOK = await this.verifyGlobalShortcut(key)
+        if (!isRegisteredOK) {
+          return
+        }
+      }
       this.kbsFormArray.controls[index].setValue(key)
     }
+  }
+
+  private async verifyGlobalShortcut(key: string): Promise<boolean> {
+    const result = await this.electronService.registerGlobalShortcutOpenMainWindow(
+      key.trim().replace(/ /g, ''),
+    )
+    return result
   }
 }

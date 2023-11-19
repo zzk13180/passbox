@@ -4,43 +4,23 @@ import type { KeyboardShortcutsBindingItem } from 'src/app/models'
 export const keyboardShortcutsBindings: KeyboardShortcutsBindingItem[] = [
   {
     label: 'Open add card dialog',
-    key: 'Ctrl + D',
+    key: 'CTRL + D',
     command: CommandEnum.OpenCardAddDialog,
   },
   {
     label: 'Open password generator',
-    key: 'Ctrl + G',
+    key: 'CTRL + G',
     command: CommandEnum.OpenPasswordGeneratorDialog,
   },
   {
     label: 'Focus search input',
-    key: 'Ctrl + F',
+    key: 'CTRL + F',
     command: CommandEnum.FocusSearchInput,
   },
   {
     label: 'Open main window',
-    key: 'Ctrl + Alt + A',
+    key: '',
     command: CommandEnum.OpenMainWindow,
-  },
-  {
-    label: 'Quit main window',
-    key: '',
-    command: CommandEnum.QuitMainWindow,
-  },
-  {
-    label: 'Close main window',
-    key: '',
-    command: CommandEnum.CloseMainWindow,
-  },
-  {
-    label: 'Minimize main window',
-    key: '',
-    command: CommandEnum.MinimizeMainWindow,
-  },
-  {
-    label: 'Maximize main window',
-    key: '',
-    command: CommandEnum.MaximizeMainWindow,
   },
   {
     label: 'Open apps nav dialog',
@@ -86,5 +66,20 @@ export const keyboardShortcutsBindings: KeyboardShortcutsBindingItem[] = [
     label: 'Open tutorial dialog',
     key: '',
     command: CommandEnum.OpenTutorialDialog,
+  },
+  {
+    label: 'Close main window',
+    key: '',
+    command: CommandEnum.CloseMainWindow,
+  },
+  {
+    label: 'Minimize main window',
+    key: '',
+    command: CommandEnum.MinimizeMainWindow,
+  },
+  {
+    label: 'Maximize main window',
+    key: '',
+    command: CommandEnum.MaximizeMainWindow,
   },
 ]

@@ -110,7 +110,7 @@ export class StandardKeyboardEvent implements IKeyboardEvent {
     this.keyCode = extractKeyCode(e)
     this.code = e.code
 
-    // console.info(e.type + ": keyCode: " + e.keyCode + ", which: " + e.which + ", charCode: " + e.charCode + ", detail: " + e.detail + " ====> " + this.keyCode + ' -- ' + KeyCode[this.keyCode]);
+    // (e.type + ": keyCode: " + e.keyCode + ", which: " + e.which + ", charCode: " + e.charCode + ", detail: " + e.detail + " ====> " + this.keyCode + ' -- ' + KeyCode[this.keyCode]);
 
     this.ctrlKey = this.ctrlKey || this.keyCode === KeyCode.Ctrl
     this.altKey = this.altKey || this.keyCode === KeyCode.Alt
@@ -120,7 +120,7 @@ export class StandardKeyboardEvent implements IKeyboardEvent {
     this._asKeybinding = this._computeKeybinding()
     this._asKeyCodeChord = this._computeKeyCodeChord()
 
-    // console.log(`code: ${e.code}, keyCode: ${e.keyCode}, key: ${e.key}`);
+    // (`code: ${e.code}, keyCode: ${e.keyCode}, key: ${e.key}`);
   }
 
   public preventDefault(): void {

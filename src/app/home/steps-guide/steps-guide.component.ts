@@ -13,14 +13,15 @@ import {
   Renderer2,
   ViewChild,
   ElementRef,
+  NgZone,
 } from '@angular/core'
 import { fromEvent, Subscription } from 'rxjs'
 import { debounceTime, throttleTime } from 'rxjs/operators'
-import party from 'party-js'
 import { LocalStorage } from 'src/app/services'
 import { PositionService } from './position.service'
 import { StepsGuideService } from './steps-guide.service'
 import { ExtraConfig } from './steps-guide.types'
+import { PartyService } from './party.service'
 
 @Component({
   templateUrl: './steps-guide.component.html',
@@ -41,11 +42,11 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
 
   triggerElement: HTMLElement
   scrollElement: HTMLElement
-  pageName: string // 页面名称，用于标记当页帮助信息是否关闭
-  title: string // 引导标题
-  content: string // 引导介绍内容
-  stepsCount: number // 总步骤数
-  stepIndex: number // 该步骤序号
+  pageName: string
+  title: string
+  content: string
+  stepsCount: number
+  stepIndex: number
   position = 'top'
   leftFix: number
   topFix: number
@@ -58,13 +59,16 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
   DOT_VERTICAL_MARGIN = 22
   document: Document
 
+  private party: any
   constructor(
     private stepService: StepsGuideService,
     private renderer: Renderer2,
     private positionService: PositionService,
     private elm: ElementRef,
+    private ngZone: NgZone,
     @Inject(DOCUMENT) private doc: Document,
     @Inject(LocalStorage) private storage: Storage,
+    private partyService: PartyService,
   ) {
     this.document = this.doc
   }
@@ -80,10 +84,13 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    party.sparkles(this.partyEL.nativeElement, {
-      size: 1,
-      count: 15,
-      speed: 30,
+    this.ngZone.runOutsideAngular(async () => {
+      this.party = await this.partyService.getParty()
+      this.party.sparkles(this.partyEL.nativeElement, {
+        size: 1,
+        count: 15,
+        speed: 30,
+      })
     })
     this.updatePosition()
     if (!this.scrollElement) {
@@ -109,6 +116,7 @@ export class StepsGuideComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.party = null
     if (this.subScriber) {
       this.subScriber.unsubscribe()
     }

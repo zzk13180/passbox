@@ -1,4 +1,5 @@
 .editorjs-container {
+  padding-top: 45px;
   width: 100vw;
   height: 100vh;
   overflow: auto;
@@ -17,4 +18,11 @@
   .ce-block:first-child
   .ce-paragraph[data-placeholder]:empty:focus::before {
   opacity: 0.8 !important;
+}
+
+apps-nav {
+  color: #838383;
+  position: fixed;
+  top: -2px;
+  left: 0;
 }

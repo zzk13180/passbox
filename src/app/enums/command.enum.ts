@@ -1,7 +1,6 @@
 export enum CommandEnum {
   FocusSearchInput = 'FocusSearchInput',
   OpenMainWindow = 'OpenMainWindow',
-  QuitMainWindow = 'QuitMainWindow',
   CloseMainWindow = 'CloseMainWindow',
   MinimizeMainWindow = 'MinimizeMainWindow',
   MaximizeMainWindow = 'MaximizeMainWindow',

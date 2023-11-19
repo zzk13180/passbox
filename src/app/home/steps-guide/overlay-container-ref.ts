@@ -1,3 +1,4 @@
+/* Original code: ng-devui/overlay-container/overlay-container-ref.ts */
 import {
   ApplicationRef,
   ComponentFactory,

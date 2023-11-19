@@ -71,7 +71,7 @@
                   lyNativeControl
                   readonly
                   type="text"
-                  (keydown)="keyInput(i, $event)"
+                  (keydown)="keyInput(i, $event, origKbs[i].command)"
                   [formControlName]="i"
                 />
                 <ly-label>{{ origKbs[i].label }}&nbsp;&nbsp;&nbsp;</ly-label>

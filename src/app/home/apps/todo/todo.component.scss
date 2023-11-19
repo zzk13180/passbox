@@ -483,3 +483,22 @@
     transition-duration: 500ms;
   }
 }
+
+.todo-input-send {
+  position: absolute;
+  width: auto;
+  top: 23px;
+  right: 13px;
+  padding: 0 8px;
+  pointer-events: all;
+  cursor: pointer;
+  height: 100%;
+  line-height: 28px;
+  font-size: 14px;
+  z-index: 2;
+
+  > svg {
+    height: 18px;
+    width: 18px;
+  }
+}

@@ -8,6 +8,7 @@ import {
   LY_THEME_GLOBAL_VARIABLES,
   PartialThemeVariables,
 } from '@alyle/ui'
+import { LyButtonModule } from '@alyle/ui/button'
 import { MinimaLight } from '@alyle/ui/themes/minima'
 import { LySnackBarModule } from '@alyle/ui/snack-bar'
 import { EffectsModule } from '@ngrx/effects'
@@ -18,6 +19,7 @@ import { AppRoutingModule } from './app-routing.module'
 import { HomeModule } from './home/home.module'
 import { CardEffects, Settingsffects } from './effects'
 import { STORAGE_PROVIDERS, cardReducer, settingsReducer } from './services'
+import { LyIconModule } from './shared/icon'
 
 class GlobalVariables implements PartialThemeVariables {
   typography = {
@@ -33,6 +35,8 @@ class GlobalVariables implements PartialThemeVariables {
     AppRoutingModule,
     BrowserAnimationsModule,
     LySnackBarModule,
+    LyButtonModule,
+    LyIconModule,
     HomeModule,
     StoreModule.forRoot({ theCards: cardReducer, theSettings: settingsReducer }),
     EffectsModule.forRoot([CardEffects, Settingsffects]),

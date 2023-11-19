@@ -1,3 +1,4 @@
+/* Original code: ng-devui/steps-guide/steps-guide.component.scss */
 :host.devui-step-item {
   width: 260px;
   min-height: 130px;
@@ -213,7 +214,6 @@
   }
 }
 
-/* 以下定义动画帧 */
 @keyframes devui-glow {
   0% {
     transform: scale(1);
