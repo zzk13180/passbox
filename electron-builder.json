@@ -27,8 +27,10 @@
     "category": "public.app-category.productivity",
     "hardenedRuntime": true,
     "icon": "dist/assets/icons",
-    "target": "default",
-    "arch": ["x64", "arm64"]
+    "target": {
+      "target": "dmg",
+      "arch": ["x64", "arm64"]
+    }
   },
   "win": {
     "icon": "dist/assets/icons",
