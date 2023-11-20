@@ -1,20 +1,22 @@
 import { CommandEnum } from 'src/app/enums'
 import type { KeyboardShortcutsBindingItem } from 'src/app/models'
 
+const isWindows = window.electronAPI.process.platform === 'win32'
+
 export const keyboardShortcutsBindings: KeyboardShortcutsBindingItem[] = [
   {
     label: 'Open add card dialog',
-    key: 'CTRL + D',
+    key: isWindows ? 'CTRL + D' : 'CMD + [KeyD]',
     command: CommandEnum.OpenCardAddDialog,
   },
   {
     label: 'Open password generator',
-    key: 'CTRL + G',
+    key: isWindows ? 'CTRL + G' : 'CMD + [KeyG]',
     command: CommandEnum.OpenPasswordGeneratorDialog,
   },
   {
     label: 'Focus search input',
-    key: 'CTRL + F',
+    key: isWindows ? 'CTRL + F' : 'CMD + [KeyF]',
     command: CommandEnum.FocusSearchInput,
   },
   {

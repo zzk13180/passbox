@@ -241,9 +241,8 @@ export class SettingsDialog implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private async verifyGlobalShortcut(key: string): Promise<boolean> {
-    const result = await this.electronService.registerGlobalShortcutOpenMainWindow(
-      key.trim().replace(/ /g, ''),
-    )
+    key = this.keyboardShortcutsService.key2ElectronAccelerator(key)
+    const result = await this.electronService.registerGlobalShortcutOpenMainWindow(key)
     return result
   }
 }

@@ -465,4 +465,297 @@ export const emojisTmpData: Emoji[] = [
     keywords:
       'smiling cat face with heart-shaped eyes heart eyes cat cat animal animal beautiful beautiful',
   },
+  {
+    title: 'Smirk Cat',
+    symbol: '😼',
+    keywords: 'cat face with wry smile cat cat animal animal',
+  },
+  {
+    title: 'Kissing Cat',
+    symbol: '😽',
+    keywords: 'kissing cat face with closed eyes cat cat animal animal',
+  },
+  {
+    title: 'Scream Cat',
+    symbol: '🙀',
+    keywords: 'weary cat face cat cat animal animal',
+  },
+  {
+    title: 'Crying Cat Face',
+    symbol: '😿',
+    keywords: 'crying cat face cry cat cat animal animal',
+  },
+  {
+    title: 'Pouting Cat',
+    symbol: '😾',
+    keywords: 'pouting cat face cat cat animal animal',
+  },
+  {
+    title: 'Raised Hands',
+    symbol: '🙌',
+    keywords:
+      'person raising both hands in celebration body hands diversity diversity perfect perfect good good parties parties',
+  },
+  {
+    title: 'Clap',
+    symbol: '👏',
+    keywords:
+      'clapping hands sign body hands win win diversity diversity good good beautiful beautiful',
+  },
+  {
+    title: 'Wave',
+    symbol: '👋',
+    keywords: 'waving hand sign body hands hi diversity diversity',
+  },
+  {
+    title: 'Thumbsup',
+    symbol: '👍',
+    keywords:
+      'thumbs up sign body hands hi luck thank you diversity diversity perfect perfect good good beautiful beautiful',
+  },
+  {
+    title: 'Thumbsdown',
+    symbol: '👎',
+    keywords: 'thumbs down sign body hands diversity diversity',
+  },
+  {
+    title: 'Punch',
+    symbol: '👊',
+    keywords:
+      'fisted hand sign body hands hi fist bump diversity diversity boys night boys night',
+  },
+  {
+    title: 'Fist',
+    symbol: '✊',
+    keywords:
+      'raised fist body hands hi fist bump diversity diversity condolence condolence',
+  },
+  {
+    title: 'v',
+    symbol: '✌',
+    keywords:
+      'victory hand body hands hi thank you peace peace diversity diversity girls night girls night',
+  },
+  {
+    title: 'Ok Hand',
+    symbol: '👌',
+    keywords:
+      'ok hand sign body hands hi diversity diversity perfect perfect good good beautiful beautiful',
+  },
+  {
+    title: 'Raised Hand',
+    symbol: '✋',
+    keywords: 'raised hand body hands hi diversity diversity girls night girls night',
+  },
+  {
+    title: 'Open Hands',
+    symbol: '👐',
+    keywords: 'open hands sign body hands diversity diversity condolence condolence',
+  },
+  {
+    title: 'Muscle',
+    symbol: '💪',
+    keywords:
+      'flexed biceps body hands workout flex win win diversity diversity feminist feminist boys night boys night',
+  },
+  {
+    title: 'Pray',
+    symbol: '🙏',
+    keywords:
+      'person with folded hands body hands hi luck thank you pray pray diversity diversity scientology scientology',
+  },
+  {
+    title: 'Point Up',
+    symbol: '☝',
+    keywords: 'white up pointing index body hands emojione diversity diversity',
+  },
+  {
+    title: 'Point Up 2',
+    symbol: '👆',
+    keywords: 'white up pointing backhand index body hands diversity diversity',
+  },
+  {
+    title: 'Point Down',
+    symbol: '👇',
+    keywords: 'white down pointing backhand index body hands diversity diversity',
+  },
+  {
+    title: 'Point Left',
+    symbol: '👈',
+    keywords: 'white left pointing backhand index body hands hi diversity diversity',
+  },
+  {
+    title: 'Point Right',
+    symbol: '👉',
+    keywords: 'white right pointing backhand index body hands hi diversity diversity',
+  },
+  {
+    title: 'Middle Finger',
+    symbol: '🖕',
+    keywords:
+      'reversed hand with middle finger extended body hands middle finger diversity diversity',
+  },
+  {
+    title: 'Hand Splayed',
+    symbol: '🖐',
+    keywords: 'raised hand with fingers splayed body hands hi diversity diversity',
+  },
+  {
+    title: 'Metal',
+    symbol: '🤘',
+    keywords:
+      'sign of the horns body hands hi diversity diversity boys night boys night parties parties',
+  },
+  {
+    title: 'Vulcan',
+    symbol: '🖖',
+    keywords:
+      'raised hand with part between middle and ring fingers body hands hi diversity diversity',
+  },
+  {
+    title: 'Writing Hand',
+    symbol: '✍',
+    keywords: 'writing hand body hands write diversity diversity',
+  },
+  {
+    title: 'Nail Care',
+    symbol: '💅',
+    keywords:
+      'nail polish women body hands nailpolish diversity diversity girls night girls night',
+  },
+  {
+    title: 'Lips',
+    symbol: '👄',
+    keywords: 'mouth women body sexy lip',
+  },
+  {
+    title: 'Tongue',
+    symbol: '👅',
+    keywords: 'tongue body sexy lip',
+  },
+  {
+    title: 'Ear',
+    symbol: '👂',
+    keywords: 'ear body diversity diversity',
+  },
+  {
+    title: 'Nose',
+    symbol: '👃',
+    keywords: 'nose body diversity diversity',
+  },
+  {
+    title: 'Eye',
+    symbol: '👁',
+    keywords: 'eye body eyes',
+  },
+  {
+    title: 'Eyes',
+    symbol: '👀',
+    keywords: 'eyes body eyes',
+  },
+  {
+    title: 'Bust In Silhouette',
+    symbol: '👤',
+    keywords: 'bust in silhouette people',
+  },
+  {
+    title: 'Busts In Silhouette',
+    symbol: '👥',
+    keywords: 'busts in silhouette people',
+  },
+  {
+    title: 'Speaking Head',
+    symbol: '🗣',
+    keywords: 'speaking head in silhouette people talk',
+  },
+  {
+    title: 'Baby',
+    symbol: '👶',
+    keywords: 'baby people baby diversity diversity',
+  },
+  {
+    title: 'Boy',
+    symbol: '👦',
+    keywords: 'boy people baby diversity diversity',
+  },
+  {
+    title: 'Girl',
+    symbol: '👧',
+    keywords: 'girl people women baby diversity diversity',
+  },
+  {
+    title: 'Man',
+    symbol: '👨',
+    keywords:
+      'man people men sex diversity diversity selfie selfie boys night boys night',
+  },
+  {
+    title: 'Woman',
+    symbol: '👩',
+    keywords:
+      'woman people women sex diversity diversity feminist feminist selfie selfie girls night girls night',
+  },
+  {
+    title: 'Person With Blond Hair',
+    symbol: '👱',
+    keywords: 'person with blond hair people men diversity diversity',
+  },
+  {
+    title: 'Older Man',
+    symbol: '👴',
+    keywords: 'older man people men old people diversity diversity',
+  },
+  {
+    title: 'Older Woman',
+    symbol: '👵',
+    keywords: 'older woman people old people diversity diversity',
+  },
+  {
+    title: 'Man With Gua Pi Mao',
+    symbol: '👲',
+    keywords: 'man with gua pi mao people hat men diversity diversity',
+  },
+  {
+    title: 'Man With Turban',
+    symbol: '👳',
+    keywords: 'man with turban people hat diversity diversity',
+  },
+  {
+    title: 'Cop',
+    symbol: '👮',
+    keywords:
+      'police officer people hat men diversity diversity job job police police 911 911',
+  },
+  {
+    title: 'Construction Worker',
+    symbol: '👷',
+    keywords: 'construction worker people hat men diversity diversity job job',
+  },
+  {
+    title: 'Guardsman',
+    symbol: '💂',
+    keywords: 'guardsman people hat men diversity diversity job job',
+  },
+  {
+    title: 'Spy',
+    symbol: '🕵',
+    keywords: 'sleuth or spy people hat men glasses diversity diversity job job',
+  },
+  {
+    title: 'Santa',
+    symbol: '🎅',
+    keywords:
+      'father christmas people hat winter holidays christmas diversity diversity santa santa',
+  },
+  {
+    title: 'Angel',
+    symbol: '👼',
+    keywords: 'baby angel people diversity diversity omg omg',
+  },
+  {
+    title: 'Princess',
+    symbol: '👸',
+    keywords:
+      'princess people women diversity diversity beautiful beautiful girls night girls night',
+  },
 ]
