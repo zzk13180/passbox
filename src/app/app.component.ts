@@ -91,10 +91,11 @@ export class AppComponent implements WithStyles, OnInit, OnDestroy {
       )
       // when openMainWindowCommandKey is empty, it means unregister
       if (cache !== openMainWindowCommandKey) {
+        const key = this.keyboardShortcutsService.key2ElectronAccelerator(
+          openMainWindowCommandKey,
+        )
         this.electronService
-          .registerGlobalShortcutOpenMainWindow(
-            openMainWindowCommandKey.trim().replace(/ /g, ''),
-          )
+          .registerGlobalShortcutOpenMainWindow(key)
           .then(isRegisteredOK => {
             if (!isRegisteredOK && openMainWindowCommandKey) {
               this.messageService.open({
